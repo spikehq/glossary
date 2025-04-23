@@ -1,10 +1,10 @@
 # Spike.sh Glossary with 11ty and Sass
 
-A glossary website similar to [VWO's Glossary](https://vwo.com/glossary/) built with 11ty (Eleventy), Nunjucks templating, Sass for styling, and Markdown for content.
+A glossary website built with 11ty (Eleventy), Handlebars templating, Sass for styling, and Markdown for content.
 
 ## Features
 
-- Responsive design inspired by VWO's glossary
+- Responsive design
 - Sass-based modular CSS architecture
 - Markdown support for term definitions
 - Alphabetical filtering of glossary terms
@@ -16,7 +16,7 @@ A glossary website similar to [VWO's Glossary](https://vwo.com/glossary/) built 
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 
 ### Installation
@@ -79,8 +79,8 @@ The built site will be in the `_site` directory.
 │   │       └── layout/     # Layout styles
 │   ├── data/               # Global data files
 │   ├── glossary/           # Glossary term markdown files
-│   ├── index.njk           # Home page
-│   └── glossary.njk        # Glossary list page
+│   ├── index.hbs           # Home page
+│   └── glossary.hbs        # Glossary list page
 ├── .eleventy.js            # Eleventy configuration
 ├── package.json            # Dependencies and scripts
 └── README.md               # This file
@@ -93,7 +93,7 @@ To add a new term to the glossary, create a new markdown file in the `src/glossa
 ```markdown
 ---
 title: Term Name
-layout: layouts/glossary-item.njk
+layout: layouts/glossary-item.hbs
 excerpt: A short description of the term.
 featured: true|false
 related:
@@ -115,7 +115,7 @@ More content...
 ### Front Matter Explanation:
 
 - `title`: The name of the term
-- `layout`: Always use `layouts/glossary-item.njk`
+- `layout`: Always use `layouts/glossary-item.hbs`
 - `excerpt`: A short description that appears in term listings
 - `featured`: Set to `true` to display on the home page
 - `related`: List of related terms with their titles and slugs
@@ -149,4 +149,4 @@ All glossary terms are written in Markdown, which allows for rich formatting inc
 - Code blocks
 - Images
 
-This makes it easy to create structured and well-formatted glossary entries.# glossary
+This makes it easy to create structured and well-formatted glossary entries.
