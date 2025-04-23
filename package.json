@@ -1,0 +1,34 @@
+{
+  "name": "glossary",
+  "version": "1.0.0",
+  "description": "Spike.sh glossary with Sass support",
+  "main": "index.js",
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy",
+    "clean": "rm -rf _site",
+    "sass": "sass src/assets/scss/main.scss:src/assets/css/style.css",
+    "sass:watch": "sass --watch src/assets/scss/main.scss:src/assets/css/style.css",
+    "dev": "npm run sass && npm start",
+    "dev:watch": "concurrently \"npm run sass:watch\" \"npm start\""
+  },
+  "keywords": [
+    "glossary",
+    "11ty",
+    "handlebars",
+    "sass"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-handlebars": "^1.0.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "handlebars": "^4.7.8",
+    "markdown-it": "^14.1.0",
+    "sass": "^1.87.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

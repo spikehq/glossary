@@ -1,0 +1,18 @@
+// Button styles
+@use 'sass:color';
+@use '../base/variables' as vars;
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: color.adjust(vars.$primary-color, $lightness: -5%);
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,77 @@
+// Glossary item styles
+
+// Individual glossary item page
+.glossary-item {
+  h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+  }
+  
+  .glossary-content {
+    margin-bottom: 40px;
+  }
+  
+  .related-terms {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    
+    h3 {
+      margin-bottom: 15px;
+    }
+    
+    ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    li {
+      a {
+        display: block;
+        padding: 5px 10px;
+        background-color: white;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .back-to-glossary {
+    margin-top: 30px;
+  }
+}
+
+// Glossary items in list
+.glossary-list {
+  .glossary-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.term-card {
+  background-color: var(--secondary-color);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: left;
+  
+  h3 {
+    margin-bottom: 10px;
+  }
+}

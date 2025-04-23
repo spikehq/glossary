@@ -1,0 +1,32 @@
+---
+layout: layouts/base.hbs
+title: Home
+---
+<div class="home-page">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-3">Spike.sh Glossary</h1>
+            <p class="lead">Welcome to our comprehensive glossary of terms related to website optimization, A/B testing, and digital marketing.</p>
+        </div>
+    </div>
+    
+    <div class="featured-terms mb-5">
+        <h2 class="mb-4 text-center">Featured Terms</h2>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {{#each collections.featuredItems}}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title h5"><a href="{{this.url}}" class="text-decoration-none">{{data.title}}</a></h3>
+                        <p class="card-text">{{data.excerpt}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    
+    <div class="text-center mb-5">
+        <a href="/glossary" class="btn btn-primary btn-lg">Browse All Terms</a>
+    </div>
+</div>

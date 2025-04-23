@@ -1,0 +1,41 @@
+// Alphabet filter styles
+
+.glossary-page {
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+}
+
+.alphabet-filter {
+  margin-bottom: 30px;
+  
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  li {
+    a {
+      display: block;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      font-weight: 500;
+      
+      &:hover,
+      &.active {
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+// Import all partials using newer @use syntax
+
+// Base styles
+@use 'base/variables';
+@use 'base/reset';
+@use 'base/typography';
+
+// Layout
+@use 'layout/header';
+@use 'layout/footer';
+@use 'layout/grid';
+
+// Components
+@use 'components/buttons';
+@use 'components/glossary-item';
+@use 'components/home';
+@use 'components/alphabet-filter';
+
+// Responsive
+@use 'base/responsive';

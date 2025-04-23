@@ -1,0 +1,53 @@
+// Responsive styles
+@use 'variables' as vars;
+
+// Mixins for media queries
+@mixin mobile {
+  @media (max-width: #{vars.$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{vars.$breakpoint-md}) and (max-width: #{vars.$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{vars.$breakpoint-lg}) {
+    @content;
+  }
+}
+
+// Mobile-specific styles
+@include mobile {
+  .term-grid,
+  .glossary-list {
+    grid-template-columns: 1fr;
+  }
+  
+  header .container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .alphabet-filter ul {
+    gap: 3px;
+  }
+  
+  .alphabet-filter li a {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 0.9rem;
+  }
+}
+
+// Tablet-specific styles
+@include tablet {
+  .term-grid,
+  .glossary-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

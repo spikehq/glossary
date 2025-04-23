@@ -1,0 +1,31 @@
+---
+layout: layouts/base.hbs
+---
+<div class="glossary-item">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="glossary-content mb-4">
+                {{{content}}}
+            </div>
+
+            {{#if related}}
+            <div class="related-terms card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Related Terms</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {{#each related}}
+                        <li class="list-group-item"><a href="/glossary/{{this.slug}}" class="text-decoration-none">{{this.title}}</a></li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="back-to-glossary mb-4">
+                <a href="/glossary" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to Glossary</a>
+            </div>
+        </div>
+    </div>
+</div>
