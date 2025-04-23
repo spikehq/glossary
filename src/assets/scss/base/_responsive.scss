@@ -22,32 +22,33 @@
 
 // Mobile-specific styles
 @include mobile {
-  .term-grid,
-  .glossary-list {
+  .letter-items,
+  .related-cards {
     grid-template-columns: 1fr;
   }
   
-  header .container {
+  .header-container {
     flex-direction: column;
     gap: 15px;
   }
   
-  .alphabet-filter ul {
-    gap: 3px;
+  .main-nav ul {
+    gap: 15px;
   }
   
-  .alphabet-filter li a {
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    font-size: 0.9rem;
+  .glossary-content h1 {
+    font-size: 28px;
+  }
+  
+  .glossary-sections h2 {
+    font-size: 22px;
   }
 }
 
 // Tablet-specific styles
 @include tablet {
-  .term-grid,
-  .glossary-list {
+  .letter-items,
+  .related-cards {
     grid-template-columns: repeat(2, 1fr);
   }
 }

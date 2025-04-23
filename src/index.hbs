@@ -1,32 +1,43 @@
 ---
 layout: layouts/base.hbs
-title: Home
+title: Glossary
+permalink: /
 ---
-<div class="home-page">
-    <div class="row mb-5">
-        <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 mb-3">Spike.sh Glossary</h1>
-            <p class="lead">Welcome to our comprehensive glossary of terms related to website optimization, A/B testing, and digital marketing.</p>
-        </div>
+<div class="glossary-page">
+    <h1>GLOSSARY</h1>
+    
+    <div class="glossary-intro">
+        <p>Culpa voluptate culpa enim aliqua elusmod mollit fugiat anim irure aliqua aute Lorem. Voluptate culpa est cillum dolore cupidatat duis occaecat quis reprehenderit. Ipsum voluptate ad elusmod ullamco proident veniam officia duis officia ad ut. Esse non exercitation proident sunt pariatur consequat officia officia. Elusmod nulla ipsum officia ipsum minim fugiat ex. Est occaecat amet quis sit sit cupidatat deserunt ex mollit. Id anim irure ad cupidatat do. Tempor ipsum nisi aliqua proident consequat et.</p>
     </div>
     
-    <div class="featured-terms mb-5">
-        <h2 class="mb-4 text-center">Featured Terms</h2>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            {{#each collections.featuredItems}}
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h3 class="card-title h5"><a href="{{this.url}}" class="text-decoration-none">{{data.title}}</a></h3>
-                        <p class="card-text">{{data.excerpt}}</p>
-                    </div>
-                </div>
-            </div>
+    <div class="alphabet-filter">
+        <div class="letter-nav">
+            {{#each collections.alphabetList}}
+            <a href="#{{this}}">{{this}}</a>
             {{/each}}
         </div>
     </div>
     
-    <div class="text-center mb-5">
-        <a href="/glossary" class="btn btn-primary btn-lg">Browse All Terms</a>
+    <div class="glossary-list container">
+        {{#each collections.glossaryItemsByLetter}}
+        <div class="letter-group row" id="{{@key}}">
+            <div class="letter-marker col-2">
+                <span>{{@key}}</span>
+            </div>
+            <div class="letter-items col-10">
+                <div class="row">
+                    {{#each this}}
+                    <div class="col-lg-4 col-md-6 col-12 mb-4">
+                        <div class="glossary-card">
+                            <h2>{{title}}</h2>
+                            <p>{{excerpt}}</p>
+                            <a href="/glossary/{{slug}}/"></a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/each}}
     </div>
 </div>

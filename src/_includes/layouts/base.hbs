@@ -1,44 +1,74 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{title}} | Spike.sh Glossary</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Monoton&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
+
 <body>
-    <header class="py-3 mb-4 border-bottom">
-        <div class="container">
-            <div class="d-flex flex-wrap justify-content-between align-items-center">
-                <h1 class="mb-0"><a href="/" class="text-decoration-none">Spike.sh Glossary</a></h1>
-                <nav>
-                    <ul class="nav">
-                        <li class="nav-item"><a href="/" class="nav-link px-2">Home</a></li>
-                        <li class="nav-item"><a href="/glossary" class="nav-link px-2">All Terms</a></li>
-                    </ul>
-                </nav>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="/">
+                    <img src="/assets/images/spike-logo.svg" alt="Spike.sh" width="67" height="24">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#">Product</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/" class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 16.5V16.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M12 7.5V12.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <a href="#" class="btn-primary">Get started</a>
+                <a href="#" class="btn-link">Login</a>
             </div>
         </div>
     </header>
 
-    <main class="container my-4">
-        {{{content}}}
+    <main class="container">
+        <div class="main-container px-5">
+            {{{content}}}
+        </div>
     </main>
 
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container">
-            <p class="text-muted">&copy; {{year}} Spike.sh Glossary. All rights reserved.</p>
-        </div>
-    </footer>
+    <!-- bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+        integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+        crossorigin="anonymous"></script>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <!-- Custom JS -->
     <script src="/assets/js/glossary.js"></script>
 </body>
+
 </html>

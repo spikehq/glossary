@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "eleventy --serve",
-    "build": "eleventy",
+    "build": "npm run sass && eleventy",
     "clean": "rm -rf _site",
-    "sass": "sass src/assets/scss/main.scss:src/assets/css/style.css",
-    "sass:watch": "sass --watch src/assets/scss/main.scss:src/assets/css/style.css",
-    "dev": "npm run sass && npm start",
-    "dev:watch": "concurrently \"npm run sass:watch\" \"npm start\""
+    "sass": "sass src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
+    "sass:watch": "sass --watch src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
+    "dev": "concurrently \"npm run sass:watch\" \"eleventy --serve --quiet\"",
+    "preview": "npm run build && eleventy --serve"
   },
   "keywords": [
     "glossary",

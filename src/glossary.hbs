@@ -1,35 +1,27 @@
 ---
 layout: layouts/base.hbs
-title: Glossary
+title: Home
 ---
-<div class="glossary-page">
-    <h1 class="mb-4">Glossary of Terms</h1>
-    
-    <div class="glossary-filters mb-4">
-        <div class="alphabet-filter">
-            <nav aria-label="Letter navigation">
-                <ul class="pagination pagination-sm flex-wrap justify-content-center">
-                    <li class="page-item"><a class="page-link" href="#all">All</a></li>
-                    {{#each collections.alphabetList}}
-                    <li class="page-item"><a class="page-link" href="#{{this}}">{{this}}</a></li>
-                    {{/each}}
-                </ul>
-            </nav>
-        </div>
+<div class="home-page">
+    <div class="hero">
+        <h1>Spike.sh Glossary</h1>
+        <p>Welcome to our comprehensive glossary of terms related to incident response, monitoring, and digital services.</p>
     </div>
     
-    <div class="glossary-list">
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            {{#each collections.glossaryItems}}
-            <div class="col">
-                <div class="card h-100 glossary-item" data-letter="{{firstLetter data.title}}">
-                    <div class="card-body">
-                        <h2 class="card-title h5"><a href="{{this.url}}" class="text-decoration-none">{{data.title}}</a></h2>
-                        <p class="card-text">{{data.excerpt}}</p>
-                    </div>
-                </div>
+    <div class="featured-terms">
+        <h2>Featured Terms</h2>
+        <div class="term-cards">
+            {{#each collections.featuredItems}}
+            <div class="term-card">
+                <h3>{{data.title}}</h3>
+                <p>{{data.excerpt}}</p>
+                <a href="{{this.url}}"></a>
             </div>
             {{/each}}
         </div>
+    </div>
+    
+    <div class="browse-all">
+        <a href="/" class="button">Browse All Terms</a>
     </div>
 </div>

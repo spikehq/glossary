@@ -2,30 +2,131 @@
 layout: layouts/base.hbs
 ---
 <div class="glossary-item">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="glossary-content mb-4">
-                {{{content}}}
-            </div>
-
-            {{#if related}}
-            <div class="related-terms card mb-4">
-                <div class="card-header">
-                    <h3 class="h5 mb-0">Related Terms</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        {{#each related}}
-                        <li class="list-group-item"><a href="/glossary/{{this.slug}}" class="text-decoration-none">{{this.title}}</a></li>
-                        {{/each}}
-                    </ul>
-                </div>
-            </div>
-            {{/if}}
-
-            <div class="back-to-glossary mb-4">
-                <a href="/glossary" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to Glossary</a>
-            </div>
+    <div class="alphabet-filter">
+        <div class="letter-nav">
+            {{#each collections.alphabetList}}
+            <a href="/glossary#{{this}}">{{this}}</a>
+            {{/each}}
         </div>
+    </div>
+    
+    <div class="glossary-back-link">
+        <a href="/">← Glossary</a>
+    </div>
+    
+    <div class="glossary-content">
+        <h1>{{title}}</h1>
+        
+        <div class="glossary-sections">
+            <section class="section-what">
+                <h2>What is {{title}}</h2>
+                <div class="section-content">
+                    {{#if data.definition}}
+                    <p>{{data.definition}}</p>
+                    {{else}}
+                    <p>A {{title}} is an annual examination of all major incidents that occurred within an organization. It involves analyzing incident reports, response times, and resolution strategies to identify patterns and areas for improvement in incident management processes.</p>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-why">
+                <h2>Why is {{title}} important</h2>
+                <div class="section-content">
+                    {{#if data.importance}}
+                    <p>{{data.importance}}</p>
+                    {{else}}
+                    <p>{{title}} helps organizations learn from past experiences, refine their incident response procedures, and allocate resources more effectively. It improves the overall effectiveness of current processes and highlight areas that need attention or resources.</p>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-example">
+                <h2>Example of {{title}}</h2>
+                <div class="section-content">
+                    {{#if data.example}}
+                    <p>{{data.example}}</p>
+                    {{else}}
+                    <p>An IT company reviews all major outages from the past year. They discover that 60% of incidents were related to database failures. This insight leads them to invest in more robust database monitoring and failover systems to prevent similar issues in the future.</p>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-how">
+                <h2>How to implement {{title}}</h2>
+                <div class="section-content">
+                    {{#if data.implementation}}
+                    {{{data.implementation}}}
+                    {{else}}
+                    <ul>
+                        <li>Gather all incident reports from the past year</li>
+                        <li>Analyze data for patterns in incident types, response times, and resolution methods</li>
+                        <li>Involve key stakeholders in discussions about findings</li>
+                        <li>Create an action plan based on insights gained</li>
+                        <li>Present findings and recommendations to leadership</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-practices">
+                <h2>3 Best practices</h2>
+                <div class="section-content">
+                    {{#if data.bestPractices}}
+                    {{{data.bestPractices}}}
+                    {{else}}
+                    <ul>
+                        <li>Use data visualization tools to spot trends more easily</li>
+                        <li>Include both quantitative and qualitative data in your analysis</li>
+                        <li>Follow up on action items from previous years' reviews</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-pitfalls">
+                <h2>3 Common pitfalls to avoid</h2>
+                <div class="section-content">
+                    {{#if data.pitfalls}}
+                    {{{data.pitfalls}}}
+                    {{else}}
+                    <ul>
+                        <li>Use data visualization tools to spot trends more easily</li>
+                        <li>Include both quantitative and qualitative data in your analysis</li>
+                        <li>Follow up on action items from previous years' reviews</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </section>
+            
+            <section class="section-kpis">
+                <h2>KPIs for {{title}}</h2>
+                <div class="section-content">
+                    {{#if data.kpis}}
+                    {{{data.kpis}}}
+                    {{else}}
+                    <ul>
+                        <li>Reduction in incident frequency year-over-year</li>
+                        <li>Improvement in average incident resolution time</li>
+                        <li>Percentage of implemented recommendations from previous reviews</li>
+                    </ul>
+                    {{/if}}
+                </div>
+            </section>
+        </div>
+        
+        {{#if related}}
+        <section class="further-reading">
+            <h2>Further reading</h2>
+            <div class="related-cards">
+                {{#each (processRelated related collections.glossaryItems)}}
+                <div class="related-card">
+                    <h3>{{this.title}}</h3>
+                    <p>{{this.excerpt}}</p>
+                    <a href="/glossary/{{this.slug}}/"></a>
+                </div>
+                {{/each}}
+            </div>
+        </section>
+        {{/if}}
     </div>
 </div>

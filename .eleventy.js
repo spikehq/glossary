@@ -24,7 +24,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/assets/js");
   eleventyConfig.addPassthroughCopy("src/assets/images");
   
-  // Compile Sass to CSS during build
+  // Compile Sass to CSS only when SCSS files change
   eleventyConfig.on('beforeBuild', () => {
     // Create the CSS directory if it doesn't exist
     const cssDir = path.join(__dirname, 'src', 'assets', 'css');
@@ -32,17 +32,19 @@ module.exports = function(eleventyConfig) {
       fs.mkdirSync(cssDir, { recursive: true });
     }
     
-    // Compile Sass to CSS
-    const sassResult = sass.compile(
-      path.join(__dirname, 'src', 'assets', 'scss', 'main.scss'),
-      { style: "compressed" }
-    );
-    
-    // Write the CSS file
-    fs.writeFileSync(
-      path.join(cssDir, 'style.css'),
-      sassResult.css
-    );
+    // Only compile if scss files have changed or css doesn't exist
+    const cssFile = path.join(cssDir, 'style.css');
+    if (!fs.existsSync(cssFile)) {
+      console.log("[11ty] Compiling Sass to CSS (first run)");
+      // Compile Sass to CSS
+      const sassResult = sass.compile(
+        path.join(__dirname, 'src', 'assets', 'scss', 'main.scss'),
+        { style: "compressed" }
+      );
+      
+      // Write the CSS file
+      fs.writeFileSync(cssFile, sassResult.css);
+    }
   });
   
   // Pass-through the compiled CSS
@@ -64,6 +66,61 @@ module.exports = function(eleventyConfig) {
     return collectionApi.getFilteredByGlob("src/glossary/*.md")
       .filter(item => item.data.featured)
       .sort((a, b) => a.data.title.localeCompare(b.data.title));
+  });
+  
+  // Handle related items data to include proper slugs
+  eleventyConfig.addFilter("processRelated", function(related, glossaryItems) {
+    if (!related) return [];
+    
+    return related.map(item => {
+      const glossaryItem = glossaryItems.find(gi => gi.fileSlug === item.slug);
+      return {
+        title: item.title,
+        slug: item.slug,
+        excerpt: glossaryItem ? glossaryItem.data.excerpt : ""
+      };
+    });
+  });
+  
+  // Group glossary items by first letter
+  eleventyConfig.addCollection("glossaryItemsByLetter", function(collectionApi) {
+    const allGlossaryItems = collectionApi.getFilteredByGlob("src/glossary/*.md");
+    
+    // Create an object to store items by letter
+    const itemsByLetter = {};
+    
+    // Initialize all letters
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
+      itemsByLetter[letter] = [];
+    });
+    
+    // Add each item to its letter group
+    allGlossaryItems.forEach(item => {
+      if (item.data.title) {
+        const letter = item.data.title.charAt(0).toUpperCase();
+        if (itemsByLetter[letter]) {
+          // Add simplified item with just what we need
+          itemsByLetter[letter].push({
+            title: item.data.title,
+            excerpt: item.data.excerpt,
+            slug: item.fileSlug
+          });
+        }
+      }
+    });
+    
+    // Remove empty letters and sort each letter's items by title
+    for (const letter in itemsByLetter) {
+      if (itemsByLetter[letter].length === 0) {
+        delete itemsByLetter[letter];
+      } else {
+        itemsByLetter[letter].sort((a, b) => 
+          a.title.localeCompare(b.title)
+        );
+      }
+    }
+    
+    return itemsByLetter;
   });
 
   // Helper functions

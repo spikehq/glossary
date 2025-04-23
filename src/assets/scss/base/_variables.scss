@@ -1,16 +1,17 @@
 // Variables
 
 :root {
-  --primary-color: #5046e4;
+  --primary-color: #0060FF;
   --secondary-color: #f5f5f7;
-  --text-color: #333;
+  --text-color: #202020;
   --light-text: #666;
+  --gray-text: #777;
   --border-color: #e1e1e1;
   --container-width: 1200px;
 }
 
 // Sass variables (for use in the Sass files)
-$primary-color: #5046e4;
+$primary-color: #0060FF;
 $secondary-color: #f5f5f7;
 $text-color: #333;
 $light-text: #666;
