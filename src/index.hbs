@@ -31,8 +31,10 @@ permalink: /
                         <div class="glossary-card">
                             <h2>{{title}}</h2>
                             <p>{{excerpt}}</p>
-                            <a href="/glossary/{{slug}}/"></a>
+                            <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
+                            <span class="read-more">Learn more ></span>
                         </div>
+
                     </div>
                     {{/each}}
                 </div>

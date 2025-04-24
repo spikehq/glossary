@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Debug output for card links
+  const cardLinks = document.querySelectorAll('.glossary-card .card-link');
+  
+  if (cardLinks.length > 0) {
+    console.log('Found card links:', cardLinks.length);
+    
+    cardLinks.forEach(link => {
+      console.log('Card link:', link.getAttribute('href'), 'Slug:', link.getAttribute('data-slug'));
+    });
+  }
+  
   // Get all filter links
   const filterLinks = document.querySelectorAll('.alphabet-filter .letter-nav a');
   

@@ -52,8 +52,12 @@ module.exports = function(eleventyConfig) {
   
   // Custom collection for glossary items
   eleventyConfig.addCollection("glossaryItems", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/glossary/*.md")
-      .sort((a, b) => a.data.title.localeCompare(b.data.title));
+    return collectionApi.getFilteredByGlob("src/glossary/**/*.md")
+      .sort((a, b) => {
+        const titleA = a.data.term || '';
+        const titleB = b.data.term || '';
+        return titleA.localeCompare(titleB);
+      });
   });
   
   // Create alphabet list collection
@@ -63,9 +67,13 @@ module.exports = function(eleventyConfig) {
   
   // Create featured items collection
   eleventyConfig.addCollection("featuredItems", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/glossary/*.md")
+    return collectionApi.getFilteredByGlob("src/glossary/**/*.md")
       .filter(item => item.data.featured)
-      .sort((a, b) => a.data.title.localeCompare(b.data.title));
+      .sort((a, b) => {
+        const titleA = a.data.term || '';
+        const titleB = b.data.term || '';
+        return titleA.localeCompare(titleB);
+      });
   });
   
   // Handle related items data to include proper slugs
@@ -75,7 +83,7 @@ module.exports = function(eleventyConfig) {
     return related.map(item => {
       const glossaryItem = glossaryItems.find(gi => gi.fileSlug === item.slug);
       return {
-        title: item.title,
+        title: item.title || (glossaryItem ? glossaryItem.data.term : ""),
         slug: item.slug,
         excerpt: glossaryItem ? glossaryItem.data.excerpt : ""
       };
@@ -84,7 +92,7 @@ module.exports = function(eleventyConfig) {
   
   // Group glossary items by first letter
   eleventyConfig.addCollection("glossaryItemsByLetter", function(collectionApi) {
-    const allGlossaryItems = collectionApi.getFilteredByGlob("src/glossary/*.md");
+    const allGlossaryItems = collectionApi.getFilteredByGlob("src/glossary/**/*.md");
     
     // Create an object to store items by letter
     const itemsByLetter = {};
@@ -96,14 +104,14 @@ module.exports = function(eleventyConfig) {
     
     // Add each item to its letter group
     allGlossaryItems.forEach(item => {
-      if (item.data.title) {
-        const letter = item.data.title.charAt(0).toUpperCase();
+      if (item.data.term) {
+        const letter = item.data.term.charAt(0).toUpperCase();
         if (itemsByLetter[letter]) {
           // Add simplified item with just what we need
           itemsByLetter[letter].push({
-            title: item.data.title,
-            excerpt: item.data.excerpt,
-            slug: item.fileSlug
+            title: item.data.term,
+            excerpt: item.data.excerpt || "",
+            slug: item.fileSlug // This is the filename without extension
           });
         }
       }
@@ -145,6 +153,16 @@ module.exports = function(eleventyConfig) {
     return new Date().getFullYear();
   });
   
+  // Set up a more direct way to configure glossary items
+  eleventyConfig.addCollection("glossaryPages", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/glossary/**/*.md").map(item => {
+      // Add the layout and permalink directly to each item
+      item.data.layout = "layouts/glossary-item.hbs";
+      item.data.permalink = `/glossary/${item.fileSlug}/`;
+      return item;
+    });
+  });
+
   return {
     dir: {
       input: "src",
