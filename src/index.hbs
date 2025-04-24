@@ -16,14 +16,17 @@ permalink: /
         </div>
     </div>
 
-    <div class="alphabet-filter">
-        <div class="letter-nav">
-            {{#each collections.alphabetList}}
-            <a href="#{{this}}">{{this}}</a>
-            {{/each}}
-        </div>
-        <div class="search-container">
-            <input type="text" id="glossary-search" placeholder="Search glossary..." class="search-input">
+    <div class="alphabet-filter row">
+        <div class="alphabet-filter-content col">
+            <div class="col-2"></div>
+            <div class="letter-nav">
+                {{#each collections.alphabetList}}
+                <a href="#{{this}}">{{this}}</a>
+                {{/each}}
+            </div>
+            <div class="search-container ms-3">
+                <input type="text" id="glossary-search" placeholder="Search glossary..." class="search-input">
+            </div>
         </div>
     </div>
 
