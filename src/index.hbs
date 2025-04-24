@@ -22,9 +22,19 @@ permalink: /
             <a href="#{{this}}">{{this}}</a>
             {{/each}}
         </div>
+        <div class="search-container">
+            <input type="text" id="glossary-search" placeholder="Search glossary..." class="search-input">
+        </div>
     </div>
 
     <div class="glossary-list container">
+        <div id="no-results" class="no-results" style="display: none;">
+            <div class="no-results-message">
+                <h3>No matching terms found</h3>
+                <p>Try a different search term or browse by letter</p>
+            </div>
+        </div>
+        
         {{#each collections.glossaryItemsByLetter}}
         <div class="letter-group row" id="{{@key}}">
             <div class="letter-marker col-2">
