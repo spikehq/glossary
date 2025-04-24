@@ -152,6 +152,13 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addHandlebarsHelper("year", () => {
     return new Date().getFullYear();
   });
+
+  // Truncate helper for excerpts
+  eleventyConfig.addFilter("truncate", function(str, length) {
+    if (!str) return '';
+    if (str.length <= length) return str;
+    return str.slice(0, length) + '...';
+  });
   
   // Set up a more direct way to configure glossary items
   eleventyConfig.addCollection("glossaryPages", function(collectionApi) {

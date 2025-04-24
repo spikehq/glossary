@@ -1,6 +1,6 @@
 module.exports = {
   title: "Spike Glossary",
-  description: "A comprehensive glossary of terms related to incident response and risk management",
+  description: "A comprehensive glossary of terms related to incident response and management",
   year: new Date().getFullYear(),
   
   // Custom function to create alphabetized collections

@@ -19,7 +19,21 @@
 }
 
 .alphabet-filter {
-  margin: 40px 0;
+  margin: 45px 0;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 100;
+  transition: box-shadow 0.3s ease;
+
+  /* The box-shadow is hidden by default */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0);
+
+  /* When it's sticky and the .is-sticky class is added by JS, show shadow */
+  &.is-sticky {
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
 
   .letter-nav {
     display: flex;
@@ -27,7 +41,7 @@
     justify-content: center;
     gap: 0px;
   }
-  
+
   a {
     display: flex;
     align-items: center;
@@ -35,13 +49,19 @@
     margin-left: 12px;
     border-radius: 4px;
     color: var(--gray-text);
-    font-weight: 700;
+    font-weight: 500;
+    font-size: 25px;
     transition: background-color 0.2s;
-    
+
+    &:first-child {
+      margin-left: 0;
+    }
+
     &:hover,
     &.active {
       color: var(--primary-color);
-      text-decoration: none;
+      text-decoration: underline;
+      font-weight: 700;
     }
   }
 }
@@ -50,16 +70,16 @@
 .letter-group {
   margin-bottom: 60px;
   align-items: flex-start;
-  
+
   .letter-marker {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
     font-family: "Monoton", sans-serif;
     position: sticky;
-    top: 80px;
+    top: 120px;
     align-self: flex-start;
-    
+
     span {
       display: flex;
       align-items: center;
@@ -97,7 +117,7 @@
     font-weight: 600;
     transition: color 0.3s ease;
   }
-  
+
   &:hover h2 {
     background: linear-gradient(90deg, #0575E6 0%, #021B79 100%);
     -webkit-background-clip: text;
@@ -108,7 +128,8 @@
   p {
     font-size: 14px;
     color: var(--gray-text);
-    margin-bottom: 40px; /* Add space below the paragraph for the read more button */
+    margin-bottom: 40px;
+    /* Add space below the paragraph for the read more button */
   }
 
   .card-link {
@@ -119,7 +140,7 @@
     height: 100%;
     z-index: 1;
   }
-  
+
   .read-more {
     position: absolute;
     bottom: 20px;
@@ -132,7 +153,7 @@
     pointer-events: none;
     margin-top: 20px;
   }
-  
+
   &:hover .read-more {
     opacity: 1;
   }

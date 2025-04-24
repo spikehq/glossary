@@ -5,11 +5,17 @@ permalink: /
 ---
 <div class="glossary-page">
     <h1>GLOSSARY</h1>
-    
-    <div class="glossary-intro">
-        <p>Culpa voluptate culpa enim aliqua elusmod mollit fugiat anim irure aliqua aute Lorem. Voluptate culpa est cillum dolore cupidatat duis occaecat quis reprehenderit. Ipsum voluptate ad elusmod ullamco proident veniam officia duis officia ad ut. Esse non exercitation proident sunt pariatur consequat officia officia. Elusmod nulla ipsum officia ipsum minim fugiat ex. Est occaecat amet quis sit sit cupidatat deserunt ex mollit. Id anim irure ad cupidatat do. Tempor ipsum nisi aliqua proident consequat et.</p>
+
+    <div class="border-bottom">
+        <div class="glossary-intro">
+            <p>Culpa voluptate culpa enim aliqua elusmod mollit fugiat anim irure aliqua aute Lorem. Voluptate culpa est
+                cillum dolore cupidatat duis occaecat quis reprehenderit. Ipsum voluptate ad elusmod ullamco proident
+                veniam officia duis officia ad ut. Esse non exercitation proident sunt pariatur consequat officia
+                officia. Elusmod nulla ipsum officia ipsum minim fugiat ex. Est occaecat amet quis sit sit cupidatat
+                deserunt ex mollit. Id anim irure ad cupidatat do. Tempor ipsum nisi aliqua proident consequat et.</p>
+        </div>
     </div>
-    
+
     <div class="alphabet-filter">
         <div class="letter-nav">
             {{#each collections.alphabetList}}
@@ -17,7 +23,7 @@ permalink: /
             {{/each}}
         </div>
     </div>
-    
+
     <div class="glossary-list container">
         {{#each collections.glossaryItemsByLetter}}
         <div class="letter-group row" id="{{@key}}">
@@ -30,9 +36,9 @@ permalink: /
                     <div class="col-lg-4 col-md-6 col-12 mb-4">
                         <div class="glossary-card">
                             <h2>{{title}}</h2>
-                            <p>{{excerpt}}</p>
+                            <p>{{truncate excerpt 200}}</p>
                             <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
-                            <span class="read-more">Learn more ></span>
+                            <span class="read-more">Learn more</span>
                         </div>
 
                     </div>
