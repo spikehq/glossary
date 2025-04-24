@@ -6,17 +6,17 @@ layout: layouts/base.hbs
         <div class="alphabet-filter-content justify-content-center">
             <div class="letter-nav">
                 {{#each collections.alphabetList}}
-                <a href="/#{{this}}">{{this}}</a>
+                <a href="#{{this}}" data-letter="{{this}}">{{this}}</a>
                 {{/each}}
             </div>
         </div>
     </div>
 
-    <div class="glossary-back-link">
-        <a href="/">← Glossary</a>
-    </div>
 
     <div class="glossary-content container">
+        <div class="glossary-back-link">
+            <a href="/">← Glossary</a>
+        </div>
         <h1>{{term}}</h1>
         <div class="glossary-sections">
             {{{content}}}

@@ -6,7 +6,6 @@
 
   .glossary-back-link {
     margin: 20px 0;
-    padding-left: 15px;
 
     a {
       display: inline-flex;
@@ -17,8 +16,9 @@
   }
 
   .glossary-content {
-    max-width: 800px;
+    max-width: 70%;
     margin: 0 auto;
+    margin-top: 55px;
 
     h1 {
       font-size: 32px;

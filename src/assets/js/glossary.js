@@ -124,12 +124,25 @@ $(document).ready(function() {
     $filterLinks.on('click', function(e) {
       e.preventDefault();
       
+      // Check if we're on a glossary item page
+      const isGlossaryItemPage = $('.glossary-item').length > 0;
+      const href = $(this).attr('href');
+      
+      // If we're on a glossary item page, navigate to the main glossary with the hash
+      if (isGlossaryItemPage) {
+        // The href might be /#letter or #letter, so handle both cases
+        const letterPart = href.includes('/#') ? href.split('/#')[1] : href.replace('#', '');
+        window.location.href = '/' + (letterPart !== 'all' ? '#' + letterPart : '');
+        return;
+      }
+      
+      // Continue with normal behavior for main glossary page
       // Remove active class from all links
       $filterLinks.removeClass('active');
       // Add active class to clicked link
       $(this).addClass('active');
       
-      const letter = $(this).attr('href').replace('#', '');
+      const letter = href.replace('#', '');
       
       // No need to add additional highlight class to letter-groups since we already
       // have the 'active' class on the navigation letter
