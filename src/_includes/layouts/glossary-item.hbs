@@ -3,23 +3,25 @@ layout: layouts/base.hbs
 ---
 <div class="glossary-item">
     <div class="alphabet-filter">
-        <div class="letter-nav">
-            {{#each collections.alphabetList}}
-            <a href="/#{{this}}">{{this}}</a>
-            {{/each}}
+        <div class="alphabet-filter-content justify-content-center">
+            <div class="letter-nav">
+                {{#each collections.alphabetList}}
+                <a href="/#{{this}}">{{this}}</a>
+                {{/each}}
+            </div>
         </div>
     </div>
-    
+
     <div class="glossary-back-link">
         <a href="/">← Glossary</a>
     </div>
-    
+
     <div class="glossary-content container">
         <h1>{{term}}</h1>
         <div class="glossary-sections">
             {{{content}}}
         </div>
-        
+
         {{#if related}}
         <section class="further-reading">
             <h2>Further reading:</h2>
@@ -30,7 +32,13 @@ layout: layouts/base.hbs
                         <h3>{{this.title}}</h3>
                         <p>{{this.excerpt}}</p>
                         <a href="/glossary/{{this.slug}}/" class="card-link"></a>
-                        <span class="read-more">Learn more ></span>
+                        <span class="read-more">Learn more
+                            <span class="right-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1f1f1f">
+                                    <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
+                                </svg>
+                            </span>
+                        </span>
                     </div>
                 </div>
                 {{/each}}

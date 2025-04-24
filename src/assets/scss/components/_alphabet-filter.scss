@@ -162,27 +162,22 @@
 
   &:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    color: white;
+    background-color: var(--orange);
   }
 
   h2 {
     font-size: 18px;
-    margin-bottom: 10px;
+    margin-bottom: 24px;
     font-weight: 600;
     transition: color 0.3s ease;
   }
 
-  &:hover h2 {
-    background: linear-gradient(90deg, #0575E6 0%, #021B79 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   p {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--gray-text);
-    margin-bottom: 40px;
-    /* Add space below the paragraph for the read more button */
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
   }
 
   .card-link {
@@ -198,17 +193,32 @@
     position: absolute;
     bottom: 20px;
     right: 20px;
-    color: #2F2F2F;
+    color: white;
     font-size: 14px;
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
     pointer-events: none;
     margin-top: 20px;
+
+    svg {
+      margin-left: 5px;
+      fill: white;
+      width: 13px;
+      height: 13px;
+    }
   }
 
   &:hover .read-more {
     opacity: 1;
+  }
+
+  &:hover h2 {
+    color: white;
+  }
+
+  &:hover p {
+    color: white;
   }
 }
 

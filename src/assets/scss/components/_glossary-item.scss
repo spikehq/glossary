@@ -93,7 +93,7 @@
         font-weight: 600;
         transition: color 0.3s ease;
       }
-      
+
       &:hover h3 {
         background: linear-gradient(90deg, #0575E6 0%, #021B79 100%);
         -webkit-background-clip: text;
@@ -104,7 +104,8 @@
       p {
         font-size: 14px;
         color: var(--light-text);
-        margin-bottom: 40px; /* Add space below the paragraph for the read more button */
+        margin-bottom: 40px;
+        /* Add space below the paragraph for the read more button */
       }
 
       .card-link {
@@ -115,7 +116,7 @@
         height: 100%;
         z-index: 1;
       }
-      
+
       .read-more {
         position: absolute;
         bottom: 20px;
@@ -126,8 +127,15 @@
         transition: opacity 0.3s ease;
         z-index: 2;
         pointer-events: none;
+
+        svg {
+          margin-left: 5px;
+          fill: white;
+          width: 13px;
+          height: 13px;
+        }
       }
-      
+
       &:hover .read-more {
         opacity: 1;
       }
