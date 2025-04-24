@@ -107,6 +107,11 @@
   }
 }
 
+// Add margin to results when filter is sticky
+.alphabet-filter.is-sticky + .glossary-list {
+  margin-top: 70px;
+}
+
 // Letter Groups
 .letter-group {
   margin-bottom: 60px;

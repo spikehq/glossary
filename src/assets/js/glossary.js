@@ -161,6 +161,14 @@ $(document).ready(function() {
         $noResultsEl.hide();
       }
       
+      // Scroll back to the top when searching and navigation is sticky
+      if ($('.alphabet-filter').hasClass('is-sticky')) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+      
       // Clear active state from letter nav
       $('.alphabet-filter .letter-nav a').removeClass('active');
     });
