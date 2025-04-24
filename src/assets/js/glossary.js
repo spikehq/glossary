@@ -12,6 +12,8 @@ $(document).ready(function() {
   
   // Use the simplest approach possible to detect when element is sticky
   const $alphabetFilter = $('.alphabet-filter');
+  // Get search input element reference for later use
+  const $searchInput = $('#glossary-search');
   
   if ($alphabetFilter.length > 0) {
     // Create a marker div just before the alphabet filter
@@ -32,10 +34,86 @@ $(document).ready(function() {
       }
     }
     
-    // Check on scroll
-    $(window).on('scroll', checkSticky);
+    // Helper function to throttle scroll events
+    function throttle(func, limit) {
+      let inThrottle;
+      return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+          func.apply(context, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+    
+    // Check on scroll (throttled to improve performance)
+    $(window).on('scroll', throttle(function() {
+      checkSticky();
+      highlightCurrentSection();
+    }, 100)); // Throttle to run at most once every 100ms
+    
     // Initial check
     checkSticky();
+    
+    // Initial section highlight with a small delay to ensure DOM is ready
+    setTimeout(highlightCurrentSection, 100);
+    
+    // Function to highlight the current letter section based on scroll position
+    function highlightCurrentSection() {
+      // Only update if we're not in a search
+      if ($searchInput.val().trim() === '') {
+        const scrollPosition = $(window).scrollTop() + $(window).height() / 2; // Use middle of viewport
+        let currentLetterGroup = null;
+        
+        // Check each letter group to find which one contains the middle of the viewport
+        $('.letter-group').each(function() {
+          const $group = $(this);
+          const groupTop = $group.offset().top;
+          const groupBottom = groupTop + $group.outerHeight();
+          
+          // If the middle of the viewport is within this letter group
+          if (scrollPosition >= groupTop && scrollPosition <= groupBottom) {
+            currentLetterGroup = $group;
+            // Break out of the loop once we've found our letter group
+            return false;
+          }
+        });
+        
+        // If we didn't find a letter group in the middle of the viewport,
+        // fall back to the traditional approach of finding the last group we scrolled past
+        if (!currentLetterGroup) {
+          $('.letter-group').each(function() {
+            if ($(this).offset().top <= scrollPosition) {
+              currentLetterGroup = $(this);
+            }
+          });
+        }
+        
+        // If we found a current letter group
+        if (currentLetterGroup) {
+          const letter = currentLetterGroup.attr('id');
+          
+          // Remove active class from all navigation links
+          $filterLinks.removeClass('active');
+          
+          // Add active class to the corresponding nav link
+          const $letterLink = $(`.alphabet-filter .letter-nav a[href="#${letter}"]`);
+          if ($letterLink.length > 0) {
+            $letterLink.addClass('active');
+          } else {
+            // If no letter link found, it might mean we need to activate the "all" link
+            // (typically happens when at the top of the page)
+            $(`.alphabet-filter .letter-nav a[href="#all"]`).addClass('active');
+          }
+        } else {
+          // If no letter group is in view, activate the "all" link
+          $filterLinks.removeClass('active');
+          $(`.alphabet-filter .letter-nav a[href="#all"]`).addClass('active');
+        }
+      }
+    }
   }
   
   // Get all filter links
@@ -52,6 +130,9 @@ $(document).ready(function() {
       $(this).addClass('active');
       
       const letter = $(this).attr('href').replace('#', '');
+      
+      // No need to add additional highlight class to letter-groups since we already
+      // have the 'active' class on the navigation letter
       
       // Clear search input when clicking a letter
       const $searchInput = $('#glossary-search');
@@ -99,7 +180,7 @@ $(document).ready(function() {
   }
   
   // Search functionality
-  const $searchInput = $('#glossary-search');
+  // Using the already defined $searchInput above
   if ($searchInput.length > 0) {
     $searchInput.on('input', function() {
       const searchTerm = $(this).val().toLowerCase().trim();

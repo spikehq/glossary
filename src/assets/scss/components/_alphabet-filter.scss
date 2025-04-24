@@ -75,11 +75,18 @@
       margin-left: 0;
     }
 
-    &:hover,
-    &.active {
+    &:hover {
       color: var(--primary-color);
       text-decoration: underline;
       font-weight: 700;
+    }
+    
+    &.active {
+      color: var(--primary-color);
+      font-weight: 700;
+      border-radius: 4px;
+      text-decoration: underline;
+      transition: transform 0.2s ease, background-color 0.2s ease;
     }
   }
   
