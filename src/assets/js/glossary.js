@@ -108,6 +108,10 @@ $(document).ready(function() {
       const $letterGroups = $('.letter-group');
       const $noResultsEl = $('#no-results');
       
+      // First, reset everything to ensure we have a clean state
+      $('.col-lg-4').hide(); // Start by hiding all cards
+      $letterGroups.hide(); // Hide all letter groups
+      
       if (searchTerm === '') {
         // If search is empty, show all cards and letter groups
         $('.col-lg-4').show();
@@ -123,6 +127,7 @@ $(document).ready(function() {
       
       // Reset visibility state
       let totalVisibleCards = 0;
+      const visibleLetterGroups = new Set();
       
       // Process all cards
       $('.glossary-card').each(function() {
@@ -136,23 +141,17 @@ $(document).ready(function() {
           // Show matching cards
           $cardColumn.show();
           totalVisibleCards++;
-        } else {
-          // Hide non-matching cards
-          $cardColumn.hide();
+          
+          // Remember which letter group this belongs to
+          if ($letterGroup.length > 0) {
+            visibleLetterGroups.add($letterGroup.attr('id'));
+          }
         }
       });
       
-      // Show/hide letter groups based on whether they have visible cards
-      $letterGroups.each(function() {
-        const $group = $(this);
-        // Count visible cards in this group
-        const visibleCards = $group.find('.col-lg-4:visible').length;
-        
-        if (visibleCards > 0) {
-          $group.show();
-        } else {
-          $group.hide();
-        }
+      // Show letter groups that have visible cards
+      visibleLetterGroups.forEach(groupId => {
+        $('#' + groupId).show();
       });
       
       // Show/hide the "no results" message
