@@ -154,10 +154,12 @@
     .letter-marker-container{
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       border-radius: 8px;
       background-color: var(--secondary-color);
       padding: 15px;
+      min-width: 130px;
+      min-height: 130px;
     }
     
     span {
