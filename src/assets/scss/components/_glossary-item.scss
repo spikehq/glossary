@@ -1,25 +1,48 @@
 // Glossary item styles
 
 .glossary-intro-header {
-  padding: 60px 0;
-  color: var(--text-color);
-  font-size: 32px;
-  font-weight: 600;
+  padding: 100px 0;
+  background-color: var(--secondary-color);
 
+  h1 {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--primary-color);
+
+    &:first-letter {
+      font-family: var(--font-family-secondary);
+      font-weight: 400;
+      font-size: 72px;
+    }
+  }
+
+  p {
+    font-size: 20px;
+    line-height: 1.5;
+    width: 70%;
+  }
 }
 
 // Individual glossary item page
 .glossary-item {
   margin-bottom: 60px;
 
-  .glossary-back-link {
-    margin: 20px 0;
+  .letter-nav {
+    a {
+      font-size: 20px;
+      color: var(--text-light);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+  }
 
+  .glossary-back-link {
     a {
       display: inline-flex;
       align-items: center;
-      color: var(--text-color);
+      color: var(--text-light);
       font-weight: 500;
+      font-size: 16px;
     }
   }
 
@@ -48,7 +71,7 @@
       }
 
       .section-content {
-        color: var(--light-text);
+        color: var(--text-light);
         font-size: 16px;
         line-height: 1.6;
 
@@ -60,6 +83,67 @@
             margin-bottom: 8px;
           }
         }
+      }
+    }
+  }
+
+  .glossary-sidebar {
+    padding-left: 60px;
+    position: sticky;
+    top: 150px;
+    height: 100%;
+
+    .socials {
+      padding-inline: 30px;
+      margin-bottom: 20px;
+
+      a {
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--text-color);
+
+        &:hover {
+          color: var(--primary-color);
+          text-decoration: underline;
+        }
+      }
+
+      .dot {
+        svg {
+          width: 8px;
+          height: 8px;
+          margin-right: 5px;
+          fill: var(--text-color);
+        }
+      }
+    }
+
+
+    .sidebar-cards {
+      margin-top: 20px;
+      .sidebar-card {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: var(--secondary-color);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-align: center;
+
+        h3 {
+          font-size: 24px;
+          margin-bottom: 10px;
+          font-weight: 500;
+        }
+
+        a {
+          font-weight: 500;
+        }
+
+        // &:hover {
+        //   transform: translateY(-5px);
+        //   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        // }
       }
     }
   }
@@ -110,7 +194,7 @@
 
       p {
         font-size: 14px;
-        color: var(--light-text);
+        color: var(--text-light);
         margin-bottom: 40px;
         /* Add space below the paragraph for the read more button */
       }

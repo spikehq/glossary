@@ -20,7 +20,7 @@
     p {
       font-size: 20px;
       line-height: 1.5;
-      color: var(--gray-text);
+      color: var(--text-light);
     }
   }
 }
@@ -74,7 +74,7 @@
     justify-content: center;
     margin-left: 12px;
     border-radius: 4px;
-    color: var(--gray-text);
+    color: var(--text-light);
     font-weight: 500;
     font-size: 25px;
     transition: background-color 0.2s;
@@ -137,7 +137,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Monoton", sans-serif;
+    font-family: var(--font-family-secondary);
     position: sticky;
     top: 150px;
     align-self: flex-start;
@@ -190,7 +190,7 @@
 
   p {
     font-size: 16px;
-    color: var(--gray-text);
+    color: var(--text-light);
     margin-bottom: 20px;
     transition: color 0.3s ease;
   }
@@ -262,7 +262,7 @@
     
     p {
       font-size: 16px;
-      color: var(--gray-text);
+      color: var(--text-light);
     }
   }
 }

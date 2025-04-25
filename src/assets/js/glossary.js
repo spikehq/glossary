@@ -93,8 +93,6 @@ function fetchAndAppendHeader() {
 }
 
 $(document).ready(function() {
-  // Fetch and append the header from spike.sh
-  fetchAndAppendHeader();
   
   // Debug output for card links
   const $cardLinks = $('.glossary-card .card-link');

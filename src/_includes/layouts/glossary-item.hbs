@@ -16,7 +16,10 @@ layout: layouts/base.hbs
     </div>
 
     <div class="alphabet-filter">
-        <div class="alphabet-filter-content justify-content-center">
+        <div class="alphabet-filter-content">
+            <div class="glossary-back-link">
+                <a href="/">← Glossary</a>
+            </div>
             <div class="letter-nav">
                 {{#each collections.alphabetList}}
                 <a href="#{{this}}" data-letter="{{this}}">{{this}}</a>
@@ -27,12 +30,49 @@ layout: layouts/base.hbs
 
 
     <div class="glossary-content container">
-        <div class="glossary-back-link">
-            <a href="/">← Glossary</a>
-        </div>
         <h1>{{term}}</h1>
-        <div class="glossary-sections">
-            {{{content}}}
+        <div class="row">
+            {{!-- col-8 --}}
+            <div class="glossary-sections col-12 col-sm-12 col-md-8">
+                {{{content}}}
+            </div>
+            {{!-- col-4 --}}
+            <div class="glossary-sidebar col-12 col-sm-12 col-md-4">
+                <div class="glossary-sidebar-content">
+                    <div class="glossary-sidebar-section">
+                        <div class="socials d-flex align-items-center justify-content-around">
+                            <a href="https://x.com/spikedhq">Follow us on X</a>
+                            <div class="dot">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#777">
+                                    <path
+                                        d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+                                </svg>
+                            </div>
+                            <a href="https://linkedin.com/company/spike-hq">LinkedIn</a>
+                        </div>
+
+                        <div class="sidebar-cards">
+                            <div class="sidebar-card">
+                                <h3>What's the Root Cause?</h3>
+                                <p>SpikeHQ is a modern incident response platform that helps teams respond to incidents
+                                    faster and more effectively.</p>
+                                <a href="https://spike.sh/quiz" class="card-link">
+                                    Take the quiz
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-cards">
+                            <div class="sidebar-card">
+                                <h3>PagerDuty Pricing breakdown</h3>
+                                <a href="https://spike.sh/blog" class="card-link">
+                                    Read the blog
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{#if related}}
