@@ -2,15 +2,15 @@
 
 .home-page {
   text-align: center;
-  max-width: 800px;
+  max-width: 50rem; /* 800px in rem */
   margin: 0 auto;
   
   .featured-terms {
-    margin: 40px 0;
+    margin: 2.5rem 0; /* 40px in rem */
   }
   
   .browse-all {
-    margin-top: 40px;
+    margin-top: 2.5rem; /* 40px in rem */
   }
 }
 

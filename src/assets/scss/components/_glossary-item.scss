@@ -1,23 +1,23 @@
 // Glossary item styles
 
 .glossary-intro-header {
-  padding: 152px 0;
+  padding: 9.5rem 0; /* 152px in rem */
   background-color: var(--secondary-color);
 
   h1 {
-    font-size: 56px;
+    font-size: 3.5rem; /* 56px in rem */
     font-weight: 700;
     color: var(--primary-color);
 
     &:first-letter {
       font-family: var(--font-family-secondary);
       font-weight: 400;
-      font-size: 72px;
+      font-size: 4.5rem; /* 72px in rem */
     }
   }
 
   p {
-    font-size: 20px;
+    font-size: 1.25rem; /* 20px in rem */
     line-height: 1.5;
     width: 70%;
   }
@@ -25,11 +25,11 @@
 
 // Individual glossary item page
 .glossary-item {
-  margin-bottom: 60px;
+  margin-bottom: 3.75rem; /* 60px in rem */
 
   .letter-nav {
     a {
-      font-size: 20px;
+      font-size: 1.25rem; /* 20px in rem */
       color: var(--text-light);
       font-weight: 500;
       transition: color 0.3s ease;
@@ -42,58 +42,58 @@
       align-items: center;
       color: var(--text-light);
       font-weight: 500;
-      font-size: 16px;
+      font-size: 1rem; /* 16px in rem */
     }
   }
 
   .glossary-content {
     margin: 0 auto;
-    margin-top: 55px;
+    margin-top: 3.4375rem; /* 55px in rem */
 
     h1 {
-      font-size: 32px;
-      margin: 30px 0;
+      font-size: 2rem; /* 32px in rem */
+      margin: 1.875rem 0; /* 30px in rem */
       color: var(--text-color);
-      border-bottom: 1px solid #eee;
-      padding-bottom: 15px;
+      border-bottom: 0.0625rem solid #eee; /* 1px in rem */
+      padding-bottom: 0.9375rem; /* 15px in rem */
     }
   }
 
   .glossary-sections {
     h2 {
-      font-size: 24px;
-      margin-bottom: 16px;
+      font-size: 1.5rem; /* 24px in rem */
+      margin-bottom: 1rem; /* 16px in rem */
       color: var(--text-color);
       font-weight: 600;
       
       &.featured-heading {
-        font-size: 24px;
+        font-size: 1.5rem; /* 24px in rem */
         font-weight: 700;
         color: var(--primary-color);
         text-decoration: underline;
-        margin-top: 30px;
+        margin-top: 1.875rem; /* 30px in rem */
       }
     }
     
     .related-terms-section {
       h2 {
-        font-size: 20px;
-        margin-bottom: 16px;
+        font-size: 1.25rem; /* 20px in rem */
+        margin-bottom: 1rem; /* 16px in rem */
         color: var(--text-color);
         font-weight: 600;
       }
 
       .section-content {
         color: var(--text-light);
-        font-size: 16px;
+        font-size: 1rem; /* 16px in rem */
         line-height: 1.6;
 
         ul {
           list-style-type: disc;
-          padding-left: 20px;
+          padding-left: 1.25rem; /* 20px in rem */
 
           li {
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem; /* 8px in rem */
           }
         }
       }
@@ -101,18 +101,18 @@
   }
 
   .glossary-sidebar {
-    padding-left: 60px;
+    padding-left: 3.75rem; /* 60px in rem */
     position: sticky;
-    top: 150px;
+    top: 9.375rem; /* 150px in rem */
     height: 100%;
 
     .socials {
-      padding-inline: 30px;
-      margin-bottom: 20px;
+      padding-inline: 1.875rem; /* 30px in rem */
+      margin-bottom: 1.25rem; /* 20px in rem */
 
       a {
         font-weight: 500;
-        font-size: 16px;
+        font-size: 1rem; /* 16px in rem */
         color: var(--text-color);
 
         &:hover {
@@ -123,8 +123,8 @@
 
       .dot {
         svg {
-          width: 8px;
-          height: 8px;
+          width: 0.5rem; /* 8px in rem */
+          height: 0.5rem; /* 8px in rem */
           fill: var(--text-color);
         }
       }
@@ -132,20 +132,20 @@
 
 
     .sidebar-cards {
-      margin-top: 70px;
+      margin-top: 4.375rem; /* 70px in rem */
 
       .sidebar-card {
-        margin-bottom: 74px;
-        padding: 24px;
+        margin-bottom: 4.625rem; /* 74px in rem */
+        padding: 1.5rem; /* 24px in rem */
         background-color: var(--secondary-color);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
+        border: 0.0625rem solid var(--border-color); /* 1px in rem */
+        border-radius: 0.375rem; /* 6px in rem */
         transition: transform 0.2s, box-shadow 0.2s;
         text-align: center;
 
         h3 {
-          font-size: 24px;
-          margin-bottom: 55px;
+          font-size: 1.5rem; /* 24px in rem */
+          margin-bottom: 3.4375rem; /* 55px in rem */
           font-weight: 500;
         }
 
@@ -155,7 +155,7 @@
 
         // &:hover {
         //   transform: translateY(-5px);
-        //   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        //   box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
         // }
       }
     }
@@ -163,37 +163,37 @@
 
   // Further Reading Section
   .further-reading {
-    margin-top: 60px;
-    border-top: 1px solid #eee;
-    padding-top: 40px;
+    margin-top: 3.75rem; /* 60px in rem */
+    border-top: 0.0625rem solid #eee; /* 1px in rem */
+    padding-top: 2.5rem; /* 40px in rem */
 
     h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
+      font-size: 1.5rem; /* 24px in rem */
+      margin-bottom: 1.25rem; /* 20px in rem */
       font-weight: 600;
     }
 
     .related-cards {
-      margin-top: 20px;
+      margin-top: 1.25rem; /* 20px in rem */
     }
 
     .related-card {
       height: 100%;
       background-color: white;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
+      border: 0.0625rem solid var(--border-color); /* 1px in rem */
+      border-radius: 0.5rem; /* 8px in rem */
+      padding: 1.25rem; /* 20px in rem */
       position: relative;
       transition: transform 0.2s, box-shadow 0.2s;
 
       &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-0.3125rem); /* -5px in rem */
+        box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
       }
 
       h3 {
-        font-size: 16px;
-        margin-bottom: 10px;
+        font-size: 1rem; /* 16px in rem */
+        margin-bottom: 0.625rem; /* 10px in rem */
         font-weight: 600;
         transition: color 0.3s ease;
       }
@@ -206,9 +206,9 @@
       }
 
       p {
-        font-size: 14px;
+        font-size: 0.875rem; /* 14px in rem */
         color: var(--text-light);
-        margin-bottom: 40px;
+        margin-bottom: 2.5rem; /* 40px in rem */
         /* Add space below the paragraph for the read more button */
       }
 
@@ -223,20 +223,20 @@
 
       .read-more {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
+        bottom: 1.25rem; /* 20px in rem */
+        right: 1.25rem; /* 20px in rem */
         color: #2F2F2F;
-        font-size: 14px;
+        font-size: 0.875rem; /* 14px in rem */
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: 2;
         pointer-events: none;
 
         svg {
-          margin-left: 5px;
+          margin-left: 0.3125rem; /* 5px in rem */
           fill: white;
-          width: 13px;
-          height: 13px;
+          width: 0.8125rem; /* 13px in rem */
+          height: 0.8125rem; /* 13px in rem */
         }
       }
 
