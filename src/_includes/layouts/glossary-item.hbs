@@ -83,7 +83,7 @@ layout: layouts/base.hbs
                         <div class="related-card">
                             <h3>{{this.title}}</h3>
                             <p>{{this.excerpt}}</p>
-                            <a href="/glossary/{{this.slug}}/" class="card-link"></a>
+                            <a href="/{{this.slug}}/" class="card-link"></a>
                         </div>
                     </div>
                     {{/each}}
@@ -93,7 +93,7 @@ layout: layouts/base.hbs
                         <div class="glossary-card">
                             <h2>{{this.title}}</h2>
                             <p>{{truncate this.excerpt 150}}</p>
-                            <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
+                            <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
                         </div>
                     </div>
                     {{/each}}

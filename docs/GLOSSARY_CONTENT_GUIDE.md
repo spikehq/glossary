@@ -17,7 +17,7 @@ This comprehensive guide provides instructions on how to create and format gloss
 
 ## Creating a New Term
 
-To add a new term to the glossary, create a new markdown file in the `src/glossary/` directory. 
+To add a new term to the glossary, create a new markdown file in the `src/` directory. 
 The filename should be the lowercase, hyphenated version of the term (e.g., `incident-management.md`).
 
 You can copy the template file (`documentation/TEMPLATE.md`) as a starting point.

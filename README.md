@@ -78,7 +78,7 @@ The built site will be in the `_site` directory.
 │   │       ├── components/ # Component-specific styles
 │   │       └── layout/     # Layout styles
 │   ├── data/               # Global data files
-│   ├── glossary/           # Glossary term markdown files
+│   ├──            # Glossary term markdown files
 │   ├── index.hbs           # Home page
 │   └── glossary.hbs        # Glossary list page
 ├── .eleventy.js            # Eleventy configuration
@@ -88,7 +88,7 @@ The built site will be in the `_site` directory.
 
 ## Creating Glossary Terms
 
-To add a new term to the glossary, create a new markdown file in the `src/glossary/` directory. Use the following template:
+To add a new term to the glossary, create a new markdown file in the `src/` directory. Use the following template:
 
 ```markdown
 ---

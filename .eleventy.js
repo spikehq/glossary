@@ -52,7 +52,7 @@ module.exports = function(eleventyConfig) {
   
   // Custom collection for glossary items
   eleventyConfig.addCollection("glossaryItems", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/glossary/**/*.md")
+    return collectionApi.getFilteredByGlob("src/**/*.md")
       .sort((a, b) => {
         const titleA = a.data.term || '';
         const titleB = b.data.term || '';
@@ -67,7 +67,7 @@ module.exports = function(eleventyConfig) {
   
   // Create featured items collection
   eleventyConfig.addCollection("featuredItems", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/glossary/**/*.md")
+    return collectionApi.getFilteredByGlob("src/**/*.md")
       .filter(item => item.data.featured)
       .sort((a, b) => {
         const titleA = a.data.term || '';
@@ -120,7 +120,7 @@ module.exports = function(eleventyConfig) {
   
   // Group glossary items by first letter
   eleventyConfig.addCollection("glossaryItemsByLetter", function(collectionApi) {
-    const allGlossaryItems = collectionApi.getFilteredByGlob("src/glossary/**/*.md");
+    const allGlossaryItems = collectionApi.getFilteredByGlob("src/**/*.md");
     
     // Create an object to store items by letter
     const itemsByLetter = {};
@@ -192,10 +192,10 @@ module.exports = function(eleventyConfig) {
   
   // Set up a more direct way to configure glossary items
   eleventyConfig.addCollection("glossaryPages", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/glossary/**/*.md").map(item => {
+    return collectionApi.getFilteredByGlob("src/**/*.md").map(item => {
       // Add the layout and permalink directly to each item
       item.data.layout = "layouts/glossary-item.hbs";
-      item.data.permalink = `/glossary/${item.fileSlug}/`;
+      item.data.permalink = `/${item.fileSlug}/`;
       
       // Add the first letter of the term to use for active letter navigation
       if (item.data.term) {

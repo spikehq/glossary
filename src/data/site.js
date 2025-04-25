@@ -17,7 +17,7 @@ module.exports = {
     
     // Group items by first letter of title
     glossaryItemsByLetter: collection => {
-      const allGlossaryItems = collection.getFilteredByGlob("./src/glossary/*.md");
+      const allGlossaryItems = collection.getFilteredByGlob("./src/*.md");
       
       // Create an object to store items by letter
       const itemsByLetter = {};
