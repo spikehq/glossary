@@ -48,7 +48,7 @@
 
   .glossary-content {
     margin: 0 auto;
-    margin-top: 3.4375rem; /* 55px in rem */
+    margin-top: 6.25rem; /* 100px in rem */
 
     h1 {
       font-size: 2rem; /* 32px in rem */
@@ -62,9 +62,9 @@
   .glossary-sections {
     h2 {
       font-size: 1.5rem; /* 24px in rem */
-      margin-bottom: 1rem; /* 16px in rem */
+      margin-bottom: 2rem; /* 32px in rem */
       color: var(--text-color);
-      font-weight: 600;
+      font-weight: 500;
       
       &.featured-heading {
         font-size: 1.5rem; /* 24px in rem */
@@ -73,6 +73,10 @@
         text-decoration: underline;
         margin-top: 1.875rem; /* 30px in rem */
       }
+    }
+
+    p {
+      margin-bottom: 3rem; /* 48px in rem */
     }
     
     .related-terms-section {
