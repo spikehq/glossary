@@ -158,29 +158,65 @@ $(document).ready(function() {
     });
   }
   
-  // Use the simplest approach possible to detect when element is sticky
-  const $alphabetFilter = $('.alphabet-filter');
-  // Get search input element reference for later use
-  const $searchInput = $('#glossary-search');
   // Get all filter links
   const $filterLinks = $('.alphabet-filter .letter-nav a');
+  // Get search input element reference for later use
+  const $searchInput = $('#glossary-search');
+  
+  // Improved sticky header functionality
+  const $alphabetFilter = $('.alphabet-filter');
+  const $mainNavBar = $('.main-navbar');
   
   if ($alphabetFilter.length > 0) {
-    // Create a marker div just before the alphabet filter
-    const $marker = $('<div>', { id: 'sticky-marker' });
-    // Position it right where the filter starts
-    $marker.insertBefore($alphabetFilter);
+    // Store some variables for performance
+    const alphabetFilterOffsetTop = $alphabetFilter.offset().top;
+    const navBarHeight = $mainNavBar.length ? $mainNavBar.outerHeight() : 0;
+    let currentState = null;
+    let spacingAdded = false;
     
-    // Function to check if we've scrolled past the marker
+    // Create a spacer div to prevent content jump when filter becomes fixed
+    const $spacer = $('<div>', { 
+      id: 'alphabet-filter-spacer', 
+      css: { height: '0px' } 
+    });
+    $spacer.insertAfter($alphabetFilter);
+        
+    // Function to check if we should make the filter sticky
     function checkSticky() {
-      const markerTop = $marker.offset().top;
       const scrollTop = $(window).scrollTop();
       
-      // If we scrolled past the marker, add sticky class
-      if (scrollTop >= markerTop) {
-        $alphabetFilter.addClass('is-sticky');
+      if (scrollTop + navBarHeight >= alphabetFilterOffsetTop) {
+        if (currentState !== 'sticky') {
+          $alphabetFilter.addClass('is-sticky');
+          $alphabetFilter.css({
+            'position': 'fixed', 
+            'top': navBarHeight + 'px', 
+            'z-index': 100
+          });
+          
+          // Set spacer height to alphabet filter's height to prevent jump
+          if (!spacingAdded) {
+            $spacer.css('height', $alphabetFilter.outerHeight() + 'px');
+            spacingAdded = true;
+          }
+          
+          currentState = 'sticky';
+        }
       } else {
-        $alphabetFilter.removeClass('is-sticky');
+        if (currentState !== 'normal') {
+          $alphabetFilter.removeClass('is-sticky');
+          $alphabetFilter.css({
+            'position': '', 
+            'top': '', 
+            'z-index': ''
+          });
+          
+          // Reset spacer when not sticky
+          $spacer.css('height', '0px');
+          spacingAdded = false;
+          
+          currentState = 'normal';
+        }
       }
     }
     
@@ -202,7 +238,15 @@ $(document).ready(function() {
     $(window).on('scroll', throttle(function() {
       checkSticky();
       highlightCurrentSection();
-    }, 100)); // Throttle to run at most once every 100ms
+    }, 50)); // Throttle to run at most once every 50ms for more responsive behavior
+    
+    // Also check on window resize since dimensions might change
+    $(window).on('resize', throttle(function() {
+      // Recalculate positions and heights
+      if (currentState === 'sticky') {
+        $spacer.css('height', $alphabetFilter.outerHeight() + 'px');
+      }
+    }, 100));
     
     // Initial check
     checkSticky();
@@ -276,6 +320,23 @@ $(document).ready(function() {
     }
   }
   
+  // Improved function to extract hash from URL
+  function extractHash(url) {
+    try {
+      // Handle relative URLs that don't have a domain
+      if (!url.includes('://')) {
+        url = 'http://example.com' + (url.startsWith('/') ? url : '/' + url);
+      }
+      
+      let parsedUrl = new URL(url);
+      return parsedUrl.hash ? parsedUrl.hash.substring(1) : null;
+    } catch (e) {
+      // Fallback for older browsers or invalid URLs
+      const hashIndex = url.indexOf('#');
+      return hashIndex !== -1 ? url.substring(hashIndex + 1) : null;
+    }
+  }
+  
   // Use filter links if they exist
   if ($filterLinks && $filterLinks.length > 0) {
     // Add click event to filter links
@@ -289,7 +350,7 @@ $(document).ready(function() {
       // If we're on a glossary item page, navigate to the main glossary with the hash
       if (isGlossaryItemPage) {
         // The href might be /#letter or #letter, so handle both cases
-        const letterPart = href.includes('/#') ? href.split('/#')[1] : href.replace('#', '');
+        const letterPart = extractHash(href) || '';
         window.location.href = '/' + (letterPart !== 'all' ? '#' + letterPart : '');
         return;
       }
@@ -300,14 +361,13 @@ $(document).ready(function() {
       // Add active class to clicked link
       $(this).addClass('active');
       
-      const letter = href.replace('#', '');
-      
-      // No need to add additional highlight class to letter-groups since we already
-      // have the 'active' class on the navigation letter
+      const letter = extractHash(href) || '';
       
       // Clear search input when clicking a letter
       const $searchInput = $('#glossary-search');
-      $searchInput.val('');
+      if ($searchInput.length) {
+        $searchInput.val('');
+      }
       
       // Show all glossary cards
       $('.glossary-card').closest('.col-lg-4').show();
@@ -319,13 +379,22 @@ $(document).ready(function() {
       $('#no-results').hide();
       
       // Smooth scroll to the letter group
-      if (letter !== 'all') {
+      if (letter !== 'all' && letter !== '') {
         const $targetElement = $('#' + letter);
         if ($targetElement.length > 0) {
-          const offsetTop = $targetElement.offset().top - 100; // Adjust for header height
+          // Get current alphabet filter height to use as offset
+          let filterHeight = $alphabetFilter.outerHeight() || 0;
+          let navHeight = $mainNavBar.length ? $mainNavBar.outerHeight() : 0;
+          let totalOffset = filterHeight + navHeight + 20; // extra padding
+          
+          const offsetTop = $targetElement.offset().top - totalOffset;
+          
+          // Check if user prefers reduced motion
+          const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          
           $('html, body').animate({
             scrollTop: offsetTop
-          }, 300);
+          }, isReduced ? 0 : 300);
         }
       } else {
         // Scroll to top if "all" is selected
@@ -335,7 +404,7 @@ $(document).ready(function() {
       }
       
       // Update URL hash
-      history.pushState(null, null, letter === 'all' ? window.location.pathname : `#${letter}`);
+      history.pushState(null, null, letter && letter !== 'all' ? `#${letter}` : window.location.pathname);
     });
     
     // Check if there's a hash in the URL on page load
