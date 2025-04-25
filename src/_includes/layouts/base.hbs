@@ -4,7 +4,39 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{title}} | Spike.sh Glossary</title>
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Spike.sh">
+    <meta name="copyright" content="Spike.sh">
+
+    {{#if term}}
+    <title>{{term}} | Spike.sh Glossary</title>
+    {{else}}
+    <title>Spike.sh Glossary</title>
+    {{/if}}
+
+    {{!-- SEO --}}
+    {{#if term}}
+        <meta name="title" content="{{term}} in Incident Management Explained">
+        <meta name="description" content="Discover what is {{term}} in incident management.">
+        <meta name="keywords" content="{{term}}, Spike.sh, Glossary">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="{{term}} in Incident Management Explained">
+        <meta property="og:description" content="Discover what is {{term}} in incident management and how it works.">
+        <meta property="og:url" content="https://spike.sh/glossary/{{page.fileSlug}}">
+        <meta property="og:type" content="article">
+        <meta property="og:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.jpg">
+
+        {{!-- Twitter --}}
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{term}} in Incident Management Explained">
+        <meta name="twitter:description" content="Discover what is {{term}} in incident management and how it works.">
+        <meta name="twitter:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.jpg">
+    {{else}}
+        <meta name="description" content="Spike.sh Glossary">
+        <meta name="keywords" content="Spike.sh, Glossary">
+    {{/if}}
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
