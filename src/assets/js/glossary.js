@@ -1,4 +1,101 @@
+// Function to fetch and append header from spike.sh
+function fetchAndAppendHeader() {
+  // Use fetch with mode=cors and error handling
+  // Create an AbortController to handle timeout
+  const controller = new AbortController();
+  const signal = controller.signal;
+  
+  // Set a timeout to abort the fetch after 5 seconds
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  
+  fetch('https://spike.sh/header', {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Accept': 'text/html'
+    },
+    credentials: 'omit',  // Don't send or receive cookies
+    signal: signal  // Connect the abort signal
+  })
+    .then(response => {
+      // Clear the timeout since we got a response
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(htmlContent => {
+      // Insert the header content directly into the #header div
+      document.getElementById('header--spike').innerHTML = htmlContent;
+      console.log('Header loaded successfully');
+    })
+    .catch(error => {
+      console.error('Error loading header via fetch:', error);
+      console.log('Trying iframe approach as fallback...');
+      
+      // Try iframe approach as a fallback
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://spike.sh/header';
+      iframe.style.width = '100%';
+      iframe.style.border = 'none';
+      iframe.style.overflow = 'hidden';
+      iframe.style.display = 'block';
+      iframe.height = '80px'; // Default height, will be adjusted
+      
+      // Listen for iframe load event to adjust height
+      iframe.onload = function() {
+        try {
+          // Try to adjust iframe height based on content
+          iframe.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+        } catch(e) {
+          console.log('Could not adjust iframe height due to cross-origin restrictions');
+        }
+      };
+      
+      // Clear and append the iframe
+      const headerEl = document.getElementById('header--spike');
+      headerEl.innerHTML = '';
+      headerEl.appendChild(iframe);
+      
+      // Set a timeout to check if iframe loaded properly
+      setTimeout(function() {
+        // If iframe isn't working, show a basic header
+        if (iframe.contentWindow && iframe.contentWindow.document.body.children.length === 0) {
+          console.log('Iframe failed, using basic header as final fallback');
+          document.getElementById('header').innerHTML = `
+            <header>
+              <div class="header-container">
+                <div class="logo">
+                  <a href="/">
+                    <img src="/assets/images/spike-logo.svg" alt="Spike.sh" width="67" height="24">
+                  </a>
+                </div>
+                <nav class="main-nav">
+                  <ul>
+                    <li><a href="#">Product</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Pricing</a></li>
+                  </ul>
+                </nav>
+                <div class="header-actions">
+                  <a href="#" class="btn-primary">Get started</a>
+                  <a href="#" class="btn-link">Login</a>
+                </div>
+              </div>
+            </header>
+          `;
+        }
+      }, 2000);
+    });
+}
+
 $(document).ready(function() {
+  // Fetch and append the header from spike.sh
+  fetchAndAppendHeader();
+  
   // Debug output for card links
   const $cardLinks = $('.glossary-card .card-link');
   

@@ -8,11 +8,12 @@ permalink: /
 
     <div class="border-bottom">
         <div class="glossary-intro">
-            <p>Culpa voluptate culpa enim aliqua elusmod mollit fugiat anim irure aliqua aute Lorem. Voluptate culpa est
-                cillum dolore cupidatat duis occaecat quis reprehenderit. Ipsum voluptate ad elusmod ullamco proident
-                veniam officia duis officia ad ut. Esse non exercitation proident sunt pariatur consequat officia
-                officia. Elusmod nulla ipsum officia ipsum minim fugiat ex. Est occaecat amet quis sit sit cupidatat
-                deserunt ex mollit. Id anim irure ad cupidatat do. Tempor ipsum nisi aliqua proident consequat et.</p>
+            <p>
+                Curious about how modern teams keep systems reliable? This glossary is a beginner-friendly guide to
+                incident response — with over 500 terms covering on-call, alerting, monitoring, and system reliability.
+                Whether you're just getting started or part of an SRE, DevOps, or operations team, this is your go-to
+                reference for everything incident-related.
+            </p>
         </div>
     </div>
 
@@ -37,11 +38,13 @@ permalink: /
                 <p>Try a different search term or browse by letter</p>
             </div>
         </div>
-        
+
         {{#each collections.glossaryItemsByLetter}}
         <div class="letter-group row" id="{{@key}}">
             <div class="letter-marker col-2">
-                <span>{{@key}}</span>
+                <div class="letter-marker-container">
+                    <span>{{@key}}</span>
+                </div>
             </div>
             <div class="letter-items col-10">
                 <div class="row">
@@ -53,7 +56,9 @@ permalink: /
                             <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
                             <span class="read-more">Learn more
                                 <span class="right-arrow">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1f1f1f"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1f1f1f">
+                                        <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
+                                    </svg>
                                 </span>
                             </span>
                         </div>

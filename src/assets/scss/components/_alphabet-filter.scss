@@ -6,8 +6,9 @@
   h1 {
     text-align: center;
     margin: 40px 0;
-    font-size: 28px;
+    font-size: 48px;
     font-weight: 700;
+    color: var(--primary-color);
     text-transform: uppercase;
   }
 
@@ -15,6 +16,12 @@
     max-width: 800px;
     margin: 0 auto 40px;
     text-align: center;
+
+    p {
+      font-size: 20px;
+      line-height: 1.5;
+      color: var(--gray-text);
+    }
   }
 }
 
@@ -32,8 +39,9 @@
 
   /* When it's sticky and the .is-sticky class is added by JS, show shadow */
   &.is-sticky {
-    padding: 15px 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding-top: 65px;
+    padding-bottom: 15px;
   }
   
   .alphabet-filter-content {
@@ -126,22 +134,27 @@
 
   .letter-marker {
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
     font-family: "Monoton", sans-serif;
     position: sticky;
     top: 120px;
     align-self: flex-start;
 
-    span {
+    .letter-marker-container{
       display: flex;
       align-items: center;
       justify-content: flex-start;
       border-radius: 8px;
+      background-color: var(--secondary-color);
+      padding: 15px;
+    }
+    
+    span {
       font-size: 100px;
-      font-weight: 400;
-      color: #888;
       line-height: 1;
+      font-weight: 400;
+      transform: rotate(5deg);
     }
   }
 
@@ -154,6 +167,7 @@
 .glossary-card {
   background-color: white;
   border: 1px solid var(--border-color);
+  background-color: var(--secondary-color);
   border-radius: 8px;
   padding: 20px;
   position: relative;
