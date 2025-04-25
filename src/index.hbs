@@ -25,7 +25,7 @@ permalink: /
                 {{/each}}
             </div>
             <div class="search-container ms-3">
-                <input type="text" id="glossary-search" placeholder="Search glossary..." class="search-input">
+                <input type="text" id="glossary-search" placeholder="Search" class="search-input">
             </div>
         </div>
     </div>
@@ -46,22 +46,14 @@ permalink: /
                 </div>
             </div>
             <div class="letter-items col-10">
-                <div class="row m-0">
+                <div class="row glossary-cards-row">
                     {{#each this}}
-                    <div class="col-lg-4 col-md-6 col-12 mb-4 glossary-card-container">
+                    <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
                         <div class="glossary-card">
                             <h2>{{title}}</h2>
-                            <p>{{truncate excerpt 200}}</p>
+                            <p>{{truncate excerpt 150}}</p>
                             <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
-                            <span class="read-more">Learn more
-                                <span class="right-arrow">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1f1f1f">
-                                        <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
-                                    </svg>
-                                </span>
-                            </span>
                         </div>
-
                     </div>
                     {{/each}}
                 </div>

@@ -57,9 +57,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1200px;
+    max-width: 80%;
     margin: 0 auto;
-    padding: 0 15px;
+    padding-left: 18px;
     
     @media (max-width: 768px) {
       flex-direction: column;
@@ -86,7 +86,7 @@
     margin-left: 8px;
     color: var(--text-light);
     font-weight: 500;
-    font-size: 25px;
+    font-size: 24px;
     transition: background-color 0.2s;
 
     &:first-child {
@@ -96,13 +96,13 @@
     &:hover {
       color: var(--primary-color);
       text-decoration: underline;
-      font-weight: 700;
+      font-weight: 500;
     }
     
     &.active {
       color: var(--primary-color);
-      background-color: var(--gray);
-      font-weight: 700;
+      background-color: var(--text-gray);
+      font-weight: 500;
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
   }
@@ -118,7 +118,7 @@
   
   .search-input {
     width: 100%;
-    padding: 10px 15px;
+    padding: 4px 15px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 16px;
@@ -138,7 +138,6 @@
 
 // Letter Groups
 .letter-group {
-  margin-bottom: 60px;
   margin-top: 100px;
   align-items: flex-start;
 
@@ -172,6 +171,30 @@
 
   .letter-items {
     padding-left: 56px;
+    
+    /* Custom row for glossary cards with specific spacing */
+    .glossary-cards-row {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 80px;
+      column-gap: 56px
+    }
+    
+    /* Override Bootstrap columns to work with gap */
+    .glossary-card-container {
+      width: calc(33.333% - 38px); /* Adjust width for the gap (56px ÷ 3 columns × 2 gaps) */
+      margin: 0;
+      padding: 0;
+      
+      @media (max-width: 992px) {
+        width: calc(50% - 28px); /* Adjust for 2 columns on medium screens */
+      }
+      
+      @media (max-width: 768px) {
+        width: 100%; /* Full width on mobile */
+      }
+    }
   }
 }
 
@@ -202,7 +225,6 @@
   p {
     font-size: 16px;
     color: var(--text-light);
-    margin-bottom: 20px;
     transition: color 0.3s ease;
   }
 

@@ -125,7 +125,6 @@
         svg {
           width: 8px;
           height: 8px;
-          margin-right: 5px;
           fill: var(--text-color);
         }
       }
@@ -133,10 +132,11 @@
 
 
     .sidebar-cards {
-      margin-top: 20px;
+      margin-top: 70px;
+
       .sidebar-card {
-        margin-bottom: 30px;
-        padding: 20px;
+        margin-bottom: 74px;
+        padding: 24px;
         background-color: var(--secondary-color);
         border: 1px solid var(--border-color);
         border-radius: 6px;
@@ -145,7 +145,7 @@
 
         h3 {
           font-size: 24px;
-          margin-bottom: 10px;
+          margin-bottom: 55px;
           font-weight: 500;
         }
 
