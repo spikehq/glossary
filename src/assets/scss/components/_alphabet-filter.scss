@@ -5,7 +5,6 @@
   
   h1 {
     text-align: center;
-    margin: 40px 0;
     font-size: 48px;
     font-weight: 700;
     color: var(--primary-color);
@@ -13,19 +12,20 @@
   }
   
   .glossary-intro-container {
-    padding: 20px 0;
+    padding: 120px 0;
     background-color: var(--secondary-color);
   }
 
   .glossary-intro {
-    max-width: 800px;
-    margin: 0 auto 40px;
+    max-width: 700px;
+    margin: 0 auto;
     text-align: center;
 
     p {
       font-size: 20px;
       line-height: 1.5;
       color: var(--text-light);
+      text-align: center;
     }
   }
 
@@ -171,7 +171,7 @@
   }
 
   .letter-items {
-    padding-left: 15px;
+    padding-left: 56px;
   }
 }
 
@@ -181,7 +181,7 @@
   border: 1px solid var(--border-color);
   background-color: var(--secondary-color);
   border-radius: 8px;
-  padding: 20px;
+  padding: 24px;
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
   height: 100%;
@@ -193,7 +193,7 @@
   }
 
   h2 {
-    font-size: 18px;
+    font-size: 20px;
     margin-bottom: 24px;
     font-weight: 600;
     transition: color 0.3s ease;
