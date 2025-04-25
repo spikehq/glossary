@@ -74,8 +74,8 @@ layout: layouts/base.hbs
             </div>
         </div>
 
-        <section class="further-reading">
-            <h2>Further reading:</h2>
+        <div class="further-reading">
+            <h2 class="further-read-heading">Further reading:</h2>
             <div class="row glossary-cards-row">
                 {{#if related}}
                     {{#each (processRelated related collections.glossaryItems)}}
@@ -99,6 +99,6 @@ layout: layouts/base.hbs
                     {{/each}}
                 {{/if}}
             </div>
-        </section>
+        </div>
     </div>
 </div>

@@ -120,6 +120,13 @@ $(document).ready(function() {
       });
     }
     
+    // Highlight headings that contain "Spike"
+    $('.glossary-sections h2').each(function() {
+      if ($(this).text().includes('Spike')) {
+        $(this).addClass('featured-heading');
+      }
+    });
+    
     // Highlight the active letter in the alphabet navigation
     const $letterNav = $('.letter-nav');
     

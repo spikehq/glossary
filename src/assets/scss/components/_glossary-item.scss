@@ -167,9 +167,13 @@
 
   // Further Reading Section
   .further-reading {
-    margin-top: 3.75rem; /* 60px in rem */
-    border-top: 0.0625rem solid #eee; /* 1px in rem */
-    padding-top: 2.5rem; /* 40px in rem */
+    margin-top: 7rem; 
+
+    .further-read-heading {
+      font-size: 2rem; /* 32px in rem */;
+      font-weight: 500;
+      margin-bottom: 1.5rem; /* 24px in rem */
+    }
 
     .related-cards {
       margin-top: 1.25rem; /* 20px in rem */
