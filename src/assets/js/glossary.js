@@ -379,7 +379,7 @@ $(document).ready(function() {
           // Get current alphabet filter height to use as offset
           let filterHeight = $alphabetFilter.outerHeight() || 0;
           let navHeight = $mainNavBar.length ? $mainNavBar.outerHeight() : 0;
-          let totalOffset = filterHeight + navHeight + 20; // extra padding
+          let totalOffset = filterHeight + navHeight + 40; // extra padding
           
           const offsetTop = $targetElement.offset().top - totalOffset;
           
