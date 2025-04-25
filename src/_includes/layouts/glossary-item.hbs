@@ -1,7 +1,7 @@
 ---
 layout: layouts/base.hbs
 ---
-<div class="glossary-item">
+<div class="glossary-item" {{#if featuredHeading}}data-featured-heading="{{featuredHeading}}"{{/if}}>
     <div class="border-bottom glossary-intro-header">
         <div class="container">
             <div class="glossary-item--title">

@@ -94,6 +94,34 @@ function fetchAndAppendHeader() {
 
 $(document).ready(function() {
   
+  // Check for featured headings and apply styling
+  const $glossaryItem = $('.glossary-item');
+  if ($glossaryItem.length > 0) {
+    // Get the featuredHeading value from page data
+    // This is added via a data attribute from the template
+    const featuredHeadingData = $glossaryItem.data('featured-heading');
+    
+    if (featuredHeadingData) {
+      // Convert to array if it's not already - split by comma, pipe, or semicolon
+      const featuredHeadings = Array.isArray(featuredHeadingData) 
+        ? featuredHeadingData 
+        : featuredHeadingData.split(/[,|;]/).map(h => h.trim());
+      
+      // Find all h2 headings in the content
+      $('.glossary-sections h2').each(function() {
+        const headingText = $(this).text().trim();
+        
+        // Check if this heading or a part of it matches any featured heading
+        for (const featured of featuredHeadings) {
+          if (headingText === featured || headingText.includes(featured)) {
+            $(this).addClass('featured-heading');
+            break; // No need to continue checking once we've found a match
+          }
+        }
+      });
+    }
+  }
+  
   // Debug output for card links
   const $cardLinks = $('.glossary-card .card-link');
   
@@ -109,6 +137,8 @@ $(document).ready(function() {
   const $alphabetFilter = $('.alphabet-filter');
   // Get search input element reference for later use
   const $searchInput = $('#glossary-search');
+  // Get all filter links
+  const $filterLinks = $('.alphabet-filter .letter-nav a');
   
   if ($alphabetFilter.length > 0) {
     // Create a marker div just before the alphabet filter
@@ -157,8 +187,8 @@ $(document).ready(function() {
     
     // Function to highlight the current letter section based on scroll position
     function highlightCurrentSection() {
-      // Only update if we're not in a search
-      if ($searchInput.val().trim() === '') {
+      // Check if $searchInput exists and only update if we're not in a search
+      if (!$searchInput || !$searchInput.length || $searchInput.val().trim() === '') {
         const scrollPosition = $(window).scrollTop() + $(window).height() / 2; // Use middle of viewport
         let currentLetterGroup = null;
         
@@ -190,8 +220,11 @@ $(document).ready(function() {
         if (currentLetterGroup) {
           const letter = currentLetterGroup.attr('id');
           
-          // Remove active class from all navigation links
-          $filterLinks.removeClass('active');
+          // Only remove active class if $filterLinks exists
+          if (typeof $filterLinks !== 'undefined' && $filterLinks.length > 0) {
+            // Remove active class from all navigation links
+            $filterLinks.removeClass('active');
+          }
           
           // Add active class to the corresponding nav link
           const $letterLink = $(`.alphabet-filter .letter-nav a[href="#${letter}"]`);
@@ -204,17 +237,17 @@ $(document).ready(function() {
           }
         } else {
           // If no letter group is in view, activate the "all" link
-          $filterLinks.removeClass('active');
+          if (typeof $filterLinks !== 'undefined' && $filterLinks.length > 0) {
+            $filterLinks.removeClass('active');
+          }
           $(`.alphabet-filter .letter-nav a[href="#all"]`).addClass('active');
         }
       }
     }
   }
   
-  // Get all filter links
-  const $filterLinks = $('.alphabet-filter .letter-nav a');
-  
-  if ($filterLinks.length > 0) {
+  // Use filter links if they exist
+  if ($filterLinks && $filterLinks.length > 0) {
     // Add click event to filter links
     $filterLinks.on('click', function(e) {
       e.preventDefault();

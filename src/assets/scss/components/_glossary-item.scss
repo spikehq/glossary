@@ -60,9 +60,22 @@
   }
 
   .glossary-sections {
-    section {
-      margin-bottom: 40px;
-
+    h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: var(--text-color);
+      font-weight: 600;
+      
+      &.featured-heading {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-decoration: underline;
+        margin-top: 30px;
+      }
+    }
+    
+    .related-terms-section {
       h2 {
         font-size: 20px;
         margin-bottom: 16px;
