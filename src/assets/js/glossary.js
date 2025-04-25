@@ -355,12 +355,6 @@ $(document).ready(function() {
         return;
       }
       
-      // Continue with normal behavior for main glossary page
-      // Remove active class from all links
-      $filterLinks.removeClass('active');
-      // Add active class to clicked link
-      $(this).addClass('active');
-      
       const letter = extractHash(href) || '';
       
       // Clear search input when clicking a letter
