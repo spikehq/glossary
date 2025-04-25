@@ -1,5 +1,13 @@
 // Glossary item styles
 
+.glossary-intro-header {
+  padding: 60px 0;
+  color: var(--text-color);
+  font-size: 32px;
+  font-weight: 600;
+
+}
+
 // Individual glossary item page
 .glossary-item {
   margin-bottom: 60px;
@@ -16,7 +24,6 @@
   }
 
   .glossary-content {
-    max-width: 70%;
     margin: 0 auto;
     margin-top: 55px;
 
