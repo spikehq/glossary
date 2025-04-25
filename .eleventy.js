@@ -75,6 +75,12 @@ module.exports = function(eleventyConfig) {
         return titleA.localeCompare(titleB);
       });
   });
+
+  // Get first letter of each term
+  eleventyConfig.addFilter("getFirstLetter", function(term) {
+    if (term) return term.charAt(0).toUpperCase();
+    return '';
+  });
   
   // Handle related items data to include proper slugs
   eleventyConfig.addFilter("processRelated", function(related, glossaryItems) {
@@ -133,13 +139,13 @@ module.exports = function(eleventyConfig) {
 
   // Helper functions
   eleventyConfig.addFilter("firstLetter", function(str) {
-    if (str) return str.charAt(0).toUpperCase();
+    if (str && typeof str === 'string') return str.charAt(0).toUpperCase();
     return '';
   });
   
   // Add Handlebars specific helper
   eleventyConfig.addHandlebarsHelper("firstLetter", function(str) {
-    if (str) return str.charAt(0).toUpperCase();
+    if (str && typeof str === 'string') return str.charAt(0).toUpperCase();
     return '';
   });
   
@@ -152,6 +158,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addHandlebarsHelper("year", () => {
     return new Date().getFullYear();
   });
+
+  // Let's not use custom helpers for now
 
   // Truncate helper for excerpts
   eleventyConfig.addFilter("truncate", function(str, length) {
@@ -166,6 +174,12 @@ module.exports = function(eleventyConfig) {
       // Add the layout and permalink directly to each item
       item.data.layout = "layouts/glossary-item.hbs";
       item.data.permalink = `/glossary/${item.fileSlug}/`;
+      
+      // Add the first letter of the term to use for active letter navigation
+      if (item.data.term) {
+        item.data.firstLetter = item.data.term.charAt(0).toUpperCase();
+      }
+      
       return item;
     });
   });

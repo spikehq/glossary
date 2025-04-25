@@ -28,10 +28,15 @@
       color: var(--text-light);
     }
   }
+
+  .letter-nav {
+    a {
+      padding: 15px 4px;
+    }
+  }
 }
 
 .alphabet-filter {
-  margin: 45px 0;
   position: sticky;
   top: 0;
   background-color: white;
@@ -44,9 +49,8 @@
 
   /* When it's sticky and the .is-sticky class is added by JS, show shadow */
   &.is-sticky {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    padding-top: 65px;
-    padding-bottom: 15px;
+    box-shadow: 0px 2px 4px 0px #00000040;
+    padding-top: 55px;
   }
   
   .alphabet-filter-content {
@@ -72,13 +76,14 @@
       margin-bottom: 15px;
     }
   }
-
+  
   a {
+    // margin: 45px 0;
+    padding: 10px 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 12px;
-    border-radius: 4px;
+    margin-left: 8px;
     color: var(--text-light);
     font-weight: 500;
     font-size: 25px;
@@ -96,9 +101,8 @@
     
     &.active {
       color: var(--primary-color);
+      background-color: var(--gray);
       font-weight: 700;
-      border-radius: 4px;
-      text-decoration: underline;
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
   }

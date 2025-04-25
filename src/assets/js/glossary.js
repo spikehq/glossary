@@ -93,7 +93,6 @@ function fetchAndAppendHeader() {
 }
 
 $(document).ready(function() {
-  
   // Check for featured headings and apply styling
   const $glossaryItem = $('.glossary-item');
   if ($glossaryItem.length > 0) {
@@ -119,6 +118,25 @@ $(document).ready(function() {
           }
         }
       });
+    }
+    
+    // Highlight the active letter in the alphabet navigation
+    const $letterNav = $('.letter-nav');
+    
+    // Get active letter from the data-active-letter attribute
+    let activeLetter = $letterNav.data('active-letter');
+    
+    // If not found, try to determine it from the term attribute
+    if (!activeLetter && $glossaryItem.data('term')) {
+      const term = $glossaryItem.data('term');
+      if (term && typeof term === 'string') {
+        activeLetter = term.charAt(0).toUpperCase();
+      }
+    }
+    
+    // Apply active class if we have a letter
+    if (activeLetter) {
+      $letterNav.find(`a[data-letter="${activeLetter}"]`).addClass('active');
     }
   }
   
@@ -187,6 +205,11 @@ $(document).ready(function() {
     
     // Function to highlight the current letter section based on scroll position
     function highlightCurrentSection() {
+      // Skip this function on glossary item pages - we'll set the active letter manually
+      if ($('.glossary-item').length > 0) {
+        return;
+      }
+      
       // Check if $searchInput exists and only update if we're not in a search
       if (!$searchInput || !$searchInput.length || $searchInput.val().trim() === '') {
         const scrollPosition = $(window).scrollTop() + $(window).height() / 2; // Use middle of viewport

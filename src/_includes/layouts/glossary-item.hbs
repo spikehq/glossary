@@ -1,7 +1,9 @@
 ---
 layout: layouts/base.hbs
 ---
-<div class="glossary-item" {{#if featuredHeading}}data-featured-heading="{{featuredHeading}}"{{/if}}>
+<div class="glossary-item" 
+    {{#if featuredHeading}}data-featured-heading="{{featuredHeading}}"{{/if}}
+    {{#if term}}data-term="{{term}}"{{/if}}>
     <div class="border-bottom glossary-intro-header">
         <div class="container">
             <div class="glossary-item--title">
@@ -20,7 +22,7 @@ layout: layouts/base.hbs
             <div class="glossary-back-link">
                 <a href="/">← Glossary</a>
             </div>
-            <div class="letter-nav">
+            <div class="letter-nav" data-active-letter="{{firstLetter}}">
                 {{#each collections.alphabetList}}
                 <a href="#{{this}}" data-letter="{{this}}">{{this}}</a>
                 {{/each}}
