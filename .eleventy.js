@@ -96,6 +96,28 @@ module.exports = function(eleventyConfig) {
     });
   });
   
+  // Get the next X items from the glossary collection
+  eleventyConfig.addFilter("getNextTerms", function(currentSlug, glossaryItems, count = 3) {
+    // Find the index of the current item
+    const currentIndex = glossaryItems.findIndex(item => item.fileSlug === currentSlug);
+    
+    if (currentIndex === -1) return [];
+    
+    // Get the next 'count' items, wrapping around to the beginning if needed
+    const nextItems = [];
+    for (let i = 1; i <= count; i++) {
+      const nextIndex = (currentIndex + i) % glossaryItems.length;
+      const nextItem = glossaryItems[nextIndex];
+      nextItems.push({
+        title: nextItem.data.term,
+        slug: nextItem.fileSlug,
+        excerpt: nextItem.data.excerpt || ""
+      });
+    }
+    
+    return nextItems;
+  });
+  
   // Group glossary items by first letter
   eleventyConfig.addCollection("glossaryItemsByLetter", function(collectionApi) {
     const allGlossaryItems = collectionApi.getFilteredByGlob("src/glossary/**/*.md");

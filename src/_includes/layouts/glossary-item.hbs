@@ -74,21 +74,31 @@ layout: layouts/base.hbs
             </div>
         </div>
 
-        {{#if related}}
         <section class="further-reading">
             <h2>Further reading:</h2>
-            <div class="related-cards row">
-                {{#each (processRelated related collections.glossaryItems)}}
-                <div class="col-md-4 mb-4">
-                    <div class="related-card">
-                        <h3>{{this.title}}</h3>
-                        <p>{{this.excerpt}}</p>
-                        <a href="/glossary/{{this.slug}}/" class="card-link"></a>
+            <div class="row glossary-cards-row">
+                {{#if related}}
+                    {{#each (processRelated related collections.glossaryItems)}}
+                    <div class="col-md-4 mb-4">
+                        <div class="related-card">
+                            <h3>{{this.title}}</h3>
+                            <p>{{this.excerpt}}</p>
+                            <a href="/glossary/{{this.slug}}/" class="card-link"></a>
+                        </div>
                     </div>
-                </div>
-                {{/each}}
+                    {{/each}}
+                {{else}}
+                    {{#each (getNextTerms page.fileSlug collections.glossaryItems 3)}}
+                    <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
+                        <div class="glossary-card">
+                            <h2>{{this.title}}</h2>
+                            <p>{{truncate this.excerpt 150}}</p>
+                            <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
+                        </div>
+                    </div>
+                    {{/each}}
+                {{/if}}
             </div>
         </section>
-        {{/if}}
     </div>
 </div>
