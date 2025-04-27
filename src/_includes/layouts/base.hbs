@@ -7,34 +7,75 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="Spike.sh">
     <meta name="copyright" content="Spike.sh">
+    <link rel="canonical" href="https://spike.sh/{{#if term}}{{page.fileSlug}}{{else}}glossary{{/if}}">
+
+    {{!-- Phone tags --}}
+    <link rel="icon" type="image/png" sizes="24x24" href="https://cdn.spike.sh/logos/spike-badge-icon.png">
+    <link rel="apple-touch-icon" href="https://cdn.spike.sh/logos/spike-badge-180.png">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!--[if IE]>
+        <p>Spike works best on modern browsers. Download <a href="https://www.google.com/chrome/">Google Chrome</a> or <a href="https://brave.com/">Brave</a> for the best experience.</p>
+    <![endif]-->
+
+    <!-- Square Windows tiles -->
+    <meta name="msapplication-TileImage" content="https://cdn.spike.sh/logos/spike-badge.png">
+    <meta name="msapplication-square70x70logo" content="https://cdn.spike.sh/logos/spike-badge-70.png">
+    <meta name="msapplication-square150x150logo" content="https://cdn.spike.sh/logos/spike-badge-150.png">
+    <meta name="msapplication-square310x310logo" content="https://cdn.spike.sh/logos/spike-badge-310.png">
+    <!-- Rectangular Windows tile -->
+    <meta name="msapplication-wide310x150logo" content="https://cdn.spike.sh/logos/spike-logo-525x150.png">
+    <!-- Windows tile theme color -->
+    <meta name="msapplication-TileColor" content="#2e2e2e">
+    <meta name="msapplication-TileColor" content="#f2f7fc">
+
 
     {{#if term}}
-    <title>{{term}} | Spike.sh Glossary</title>
+        <title>{{term}} in Incident Response Explained</title>
     {{else}}
-    <title>Spike.sh Glossary</title>
+        <title>Incident Response Glossary: 500+ Key Terms Explained | Spike</title>
     {{/if}}
 
     {{!-- SEO --}}
     {{#if term}}
-        <meta name="title" content="{{term}} in Incident Management Explained">
-        <meta name="description" content="Discover what is {{term}} in incident management.">
-        <meta name="keywords" content="{{term}}, Spike.sh, Glossary">
+        <meta name="title" content="{{term}} in Incident Response Explained">
+        <meta name="description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
+        <meta name="keywords" content="{{term}}, Spike, Glossary, Incident Response, Incident Management, DevOps, Site Reliability Engineering, SRE, On-call Management, Incident Management Glossary, DevOps Terms, SRE Terms">
 
         <!-- Open Graph / Facebook -->
-        <meta property="og:title" content="{{term}} in Incident Management Explained">
-        <meta property="og:description" content="Discover what is {{term}} in incident management and how it works.">
+        <meta property="og:title" content="{{term}} in Incident Response Explained">
+        <meta property="og:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
         <meta property="og:url" content="https://spike.sh/{{page.fileSlug}}">
         <meta property="og:type" content="article">
-        <meta property="og:image" content="https://cdn.spike.sh/{{page.fileSlug}}.jpg">
+        <meta property="og:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
 
         {{!-- Twitter --}}
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="{{term}} in Incident Management Explained">
-        <meta name="twitter:description" content="Discover what is {{term}} in incident management and how it works.">
-        <meta name="twitter:image" content="https://cdn.spike.sh/{{page.fileSlug}}.jpg">
+        <meta name="twitter:url" content="https://spike.sh/{{page.fileSlug}}">
+        <meta name="twitter:title" content="{{term}} in Incident Response Explained">
+        <meta name="twitter:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
+        <meta name="twitter:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
     {{else}}
-        <meta name="description" content="Spike.sh Glossary">
-        <meta name="keywords" content="Spike.sh, Glossary">
+        <meta name="title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
+        <meta name="description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
+        <meta name="keywords" content="Spike, Glossary, Incident Response, Incident Management, DevOps, Site Reliability Engineering, SRE, On-call Management, Incident Management Glossary, DevOps Terms, SRE Terms">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
+        <meta property="og:description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
+        <meta property="og:url" content="https://spike.sh/glossary">
+        <meta property="og:type" content="article">
+        <meta property="og:image" content="https://cdn.spike.sh/glossary/glossary-default.png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+
+        {{!-- Twitter --}}
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
+        <meta name="twitter:url" content="https://spike.sh/glossary">
+        <meta name="twitter:description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
+        <meta name="twitter:image" content="https://cdn.spike.sh/glossary/glossary-default.png">
     {{/if}}
 
     <!-- Google Fonts -->

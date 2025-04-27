@@ -200,13 +200,15 @@
   background-color: var(--secondary-color);
   border-radius: 0.5rem; /* 8px in rem */
   padding: 1.5rem; /* 24px in rem */
-  position: relative;
+  // position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
   height: 100%;
 
   &:hover {
-    box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
+    // box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
+    box-shadow: 0 .625rem 1.25rem rgb(0 0 0 / 30%);
     color: white;
+    border-color: var(--orange);
     background-color: var(--orange);
   }
 
