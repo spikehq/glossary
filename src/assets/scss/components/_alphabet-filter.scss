@@ -10,6 +10,12 @@
     color: var(--primary-color);
     text-transform: uppercase;
   }
+
+  h2 {
+    text-align: center;
+    font-size: 1.5rem; /* 24px in rem */
+    font-weight: 700;
+  }
   
   .glossary-intro-container {
     padding: 7.5rem 0; /* 120px in rem */
