@@ -147,6 +147,12 @@
   }
 }
 
+.glossary-item {
+  .alphabet-filter-content {
+    justify-content: space-between;
+  }
+}
+
 // Add margin to results when filter is sticky
 .alphabet-filter.is-sticky + .glossary-list {
   margin-top: 4.375rem; /* 70px in rem */
