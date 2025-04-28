@@ -4,7 +4,7 @@ title: Glossary
 permalink: /
 ---
 <div class="glossary-page">
-    <div class="glossary-intro-container border-bottom">
+    <div class="glossary-intro-container border-bottom px-3">
         <h1>Incident Response Glossary</h1>
         <h2>Master the Language of Modern Incident Management</h2>
 
@@ -30,6 +30,17 @@ permalink: /
             <div class="search-container ms-5">
                 <input type="text" id="glossary-search" placeholder="Search" class="search-input">
             </div>
+            <div class="mobile-filter-container py-2">
+                <select class="mobile-alphabet-dropdown">
+                    <option value="">Select Letter</option>
+                    {{#each collections.alphabetList}}
+                        <option value="#{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+                <div class="mobile-search-container">
+                    <input type="text" id="mobile-glossary-search" placeholder="Search" class="search-input">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -42,26 +53,26 @@ permalink: /
         </div>
 
         {{#each collections.glossaryItemsByLetter}}
-        <div class="letter-group row" id="{{@key}}">
-            <div class="letter-marker col-2">
-                <div class="letter-marker-container">
-                    <span>{{@key}}</span>
-                </div>
-            </div>
-            <div class="letter-items col-10">
-                <div class="row glossary-cards-row">
-                    {{#each this}}
-                    <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
-                        <div class="glossary-card">
-                            <h3>{{title}}</h3>
-                            <p>{{truncate excerpt 150}}</p>
-                            <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
-                        </div>
+            <div class="letter-group row" id="{{@key}}">
+                <div class="letter-marker d-none d-md-block col-2">
+                    <div class="letter-marker-container">
+                        <span>{{@key}}</span>
                     </div>
-                    {{/each}}
+                </div>
+                <div class="letter-items col-10">
+                    <div class="row glossary-cards-row">
+                        {{#each this}}
+                            <div class="col-lg-4 col-md-6 col-xs-6 col-sm-6 col-4 glossary-card-container">
+                                <div class="glossary-card">
+                                    <h3>{{title}}</h3>
+                                    <p class="d-none d-md-block">{{truncate excerpt 150}}</p>
+                                    <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
                 </div>
             </div>
-        </div>
         {{/each}}
     </div>
 </div>

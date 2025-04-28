@@ -248,3 +248,18 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .glossary-item {
+    .glossary-sidebar {
+      border-top: 1px solid var(--border-color); /* 1px in rem */
+      margin-top: 2rem; /* 48px in rem */
+      padding-top: 2rem; /* 48px in rem */;
+      padding-left: 1.25rem; /* 20px in rem */
+    }
+  }
+
+  .glossary-card-container {
+    margin-bottom: 2rem; /* 48px in rem */
+  }
+}

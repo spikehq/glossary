@@ -51,7 +51,6 @@
   /* Styling when sticky */
   &.is-sticky {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.25); /* 2px 4px in rem */
-    // padding: 0.75rem 0;
     padding-top: 3rem; /* 55px in rem */
   }
   
@@ -60,20 +59,63 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto;
-    
-    @media (max-width: 768px) {
-      flex-direction: column;
-    }
   }
 
   .letter-nav {
     display: flex;
     flex-wrap: wrap;
     gap: 0;
-    
-    @media (max-width: 768px) {
-      justify-content: center;
-      margin-bottom: 0.9375rem; /* 15px in rem */
+  }
+
+  .search-container {
+    width: 12.5rem; /* 200px in rem */
+  }
+
+  .mobile-filter-container {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .alphabet-filter-content {
+      flex-direction: column;
+    }
+
+    .letter-nav {
+      display: none;
+    }
+
+    .search-container {
+      display: none;
+    }
+
+    .mobile-filter-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      max-width: 25rem;
+      margin: 0 auto;
+    }
+
+    .mobile-alphabet-dropdown {
+      display: block;
+      padding: 0.5rem;
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      background-color: white;
+      color: var(--text-light);
+      min-width: 8rem;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.125rem rgba(5, 117, 230, 0.2);
+      }
+    }
+
+    .mobile-search-container {
+      flex: 1;
     }
   }
 
@@ -122,13 +164,12 @@
       }
     }
   }
-  
-  .search-container {
-    width: 12.5rem; /* 200px in rem */
-    
-    @media (max-width: 768px) {
-      width: 100%;
-      max-width: 25rem; /* 400px in rem */
+
+// ipads and tablets
+  @media (min-width: 768px) and (max-width: 1024px) {
+    a {
+      padding: 1rem 0.1rem; /* 8px 4px in rem */
+      margin-left: 0.125rem; /* 5px in rem */
     }
   }
   
@@ -169,7 +210,7 @@
     justify-content: center;
     font-family: var(--font-family-secondary);
     position: sticky;
-    top: 9.375rem; /* 150px in rem */
+    top: 10rem; /* 160px in rem */
     align-self: flex-start;
 
     .letter-marker-container{
@@ -291,6 +332,28 @@
 
   &:hover p {
     color: white;
+  }
+}
+
+@media (max-width: 768px) {
+  .glossary-card {
+    margin: 0;
+    h3 {
+      margin-bottom: 0; // we are hiding excert
+    }
+  }
+
+  .letter-group {
+    margin-top: 3.125rem; /* 50px in rem */
+    .letter-marker {
+      display: none;
+    }
+
+    .letter-items {
+        .glossary-cards-row {
+          row-gap: 2.125rem; /* 50px in rem */
+        }
+    }
   }
 }
 
