@@ -1,5 +1,5 @@
 module.exports = {
-  title: "Spike Glossary",
+  title: "Incident Response Glossary: 500+ Key Terms Explained | Spike",
   description: "A comprehensive glossary of terms related to incident response and management",
   year: new Date().getFullYear(),
   

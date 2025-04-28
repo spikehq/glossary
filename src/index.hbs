@@ -5,7 +5,8 @@ permalink: /
 ---
 <div class="glossary-page">
     <div class="glossary-intro-container border-bottom">
-        <h1>GLOSSARY</h1>
+        <h1>Incident Response Glossary</h1>
+        <h2>Master the Language of Modern Incident Management</h2>
 
         <div class="glossary-intro">
             <p>
@@ -18,13 +19,15 @@ permalink: /
     </div>
 
     <div class="alphabet-filter row m-0">
-        <div class="alphabet-filter-content">
+        <div class="alphabet-filter-content container">
             <div class="letter-nav">
                 {{#each collections.alphabetList}}
-                <a href="#{{this}}">{{this}}</a>
+                    <a href="#{{this}}">
+                        <h2>{{this}}</h2>
+                    </a>
                 {{/each}}
             </div>
-            <div class="search-container ms-3">
+            <div class="search-container ms-5">
                 <input type="text" id="glossary-search" placeholder="Search" class="search-input">
             </div>
         </div>
@@ -50,7 +53,7 @@ permalink: /
                     {{#each this}}
                     <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
                         <div class="glossary-card">
-                            <h2>{{title}}</h2>
+                            <h3>{{title}}</h3>
                             <p>{{truncate excerpt 150}}</p>
                             <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
                         </div>

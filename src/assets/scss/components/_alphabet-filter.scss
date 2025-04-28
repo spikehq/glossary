@@ -10,6 +10,12 @@
     color: var(--primary-color);
     text-transform: uppercase;
   }
+
+  .glossary-intro-container h2 {
+    text-align: center;
+    font-size: 1.5rem; /* 24px in rem */
+    font-weight: 700;
+  }
   
   .glossary-intro-container {
     padding: 7.5rem 0; /* 120px in rem */
@@ -31,7 +37,7 @@
 
   .letter-nav {
     a {
-      padding: 0.9375rem 0.25rem; /* 15px 4px in rem */
+      // padding: 0.9375rem 0.25rem; /* 15px 4px in rem */
     }
   }
 }
@@ -52,10 +58,8 @@
   .alphabet-filter-content {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    max-width: 80%;
+    justify-content: center;
     margin: 0 auto;
-    padding-left: 1.125rem; /* 18px in rem */
     
     @media (max-width: 768px) {
       flex-direction: column;
@@ -72,9 +76,22 @@
       margin-bottom: 0.9375rem; /* 15px in rem */
     }
   }
-  
+
+  h2 {
+    margin-bottom: 0;
+    font-size: 1.25rem; /* 24px in rem */
+    font-weight: 500;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 1.25rem; /* 24px in rem */
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
   a {
-    padding: 0.625rem 0.25rem; /* 10px 4px in rem */
+    padding: 1rem 0.25rem; /* 10px 4px in rem */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,7 +107,6 @@
 
     &:hover {
       color: var(--primary-color);
-      text-decoration: underline;
       font-weight: 500;
     }
     
@@ -99,6 +115,11 @@
       background-color: var(--text-gray);
       font-weight: 500;
       transition: transform 0.2s ease, background-color 0.2s ease;
+
+      h2 {
+        color: var(--primary-color);
+        text-decoration: underline;
+      }
     }
   }
   
@@ -123,6 +144,12 @@
       border-color: var(--primary-color);
       box-shadow: 0 0 0 0.125rem rgba(5, 117, 230, 0.2); /* 2px in rem */
     }
+  }
+}
+
+.glossary-item {
+  .alphabet-filter-content {
+    justify-content: space-between;
   }
 }
 
@@ -200,17 +227,19 @@
   background-color: var(--secondary-color);
   border-radius: 0.5rem; /* 8px in rem */
   padding: 1.5rem; /* 24px in rem */
-  position: relative;
+  // position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
   height: 100%;
 
   &:hover {
-    box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
+    // box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08); /* 10px 20px in rem */
+    box-shadow: 0 .625rem 1.25rem rgb(0 0 0 / 30%);
     color: white;
+    border-color: var(--orange);
     background-color: var(--orange);
   }
 
-  h2 {
+  h3 {
     font-size: 1.25rem; /* 20px in rem */
     margin-bottom: 1.5rem; /* 24px in rem */
     font-weight: 600;
@@ -256,7 +285,7 @@
     opacity: 1;
   }
 
-  &:hover h2 {
+  &:hover h3 {
     color: white;
   }
 

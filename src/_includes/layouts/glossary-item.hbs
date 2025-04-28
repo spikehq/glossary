@@ -18,7 +18,7 @@ layout: layouts/base.hbs
     </div>
 
     <div class="alphabet-filter">
-        <div class="alphabet-filter-content">
+        <div class="alphabet-filter-content container">
             <div class="glossary-back-link">
                 <a href="/">← Glossary</a>
             </div>
@@ -80,7 +80,7 @@ layout: layouts/base.hbs
                 {{#if related}}
                     {{#each (processRelated related collections.glossaryItems)}}
                     <div class="col-md-4 mb-4">
-                        <div class="related-card">
+                        <div class=" related-card">
                             <h3>{{this.title}}</h3>
                             <p>{{this.excerpt}}</p>
                             <a href="/{{this.slug}}/" class="card-link"></a>
@@ -91,7 +91,7 @@ layout: layouts/base.hbs
                     {{#each (getNextTerms page.fileSlug collections.glossaryItems 3)}}
                     <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
                         <div class="glossary-card">
-                            <h2>{{this.title}}</h2>
+                            <h3>{{this.title}}</h3>
                             <p>{{truncate this.excerpt 150}}</p>
                             <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
                         </div>
