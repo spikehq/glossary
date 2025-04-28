@@ -22,7 +22,9 @@ permalink: /
         <div class="alphabet-filter-content">
             <div class="letter-nav">
                 {{#each collections.alphabetList}}
-                <a href="#{{this}}">{{this}}</a>
+                    <a href="#{{this}}">
+                        <h2>{{this}}</h2>
+                    </a>
                 {{/each}}
             </div>
             <div class="search-container ms-3">
@@ -51,7 +53,7 @@ permalink: /
                     {{#each this}}
                     <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
                         <div class="glossary-card">
-                            <h2>{{title}}</h2>
+                            <h3>{{title}}</h3>
                             <p>{{truncate excerpt 150}}</p>
                             <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
                         </div>
