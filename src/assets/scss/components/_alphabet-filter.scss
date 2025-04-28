@@ -202,7 +202,7 @@
     justify-content: center;
     font-family: var(--font-family-secondary);
     position: sticky;
-    top: 9.375rem; /* 150px in rem */
+    top: 10rem; /* 160px in rem */
     align-self: flex-start;
 
     .letter-marker-container{
@@ -324,6 +324,28 @@
 
   &:hover p {
     color: white;
+  }
+}
+
+@media (max-width: 768px) {
+  .glossary-card {
+    margin: 0;
+    h3 {
+      margin-bottom: 0; // we are hiding excert
+    }
+  }
+
+  .letter-group {
+    margin-top: 3.125rem; /* 50px in rem */
+    .letter-marker {
+      display: none;
+    }
+
+    .letter-items {
+        .glossary-cards-row {
+          row-gap: 2.125rem; /* 50px in rem */
+        }
+    }
   }
 }
 
