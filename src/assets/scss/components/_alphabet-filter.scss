@@ -58,10 +58,8 @@
   .alphabet-filter-content {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    max-width: 80%;
+    justify-content: center;
     margin: 0 auto;
-    padding-left: 1.125rem; /* 18px in rem */
     
     @media (max-width: 768px) {
       flex-direction: column;
@@ -81,10 +79,19 @@
 
   h2 {
     margin-bottom: 0;
+    font-size: 1.25rem; /* 24px in rem */
+    font-weight: 500;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 1.25rem; /* 24px in rem */
+
+    &:hover {
+      color: var(--primary-color);
+    }
   }
-  
-  a, h2 {
-    padding: 0.625rem 0.25rem; /* 10px 4px in rem */
+
+  a {
+    padding: 1rem 0.25rem; /* 10px 4px in rem */
     display: flex;
     align-items: center;
     justify-content: center;
