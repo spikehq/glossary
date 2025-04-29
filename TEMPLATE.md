@@ -1,5 +1,5 @@
 ---
-term: [Your Term Name]
+term: [Term Name]
 excerpt: [A short, concise description (50-60 words) that summarizes the term.]
 featured: false
 # featuredHeading: [Optional custom heading to display when featured]
