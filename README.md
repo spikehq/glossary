@@ -46,7 +46,7 @@ Explain why it matters...
 Give a practical example...
 
 ```
-3. Commit your file and open a pull request. That's it!
+3. Commit your file and open a pull request to `production` branch. That's it!
 
 ---
 ## Developer setup
