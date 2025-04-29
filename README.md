@@ -1,23 +1,55 @@
 <img src="hero.png" alt="Incident Response Glossary by Spike.sh"/>
 
 # Incident Response Glossary
-
 This is the largest Incident Response Glossary with 500+ terms explained. We built this glossary because we often found ourselves explaining the same terms to new teammates, and we wanted a single source of truth for anyone working in ops.
 
 Demo → [spike.sh/glossary](https://spike.sh/glossary)
 
-Want to suggest a new term or improve existing ones? See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## Features
-
-- Responsive design
-- Markdown support for term definitions
-- Alphabetical filtering of glossary terms
-- Easy to add new terms through markdown files
+> **PRs are welcome!** Whether you want to contribute new terms or improve the website itself, we welcome content writers and developers alike.
 
 ---
 
-## Getting Started
+## Table of Contents
+- [Contributing a New Term ✍️ ](#contributing-a-new-term)
+- [Developer Setup](#developer-setup)
+  - [Project Structure](#project-structure)
+  - [Customization](#customization)
+- [Thank You](#thank-you)
+
+---
+
+## Contributing a New Term
+
+To contribute a term or suggest improvements to existing ones, please see our full guide in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Here's a quick overview:
+
+1. Go to `/src/` and add a new markdown file (e.g., `incident-management.md`)
+2. Use this format:
+
+```markdown
+---
+term: Incident Management
+excerpt: Coordinating efforts to handle and resolve incidents efficiently.
+related:
+  - incident-response
+  - post-incident-review
+---
+
+## What Is Incident Management
+Explain the term...
+
+## Why Is Incident Management Important
+Explain why it matters...
+
+## Example Of Incident Management
+Give a practical example...
+
+```
+3. Commit your file and open a pull request. That's it!
+
+---
+## Developer setup
 
 ### Prerequisites
 
@@ -60,17 +92,17 @@ npm run sass && npm run build
 
 The built site will be in the `_site` directory.
 
-## Project Structure
+### Project Structure
 
 ```
 .
-├── src/                    # Source files
-│   ├── _includes/          # Templates and partials
+├── src/                    
+│   ├── _includes/          
 │   │   └── layouts/        # Layout templates
 │   ├── assets/             # Static assets
 │   │   ├── css/            # Compiled CSS (don't edit directly)
-│   │   ├── js/             # JavaScript files
-│   │   ├── images/         # Image assets
+│   │   ├── js/             
+│   │   ├── images/         
 │   │   └── scss/           # Sass source files
 │   │       ├── base/       # Base styles, variables, reset
 │   │       ├── components/ # Component-specific styles
@@ -79,50 +111,35 @@ The built site will be in the `_site` directory.
 │   ├──            # +++  Glossary term markdown files   +++
 │   ├── index.hbs           # Home page
 │   └── glossary.hbs        # Glossary list page
-├── .eleventy.js            # Eleventy configuration
-├── package.json            # Dependencies and scripts
-└── README.md               # This file
+├── .eleventy.js            
+├── package.json            
+└── README.md               
 ```
 
-## Customization
 
-- **Styling**: Edit the Sass files in `src/assets/scss/` directory:
-  - `base/_variables.scss`: Color variables, breakpoints, etc.
-  - `components/`: Component-specific styles
-  - `layout/`: Layout styles
-- **Layouts**: Modify templates in `src/_includes/layouts/`
-- **Global Data**: Update site-wide data in `src/data/site.js`
-- **Configuration**: Adjust settings in `.eleventy.js`
+### Customization
+- Sass: `src/assets/scss/`
+  - `base/_variables.scss` for colors & breakpoints
+  - `components/`, `layout/` for other styling
+- Layouts: `src/_includes/layouts/`
+- Data: `src/data/site.js`
+- Glossary terms can be filtered by first letter using `src/assets/js/glossary.js`
 
-
-## Alphabetical Filtering
-
-The glossary page includes alphabetical filtering that allows users to filter terms by their first letter. This is implemented with JavaScript in `src/assets/js/glossary.js`.
-
-## Responsive Design
-
-The site is fully responsive and works well on mobile, tablet, and desktop devices.
-
-## Markdown Support
-
-All glossary terms are written in Markdown, which allows for rich formatting including:
-
-- Headings
-- Lists
-- Bold and italic text
-- Links
-- Code blocks
-- Images
-
-This makes it easy to create structured and well-formatted glossary entries.
+--- 
 
 # Thank You 🙏
 Thanks for checking out the Incident Response Glossary!
 
-This project is a small way for us at Spike.sh to give back to the DevOps and SRE community.
+This project is a small way for us at [Spike](https://spike.sh) to give back to the DevOps and SRE community.
 
 If you find it useful, feel free to share it, contribute, or just explore and learn.
 
 Every term helps someone build more reliable systems — and that’s what we’re here for.
 
 Happy learning!
+
+Follow us for more:
+
+- [Twitter / X](https://twitter.com/SpikedHQ)  
+- [LinkedIn](https://linkedin.com/company/spike-hq)
+- [r/spikesh on Reddit](https://www.reddit.com/r/spikesh)

@@ -22,6 +22,16 @@ The filename should be the lowercase, hyphenated version of the term (e.g., `inc
 
 You can copy the template file [TEMPLATE.md](TEMPLATE.md) as a starting point.
 
+**Markdown support**
+All terms support:
+- Headings
+- Lists
+- Emphasis
+- Links
+- Code blocks
+- Images
+
+
 ## Front Matter Structure
 
 The front matter (the section between `---` at the top of the file) contains metadata about your term:
