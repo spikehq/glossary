@@ -4,7 +4,7 @@
 
 A glossary website built with 11ty (Eleventy), Handlebars templating, SASS for styling, and Markdown for content.
 
-Want to suggest a new term or improve existing ones? See [CONTRIBUTING.md]
+Want to suggest a new term or improve existing ones? See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Features
 
