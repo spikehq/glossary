@@ -31,6 +31,7 @@ All terms support:
 - Code blocks
 - Images
 
+
 ## Front Matter Structure
 
 The front matter (the section between `---` at the top of the file) contains metadata about your term:

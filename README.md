@@ -1,7 +1,6 @@
 <img src="hero.png" alt="Incident Response Glossary by Spike.sh"/>
 
 # Incident Response Glossary
-
 This is the largest Incident Response Glossary with 500+ terms explained. We built this glossary because we often found ourselves explaining the same terms to new teammates, and we wanted a single source of truth for anyone working in ops.
 
 Demo → [spike.sh/glossary](https://spike.sh/glossary)
@@ -116,6 +115,7 @@ The built site will be in the `_site` directory.
 ├── package.json            
 └── README.md               
 ```
+
 
 ### Customization
 - Sass: `src/assets/scss/`
