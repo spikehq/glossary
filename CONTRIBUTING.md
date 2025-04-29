@@ -1,6 +1,6 @@
 # Glossary Content Guide
 
-This comprehensive guide provides instructions on how to create and format glossary content, highlighting important information, and connecting related terms.
+This guide will help you get started on how to create and format glossary content, highlighting important information, and connecting related terms.
 
 ## Table of Contents
 - [Creating a New Term](#creating-a-new-term)
@@ -20,18 +20,18 @@ This comprehensive guide provides instructions on how to create and format gloss
 To add a new term to the glossary, create a new markdown file in the `src/` directory. 
 The filename should be the lowercase, hyphenated version of the term (e.g., `incident-management.md`).
 
-You can copy the template file (`documentation/TEMPLATE.md`) as a starting point.
+You can copy the template file [TEMPLATE.md](TEMPLATE.md) as a starting point.
 
 ## Front Matter Structure
 
 The front matter (the section between `---` at the top of the file) contains metadata about your term:
-
-- **term**: The name of the term as it should appear in headings and titles
-- **excerpt**: A short description (50-60 words) that appears in term listings and search results
-- **featured** (optional): Set to `true` to display this term on the home page
-- **featuredHeading** (optional): Custom heading to display when the term is featured
-- **related** (optional): List of slugs for related terms (these must match the filenames of other terms without the `.md` extension)
-
+```
+- term: The name of the term as it should appear in headings and titles
+- excerpt: A short description (50-60 words) that appears in term listings and search results
+- featured (optional): Set to `true` to display this term on the home page
+- featuredHeading (optional): Custom heading to display when the term is featured
+- related (optional): List of slugs for related terms (these must match the filenames of other terms without the `.md` extension)
+```
 Example front matter:
 ```yaml
 ---
@@ -56,6 +56,34 @@ Each term should follow a consistent structure with these sections:
 3. **Example Of [Term]**: Share a practical, real-world example
 
 You can add additional sections if needed, but these three are required for consistency.
+
+### END RESULT
+
+```markdown
+---
+term: Term Name
+excerpt: A short description of the term.
+featured: true|false
+featuredHeading: Optional heading to display when featured
+related:
+  - name: Name of related term
+    slug: related-term-slug
+---
+
+## What Is [Term Name]
+
+Detailed explanation of the term...
+
+## Why Is [Term Name] Important
+
+Why this term matters...
+
+## Example Of [Term Name]
+
+Real-world example...
+```
+
+---
 
 ## Highlighting and Featuring Content
 
@@ -99,8 +127,8 @@ The slugs must match the filenames of other terms (without the `.md` extension).
 When adding related terms:
 
 1. **Keep the list focused** - Include 2-5 closely related terms, not every possible connection
-2. **Ensure bidirectional relationships** - If Term A relates to Term B, Term B should typically also relate to Term A
-3. **Consider user journeys** - What terms would a user want to explore next after reading this entry?
+2. **Check for bidirectional relationships** - If Term A relates to Term B, Term B should typically also relate to Term A
+3. **Consider reader journeys** - What terms would a reader want to explore next after reading this entry?
 4. **Include a mix of relationship types** - See the next section
 5. **Verify that all slugs exist** - Only link to terms that have been created
 6. **Update relationships when adding new terms** - When creating a new term, update related terms to reference it

@@ -1,16 +1,21 @@
-# Spike.sh Glossary with 11ty and Sass
+<img src="hero.png" alt="Incident Response Glossary by Spike.sh"/>
 
-A glossary website built with 11ty (Eleventy), Handlebars templating, Sass for styling, and Markdown for content.
+# Incident Response Glossary
+
+This is the largest Incident Response Glossary with 500+ terms explained. We built this glossary because we often found ourselves explaining the same terms to new teammates, and we wanted a single source of truth for anyone working in ops.
+
+Demo → [spike.sh/glossary](https://spike.sh/glossary)
+
+Want to suggest a new term or improve existing ones? See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Features
 
 - Responsive design
-- Sass-based modular CSS architecture
 - Markdown support for term definitions
 - Alphabetical filtering of glossary terms
-- Featured terms highlighting on the home page
-- Related terms recommendations
 - Easy to add new terms through markdown files
+
+---
 
 ## Getting Started
 
@@ -22,24 +27,17 @@ A glossary website built with 11ty (Eleventy), Handlebars templating, Sass for s
 ### Installation
 
 1. Clone this repository
-2. Install dependencies:
-
-```bash
-npm install
-```
+2. Install dependencies with `npm install` or `yarn`
 
 ### Development
 
-Start the development server with Sass compilation:
+Start the development server with automatic Sass compilation when files change:
 
 ```bash
 npm run dev
 ```
-
-For the best development experience with automatic Sass compilation when files change:
-
 ```bash
-npm run dev:watch
+yarn run dev
 ```
 
 Or you can run Sass compilation and the development server separately:
@@ -78,56 +76,13 @@ The built site will be in the `_site` directory.
 │   │       ├── components/ # Component-specific styles
 │   │       └── layout/     # Layout styles
 │   ├── data/               # Global data files
-│   ├──            # Glossary term markdown files
+│   ├──            # +++  Glossary term markdown files   +++
 │   ├── index.hbs           # Home page
 │   └── glossary.hbs        # Glossary list page
 ├── .eleventy.js            # Eleventy configuration
 ├── package.json            # Dependencies and scripts
 └── README.md               # This file
 ```
-
-## Creating Glossary Terms
-
-To add a new term to the glossary, create a new markdown file in the `src/` directory. Use the following template:
-
-```markdown
----
-term: Term Name
-excerpt: A short description of the term.
-featured: true|false
-featuredHeading: Optional heading to display when featured
-related:
-  - name: Name of related term
-    slug: related-term-slug
----
-
-## What Is [Term Name]
-
-Detailed explanation of the term...
-
-## Why Is [Term Name] Important
-
-Why this term matters...
-
-## Example Of [Term Name]
-
-Real-world example...
-```
-
-### Front Matter Explanation:
-
-- `term`: The name of the term as it should appear in headings and titles
-- `excerpt`: A short description that appears in term listings
-- `featured`: Set to `true` to display on the home page
-- `featuredHeading`: Optional custom heading to display when the term is featured
-- `related`: List of related term slugs (filenames without the `.md` extension)
-
-### Detailed Documentation
-
-For detailed guidelines on creating and formatting content, please refer to:
-
-- [Glossary Content Guide](./docs/GLOSSARY_CONTENT_GUIDE.md) - Comprehensive guide for writing glossary entries, highlighting content, and connecting related terms
-- [Template File](./docs/TEMPLATE.md) - Ready-to-use template for new glossary entries
 
 ## Customization
 
@@ -138,6 +93,7 @@ For detailed guidelines on creating and formatting content, please refer to:
 - **Layouts**: Modify templates in `src/_includes/layouts/`
 - **Global Data**: Update site-wide data in `src/data/site.js`
 - **Configuration**: Adjust settings in `.eleventy.js`
+
 
 ## Alphabetical Filtering
 
@@ -159,3 +115,14 @@ All glossary terms are written in Markdown, which allows for rich formatting inc
 - Images
 
 This makes it easy to create structured and well-formatted glossary entries.
+
+# Thank You 🙏
+Thanks for checking out the Incident Response Glossary!
+
+This project is a small way for us at Spike.sh to give back to the DevOps and SRE community.
+
+If you find it useful, feel free to share it, contribute, or just explore and learn.
+
+Every term helps someone build more reliable systems — and that’s what we’re here for.
+
+Happy learning!
