@@ -53,21 +53,18 @@ $(document).ready(function() {
     }
   }
   
-  // Debug output for card links
-  const $cardLinks = $('.glossary-card .card-link');
-  
-  if ($cardLinks.length > 0) {
-    console.log('Found card links:', $cardLinks.length);
-    
-    $cardLinks.each(function() {
-      console.log('Card link:', $(this).attr('href'), 'Slug:', $(this).data('slug'));
-    });
-  }
-  
   // Get all filter links
   const $filterLinks = $('.alphabet-filter .letter-nav a');
   // Get search input element reference for later use
   const $searchInput = $('#glossary-search');
+  const $mobileSearchInput = $('#mobile-glossary-search');
+
+  $mobileSearchInput.on('input', function() {
+    const searchTerm = $(this).val().toLowerCase().trim();
+
+    $searchInput.val(searchTerm);
+    $searchInput.trigger('input');
+  })
   
   // Improved sticky header functionality
   const $alphabetFilter = $('.alphabet-filter');
@@ -355,10 +352,10 @@ $(document).ready(function() {
         const $card = $(this);
         const $cardColumn = $card.closest('.col-lg-4');
         const $letterGroup = $card.closest('.letter-group');
-        const cardTitle = $card.find('h2').text().toLowerCase();
+        const cardTitle = $card.find('h3').text().toLowerCase();
         const cardContent = $card.find('p').text().toLowerCase();
-        
-        if (cardTitle.includes(searchTerm) || cardContent.includes(searchTerm)) {
+
+        if (cardTitle.includes(searchTerm)) {
           // Show matching cards
           $cardColumn.show();
           totalVisibleCards++;
