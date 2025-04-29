@@ -2,19 +2,20 @@
 
 # Incident Response Glossary
 
-A glossary website built with 11ty (Eleventy), Handlebars templating, SASS for styling, and Markdown for content.
+This is the largest Incident Response Glossary with 500+ terms explained. We built this glossary because we often found ourselves explaining the same terms to new teammates, and we wanted a single source of truth for anyone working in ops.
+
+Demo → [spike.sh/glossary](https://spike.sh/glossary)
 
 Want to suggest a new term or improve existing ones? See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Features
 
 - Responsive design
-- Sass-based modular CSS architecture
 - Markdown support for term definitions
 - Alphabetical filtering of glossary terms
-- Featured terms highlighting on the home page
-- Related terms recommendations
 - Easy to add new terms through markdown files
+
+---
 
 ## Getting Started
 
