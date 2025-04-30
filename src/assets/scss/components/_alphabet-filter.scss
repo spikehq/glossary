@@ -166,10 +166,16 @@
   }
 
 // ipads and tablets
-  @media (min-width: 768px) and (max-width: 1024px) {
+  @media (min-width: 768px) and (max-width: 920px) {
     a {
       padding: 1rem 0.1rem; /* 8px 4px in rem */
-      margin-left: 0.125rem; /* 5px in rem */
+      margin-left: 0.4rem; /* 5px in rem */
+    }
+  }
+  @media (min-width: 920px) and (max-width: 1024px) {
+    a {
+      padding: 1rem 0.1rem; /* 8px 4px in rem */
+      margin-left: 0.5rem; /* 5px in rem */
     }
   }
   
