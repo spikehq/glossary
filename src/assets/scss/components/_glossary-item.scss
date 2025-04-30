@@ -21,6 +21,13 @@
     line-height: 1.5;
     width: 70%;
   }
+
+  .glossary-item-excerpt {
+    width: 70%;
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
 }
 
 // Individual glossary item page
