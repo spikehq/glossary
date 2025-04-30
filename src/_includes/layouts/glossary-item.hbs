@@ -24,7 +24,7 @@ layout: layouts/base.hbs
             </div>
             <div class="letter-nav" data-active-letter="{{firstLetter}}">
                 {{#each collections.alphabetList}}
-                <a href="#{{this}}" data-letter="{{this}}">{{this}}</a>
+                    <a href="/glossary/#{{this}}" data-letter="{{this}}">{{this}}</a>
                 {{/each}}
             </div>
         </div>

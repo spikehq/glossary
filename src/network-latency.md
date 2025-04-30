@@ -1,6 +1,6 @@
 ---
-excerpt: 
-term:
+excerpt: Network latency is the time delay between sending and receiving data across a network.
+term: Network Latency
 ---
 ## What Is Network Latency
 
