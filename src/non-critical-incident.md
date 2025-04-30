@@ -1,3 +1,8 @@
+---
+excerpt: A non-critical incident is an event that disrupts normal business operations but doesn't significantly impact core services or large numbers of users.
+term: Non-Critical Incident
+---
+
 ## What Is Non-Critical Incident
 
 A non-critical incident is an event that disrupts normal business operations but doesn't significantly impact core services or large numbers of users. These incidents have minimal urgency and typically allow for standard resolution timeframes without requiring immediate attention or emergency response procedures.
