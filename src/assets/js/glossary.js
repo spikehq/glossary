@@ -244,20 +244,17 @@ $(document).ready(function() {
   if ($filterLinks && $filterLinks.length > 0) {
     // Add click event to filter links
     $filterLinks.on('click', function(e) {
-      
+      e.preventDefault();
       // Check if we're on a glossary item page
       const isGlossaryItemPage = $('.glossary-item').length > 0;
       const href = $(this).attr('href');
       
       // If we're on a glossary item page, navigate to the main glossary with the hash
       if (isGlossaryItemPage) {
-        console.log('isGlossaryItemPage');
-        // // The href might be /#letter or #letter, so handle both cases
-        // const letterPart = extractHash(href) || '';
-        // window.location.href = '/glossary' + (letterPart !== 'all' ? '#' + letterPart : '');
-        // return;
-      } else {
-        e.preventDefault();
+        // The href might be /#letter or #letter, so handle both cases
+        const letterPart = extractHash(href) || '';
+        window.location.href = 'https://spike.sh/glossary' + (letterPart !== 'all' ? '#' + letterPart : '');
+        return;
       }
       
       const letter = extractHash(href) || '';
