@@ -254,7 +254,7 @@ $(document).ready(function() {
       if (isGlossaryItemPage) {
         // The href might be /#letter or #letter, so handle both cases
         const letterPart = extractHash(href) || '';
-        window.location.href = '/' + (letterPart !== 'all' ? '#' + letterPart : '');
+        window.location.href = '/glossary' + (letterPart !== 'all' ? '#' + letterPart : '');
         return;
       }
       

@@ -39,3 +39,4 @@ temp/
 .cache/
 .DS_Store
 Thumbs.db
+dump.rdb
