@@ -1,11 +1,12 @@
 {
   "name": "glossary",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Spike.sh glossary with Sass support",
   "main": "index.js",
   "scripts": {
     "start": "eleventy --serve",
-    "build": "npm run sass && eleventy",
+    "sitemap": "node generate-sitemap.js",
+    "build": "npm run sass && eleventy && npm run sitemap",
     "clean": "rm -rf _site",
     "sass": "sass src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
     "sass:watch": "sass --watch src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
