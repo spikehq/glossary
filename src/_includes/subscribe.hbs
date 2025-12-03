@@ -4,13 +4,18 @@
 <div class="newsletter-form-container">
     <form class="newsletter-form" action="https://app.loops.so/api/newsletter-form/clmbi4htj0022l10nmkpz5yey"
         method="POST"
-        style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;"><input
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+        <input
             class="newsletter-form-input" name="newsletter-form-input" type="email" placeholder="you@example.com"
             required=""
-            style="font-family: Inter, sans-serif; color: rgb(32, 32, 32); font-size: 16px; margin: 0px 0px 10px; width: 100%; max-width: 300px; min-width: 100px; background: rgb(255, 255, 255); border: 1px solid rgb(209, 213, 219); box-sizing: border-box; box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px; border-radius: 6px; padding: 8px 12px;"><button
+            style="font-family: Inter, sans-serif; color: rgb(32, 32, 32); font-size: 16px; margin: 0px 0px 10px; width: 100%; max-width: 300px; min-width: 100px; background: rgb(255, 255, 255); border: 1px solid rgb(209, 213, 219); box-sizing: border-box; box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px; border-radius: 6px; padding: 8px 12px;">
+            <input type="hidden" name="source" value="Glossary">
+            <input type="hidden" name="userGroup" value="Glossary">
+            <button
             type="submit" class="newsletter-form-button"
             style="background: rgb(22, 73, 255); font-size: 16px; color: rgb(255, 249, 249); font-family: Inter, sans-serif; display: flex; width: 100%; max-width: 300px; white-space: normal; height: 38px; align-items: center; justify-content: center; flex-direction: row; padding: 9px 17px; box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px; border-radius: 6px; text-align: center; font-style: normal; font-weight: 500; line-height: 20px; border: none; cursor: pointer;">Subscribe
-            for more such content</button><button type="button" class="newsletter-loading-button"
+            for more such content</button>
+            <button type="button" class="newsletter-loading-button"
             style="background: rgb(22, 73, 255); font-size: 16px; color: rgb(255, 249, 249); font-family: Inter, sans-serif; display: none; width: 100%; max-width: 300px; white-space: normal; height: 38px; align-items: center; justify-content: center; flex-direction: row; padding: 9px 17px; box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px; border-radius: 6px; text-align: center; font-style: normal; font-weight: 500; line-height: 20px; border: none; cursor: pointer;">Please
             wait...</button></form>
     <div class="newsletter-success" style="display: none; align-items: center; justify-content: center; width: 100%;">
@@ -66,7 +71,7 @@
         submitButton.style.display = "none";
         loadingButton.style.display = "flex";
 
-        var formBody = "userGroup=&mailingLists=&email="
+        var formBody = "source=Glossary&userGroup=Glossary&email="
             + encodeURIComponent(formInput.value)
             ;
 
