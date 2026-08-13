@@ -1,3 +1,8 @@
+---
+excerpt: Cyber Physical Systems Incidents are events that affect systems where digital and physical components interact. These incidents can impact both digital operations and physical infrastructure, potentially causing real-world consequences.
+term: Cyber Physical Systems Incidents
+---
+
 ## What Are Cyber Physical Systems Incidents
 
 Cyber Physical Systems Incidents are events that affect systems where digital and physical components interact. These incidents can impact both digital operations and physical infrastructure, potentially causing real-world consequences.
