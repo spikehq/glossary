@@ -1,3 +1,8 @@
+---
+excerpt: A critical service is any system or application essential for business operations. If it fails, it causes major disruption or financial loss.
+term: Critical Service
+---
+
 ## What Is Critical Service
 
 A critical service is any system or application essential for business operations. If it fails, it causes major disruption or financial loss.
