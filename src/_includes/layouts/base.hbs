@@ -7,7 +7,7 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="Spike.sh">
     <meta name="copyright" content="Spike.sh">
-    <link rel="canonical" href="https://spike.sh/{{#if term}}glossary/{{page.fileSlug}}{{else}}glossary/{{/if}}">
+    <link rel="canonical" href="https://spike.sh/{{#if term}}glossary/{{page.fileSlug}}/{{else}}glossary/{{/if}}">
 
     {{!-- Phone tags --}}
     <link rel="icon" type="image/png" sizes="24x24" href="https://cdn.spike.sh/logos/spike-badge-icon.png">
@@ -47,7 +47,7 @@
         <!-- Open Graph / Facebook -->
         <meta property="og:title" content="{{term}} in Incident Response Explained">
         <meta property="og:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
-        <meta property="og:url" content="https://spike.sh/{{page.fileSlug}}">
+        <meta property="og:url" content="https://spike.sh/glossary/{{page.fileSlug}}/">
         <meta property="og:type" content="article">
         <meta property="og:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
         <meta property="og:image:width" content="1200">
@@ -55,7 +55,7 @@
 
         {{!-- Twitter --}}
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:url" content="https://spike.sh/{{page.fileSlug}}">
+        <meta name="twitter:url" content="https://spike.sh/glossary/{{page.fileSlug}}/">
         <meta name="twitter:title" content="{{term}} in Incident Response Explained">
         <meta name="twitter:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
         <meta name="twitter:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
@@ -152,11 +152,6 @@
         "name": "Incident Response Glossary",
         "description": "A curated collection of 500+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps.",
         "url": "https://spike.sh/glossary",
-        "about": {
-            "@type": "Thing",
-            "name": "Incident Response",
-            "description": "The process of identifying, analyzing, and responding to incidents in IT systems and services."
-        },
         "numberOfItems": 500
     }
     </script>
