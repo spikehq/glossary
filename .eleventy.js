@@ -66,6 +66,15 @@ const FONT_FACES = [
     output: "assets/fonts/geist-mono-latin.woff2",
     weights: { min: 400, max: 500 },
   },
+  {
+    // Monoton — the striped display face, used for exactly one thing: the
+    // big A–Z letter beside each section. Static (single weight), so no
+    // variation axes to clamp, and subset to the 26 letters it renders
+    // rather than the whole site's character set.
+    source: "node_modules/@fontsource/monoton/files/monoton-latin-400-normal.woff2",
+    output: "assets/fonts/monoton-latin.woff2",
+    characters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  },
 ];
 
 // Always kept, whatever the content happens to use today.
@@ -103,10 +112,11 @@ async function buildFonts(outputDir) {
 
   for (const face of FONT_FACES) {
     const source = fs.readFileSync(path.join(__dirname, face.source));
-    const subset = await subsetFont(source, characters, {
-      targetFormat: "woff2",
-      variationAxes: { wght: face.weights },
-    });
+    const options = { targetFormat: "woff2" };
+    // Static faces have no axes to clamp; asking for a wght range on one
+    // throws rather than being ignored.
+    if (face.weights) options.variationAxes = { wght: face.weights };
+    const subset = await subsetFont(source, face.characters || characters, options);
     fs.writeFileSync(path.join(__dirname, face.output.replace(/^/, outputDir + "/")), subset);
   }
 
@@ -147,7 +157,9 @@ module.exports = function (eleventyConfig) {
   // Subsetting needs the rendered HTML, so it runs once the pages exist.
   eleventyConfig.on("eleventy.after", async ({ dir }) => {
     const count = await buildFonts(dir.output);
-    console.log(`[glossary] subset 3 font faces to ${count} characters`);
+    console.log(
+      `[glossary] subset ${FONT_FACES.length} font faces to ${count} characters`
+    );
   });
 
   eleventyConfig.addGlobalData("inlineCss", () => buildCss());

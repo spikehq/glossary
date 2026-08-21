@@ -39,6 +39,15 @@
     font-weight: 400 500;
     src: url(__BASE__/assets/fonts/geist-mono-latin.woff2) format('woff2-variations');
 }
+/* Display face for the big A–Z letters only, subset at build time to those
+   26 glyphs. Static single weight, so a plain woff2 rather than a variation. */
+@font-face {
+    font-family: 'Monoton';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url(__BASE__/assets/fonts/monoton-latin.woff2) format('woff2');
+}
 
 /* --------------------------------------------------------------------------
    2. Token hardening (light mode only)
@@ -60,7 +69,12 @@
 
 :root {
     --header-h: 3.5rem; /* 56px */
-    --toolbar-h: 4.5rem; /* 72px — the sticky bar's rendered height           */
+    /* Fallback only — glossary.js overwrites this with the sticky bar's real
+       rendered height, which varies by page (the index's two-row toolbar vs
+       a term page's slim one) and by how far the A–Z strip wraps. Anchor
+       offsets below depend on it being accurate, or headings land tucked
+       under the bar. */
+    --toolbar-h: 4.5rem;
     --page-pad: var(--space-4);
 
     /* Minimum interactive height. 48px on touch (WCAG 2.5.5 / Lighthouse tap
@@ -422,7 +436,11 @@ kbd.key {
         position: fixed;
         inset-inline: 0;
     }
-    #site-header {
+    /* On :root, not #site-header: .toolbar-wrap (elsewhere in the page, not
+       a descendant of the header) also reads --header-height to stay flush
+       against it, and an element-scoped override wouldn't reach outside the
+       header's own subtree. */
+    :root {
         --header-height: calc(4.5rem - 0.625rem * var(--header-progress));
     }
 }
@@ -475,8 +493,13 @@ kbd.key {
 
 #site-header .site-nav {
     margin-inline: auto;
-    max-width: 64rem;
-    height: 4.5rem;
+    max-width: var(--container-max);
+    /* Tracks the same shrinking value as the header box itself (not a fixed
+       4.5rem) — otherwise this row keeps rendering at its full height and
+       visibly overflows the now-shorter header once compaction kicks in,
+       leaving the toolbar's flush-under-the-header offset floating short
+       of where the nav content actually ends. */
+    height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -509,25 +532,16 @@ kbd.key {
     align-items: center;
     gap: var(--space-2);
 }
-#site-logo-light,
-#site-logo-dark {
+/* One wordmark asset serves both themes (no separate light/dark artwork
+   exists yet) — it just stays put across the light/dark switch instead of
+   cross-fading between a shown and a permanently-invisible twin. */
+#site-logo {
     height: 1.5rem;
     width: auto;
     transform-origin: left center;
-    transition: opacity 200ms;
-}
-#site-logo-dark {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-}
-#site-logo-light.opacity-0,
-#site-logo-dark.opacity-0 {
-    opacity: 0;
 }
 @media (min-width: 64rem) {
-    #site-logo-light,
-    #site-logo-dark {
+    #site-logo {
         transform: translateY(calc(-0.3125rem * var(--header-progress)))
             scale(calc(1 - 0.167 * var(--header-progress)));
         will-change: transform;
@@ -555,7 +569,7 @@ kbd.key {
        the full header width, not just this trigger cluster. */
     display: flex;
     align-items: center;
-    height: 4.5rem;
+    height: var(--header-height); /* tracks the same shrink as .site-nav */
 }
 .mega-dropdown-triggers {
     display: flex;
@@ -622,7 +636,7 @@ kbd.key {
 .mega-panel {
     pointer-events: auto;
     margin-inline: auto;
-    max-width: 64rem;
+    max-width: var(--container-max);
     overflow: hidden;
     border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
     border: 1px solid var(--color-border-default);
@@ -1001,7 +1015,7 @@ kbd.key {
 }
 .mobile-menu-inner {
     margin-inline: auto;
-    max-width: 64rem;
+    max-width: var(--container-max);
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -1258,7 +1272,7 @@ main > .page:first-child {
     font-weight: var(--font-weight-bold);
     line-height: 1.08;
     letter-spacing: -0.02em;
-    color: var(--link); /* --spike-blue in light, lifted for AA in dark */
+    color: var(--heading-foreground); /* near-black in light, near-white in dark */
 }
 .hero__sub {
     font-family: var(--font-heading);
@@ -1351,8 +1365,13 @@ main > .page:first-child {
     position: sticky;
     top: var(--header-height);
     z-index: 20;
-    padding-block: var(--space-3);
-    margin-block: var(--space-6) var(--space-4);
+    /* No padding-top and no margin-top. The sticky offset lands this
+       wrapper's border edge flush under the header, so any top padding
+       would push the visible card down by that much and read as a gap;
+       any top margin would offset the stick point itself. Spacing above
+       the bar before it sticks comes from the hero's padding-bottom. */
+    padding-block: 0;
+    margin-block: 0 var(--space-4);
     background: color-mix(in srgb, var(--background) 88%, transparent);
     backdrop-filter: blur(8px);
 }
@@ -1573,9 +1592,10 @@ main > .page:first-child {
     box-shadow: var(--shadow-sm);
     scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
     transition:
-        background-color var(--duration-hover) var(--ease-out),
-        border-color var(--duration-hover) var(--ease-out),
-        transform var(--duration-hover) var(--ease-out);
+        background-color 180ms var(--ease-out),
+        border-color 180ms var(--ease-out),
+        box-shadow 180ms var(--ease-out),
+        transform 180ms var(--ease-out);
 }
 .term-card h3 {
     font-size: var(--text-base);
@@ -1617,26 +1637,47 @@ main > .page:first-child {
 .terms .term-card p {
     display: none;
 }
-.term-card:hover {
-    border-color: var(--ring);
-    transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+    .letter:hover {
+        content-visibility: visible;
+    }
+    .terms > li:hover {
+        position: relative;
+        z-index: 1;
+        content-visibility: visible;
+    }
+    .term-card:hover {
+        background: color-mix(in srgb, var(--card) 94%, var(--accent-foreground));
+        border-color: color-mix(in srgb, var(--ring) 65%, var(--border));
+        box-shadow:
+            0 8px 20px -12px rgb(0 0 0 / 0.35),
+            0 3px 8px -6px rgb(0 0 0 / 0.2);
+        transform: translateY(-2px);
+    }
 }
 
-/* The keyboard cursor. A tint plus a solid edge marker — never colour alone,
-   and neutral (--primary), because blue is reserved for the CTA. */
+/* Release paint containment around the keyboard cursor so its ring can draw
+   outside both deferred-rendering boundaries. */
+.letter:focus-within,
+.terms > li:focus-within {
+    content-visibility: visible;
+}
+.terms > li:focus-within {
+    position: relative;
+    z-index: 1;
+}
+
+/* One cohesive keyboard cursor: the component-level ring replaces the global
+   outline, matching the card radius instead of stacking multiple indicators. */
 .term-card.is-active {
     background: var(--accent);
-    border-color: var(--primary);
+    border-color: var(--ring);
+    box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--ring) 25%, transparent),
+        var(--shadow-sm);
 }
-.term-card.is-active::before {
-    content: '';
-    position: absolute;
-    left: -1px;
-    top: 0.75rem;
-    bottom: 0.75rem;
-    width: 3px;
-    border-radius: var(--radius-full);
-    background: var(--primary);
+.term-card:focus-visible {
+    outline: none;
 }
 
 .empty-state {
@@ -2038,6 +2079,171 @@ main > .page:first-child {
 /* --------------------------------------------------------------------------
    13. Responsive
    -------------------------------------------------------------------------- */
+@media (max-width: 39.999rem) {
+    :root {
+        --page-pad: 0.875rem;
+    }
+
+    #site-header,
+    #site-header .site-nav {
+        height: 3.5rem;
+    }
+    #site-header .site-nav {
+        padding-inline: var(--page-pad);
+    }
+    #site-logo {
+        height: 1.25rem;
+    }
+    .mobile-menu-toggle {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+
+    .hero {
+        --swoosh: 175% 78% at 124% 154%;
+        padding-block: var(--space-8) var(--space-10);
+        border-end-start-radius: 1.5rem;
+        border-end-end-radius: 1.5rem;
+    }
+    .hero__inner {
+        gap: var(--space-2);
+    }
+    .hero h1 {
+        max-width: 12ch;
+        font-size: 2.25rem;
+        line-height: 1.02;
+        letter-spacing: 0;
+    }
+    .hero__sub {
+        font-size: var(--text-base);
+        line-height: var(--leading-tight);
+    }
+    .hero__lede {
+        display: none;
+    }
+
+    .toolbar-wrap {
+        top: 3.5rem;
+        margin-bottom: var(--space-5);
+        background: color-mix(in srgb, var(--background) 94%, transparent);
+        backdrop-filter: blur(16px) saturate(140%);
+    }
+    .toolbar-wrap > .page {
+        padding-inline: 0;
+    }
+    .toolbar {
+        gap: var(--space-2);
+        padding: var(--space-3) var(--page-pad);
+        border-inline: 0;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        box-shadow: 0 8px 24px -20px rgb(0 0 0 / 0.45);
+    }
+    .toolbar__top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+    }
+    .search {
+        order: -2;
+        flex-basis: auto;
+        width: 100%;
+    }
+    .search input {
+        min-height: 2.75rem;
+        border-radius: var(--radius-lg);
+        background: color-mix(in srgb, var(--background) 72%, var(--card));
+        font-size: var(--text-sm);
+    }
+    .search__hint {
+        display: none;
+    }
+    .az {
+        order: -1;
+        flex-basis: auto;
+    }
+    .az__list {
+        display: grid;
+        grid-template-columns: repeat(13, minmax(0, 1fr));
+        gap: 2px;
+        overflow: visible;
+    }
+    .az__list > li {
+        min-width: 0;
+    }
+    .az__list a,
+    .az__list > li > span {
+        min-width: 0;
+        min-height: 2rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.6875rem;
+    }
+
+    .letters {
+        gap: var(--space-10);
+    }
+    .letter {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        gap: var(--space-3);
+        contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.5rem);
+    }
+    .letter__head {
+        position: sticky;
+        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-3));
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        margin: 0;
+        padding-top: var(--space-1);
+    }
+    .letter__head h2 {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-md);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        font-size: var(--text-lg);
+        line-height: 1;
+    }
+    .letter__count {
+        font-size: 0.625rem;
+        text-align: center;
+        line-height: 1.1;
+    }
+    .terms {
+        gap: var(--space-2);
+        min-width: 0;
+    }
+    .terms .term-card {
+        min-height: 4rem;
+        height: auto;
+        padding: 0.75rem 2.5rem 0.75rem var(--space-3);
+        border-radius: var(--radius-lg);
+        box-shadow: none;
+    }
+    .terms .term-card::after {
+        content: '›';
+        position: absolute;
+        right: var(--space-3);
+        top: 50%;
+        transform: translateY(-52%);
+        color: var(--muted-foreground);
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .terms .term-card h3 {
+        font-size: 0.875rem;
+        line-height: 1.25;
+    }
+    .faq {
+        padding: var(--space-5);
+    }
+}
+
 @media (min-width: 40rem) {
     :root {
         --page-pad: var(--space-6);
@@ -2127,19 +2333,32 @@ main > .page:first-child {
     }
     .letter {
         display: grid;
-        grid-template-columns: 4rem 1fr;
+        grid-template-columns: 7rem 1fr;
         gap: var(--space-6);
-        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 3.5rem);
+        /* Three columns, so a section is ceil(n/3) rows of a 9rem card plus a
+           0.75rem gap — 3.25rem of height per term, not 3.5rem. That quarter
+           of a rem is per *term*, so it compounded into thousands of pixels
+           of overshoot across the alphabet and threw every jump off. */
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 3.25rem);
     }
     .letter__head {
         display: block;
         position: sticky;
         top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
         margin-bottom: 0;
+        /* Without this the heading is a stretched grid item filling the whole
+           row, so it has no slack to travel in and sticky does nothing. */
+        align-self: start;
     }
     .letter__head h2 {
-        font-size: var(--text-4xl);
-        color: var(--muted-foreground);
+        font-family: 'Monoton', var(--font-heading);
+        /* Monoton is a striped display face — it only reads as one at size,
+           and it ships a single weight, so no bold to ask for. */
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 1.1;
+        color: var(--heading-foreground);
     }
     .term-layout {
         grid-template-columns: minmax(0, 1fr) 20rem;
