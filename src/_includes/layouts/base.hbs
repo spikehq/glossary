@@ -4,213 +4,161 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fcfbf9" id="theme-color">
+
+    <title>{{pageTitle}}</title>
+    <meta name="description" content="{{metaDescription}}">
+    <link rel="canonical" href="{{pageUrl}}">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Spike.sh">
-    <meta name="copyright" content="Spike.sh">
-    <link rel="canonical" href="https://spike.sh/{{#if term}}glossary/{{page.fileSlug}}/{{else}}glossary/{{/if}}">
 
-    {{!-- Phone tags --}}
-    <link rel="icon" type="image/png" sizes="24x24" href="https://cdn.spike.sh/logos/spike-badge-icon.png">
-    <link rel="apple-touch-icon" href="https://cdn.spike.sh/logos/spike-badge-180.png">
-    <meta name="mobile-web-app-capable" content="yes" />
-    <!--[if IE]>
-        <p>Spike works best on modern browsers. Download <a href="https://www.google.com/chrome/">Google Chrome</a> or <a href="https://brave.com/">Brave</a> for the best experience.</p>
-    <![endif]-->
-
-    <!-- Square Windows tiles -->
-    <meta name="msapplication-TileImage" content="https://cdn.spike.sh/logos/spike-badge.png">
-    <meta name="msapplication-square70x70logo" content="https://cdn.spike.sh/logos/spike-badge-70.png">
-    <meta name="msapplication-square150x150logo" content="https://cdn.spike.sh/logos/spike-badge-150.png">
-    <meta name="msapplication-square310x310logo" content="https://cdn.spike.sh/logos/spike-badge-310.png">
-    <!-- Rectangular Windows tile -->
-    <meta name="msapplication-wide310x150logo" content="https://cdn.spike.sh/logos/spike-logo-525x150.png">
-    <!-- Windows tile theme color -->
-    <meta name="msapplication-TileColor" content="#2e2e2e">
-    <meta name="msapplication-TileColor" content="#f2f7fc">
-
-    <!-- Site Manifest -->
-    <link rel="manifest" href="/site.webmanifest">
-
-
-    {{#if term}}
-        <title>{{term}} in Incident Response Explained</title>
-    {{else}}
-        <title>Incident Response Glossary: 500+ Key Terms Explained | Spike</title>
-    {{/if}}
-
-    {{!-- SEO --}}
-    {{#if term}}
-        <meta name="title" content="{{term}} in Incident Response Explained">
-        <meta name="description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
-        <meta name="keywords" content="{{term}}, Spike, Glossary, Incident Response, Incident Management, DevOps, Site Reliability Engineering, SRE, On-call Management, Incident Management Glossary, DevOps Terms, SRE Terms">
-
-        <!-- Open Graph / Facebook -->
-        <meta property="og:title" content="{{term}} in Incident Response Explained">
-        <meta property="og:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
-        <meta property="og:url" content="https://spike.sh/glossary/{{page.fileSlug}}/">
-        <meta property="og:type" content="article">
-        <meta property="og:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-
-        {{!-- Twitter --}}
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:url" content="https://spike.sh/glossary/{{page.fileSlug}}/">
-        <meta name="twitter:title" content="{{term}} in Incident Response Explained">
-        <meta name="twitter:description" content="Learn what {{term}} means in incident response, why it matters, and how it impacts teams.">
-        <meta name="twitter:image" content="https://cdn.spike.sh/glossary/{{page.fileSlug}}.png">
-    {{else}}
-        <meta name="title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
-        <meta name="description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
-        <meta name="keywords" content="Spike, Glossary, Incident Response, Incident Management, DevOps, Site Reliability Engineering, SRE, On-call Management, Incident Management Glossary, DevOps Terms, SRE Terms">
-
-        <!-- Open Graph / Facebook -->
-        <meta property="og:title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
-        <meta property="og:description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
-        <meta property="og:url" content="https://spike.sh/glossary">
-        <meta property="og:type" content="article">
-        <meta property="og:image" content="https://cdn.spike.sh/glossary/glossary-default.png">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-
-        {{!-- Twitter --}}
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Incident Response Glossary: 500+ Key Terms Explained | Spike">
-        <meta name="twitter:url" content="https://spike.sh/glossary">
-        <meta name="twitter:description" content="Discover 500+ essential terms for incident response and management. Learn definitions, examples, and best practices.">
-        <meta name="twitter:image" content="https://cdn.spike.sh/glossary/glossary-default.png">
-    {{/if}}
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Monoton&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="https://cdn.spike.sh/website/css/main.min.css" type="text/css">
-    <link rel="stylesheet" href="/assets/css/style.css">
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Spike.sh",
-        "url": "https://spike.sh",
-        "logo": "https://spike.sh/spike-badge-150.png",
-        "description": "Spike.sh is an incident response platform with a goal to help engineering and ops teams stay ahead of incidents with real-time alerts, automated response playbooks, and status pages to communicate with users.",
-        "sameAs": [
-            "https://linkedin.com/company/spike-hq",
-            "https://reddit.com/r/spikesh",
-            "https://www.youtube.com/@SpikeHQ",
-            "https://twitter.com/spikedhq"
-        ]
-    }
+    {{!-- Theme: resolve before first paint so there is no flash and no shift.
+          Also marks the document as script-enabled, which is how JS-only
+          controls (theme toggle, search) unhide themselves. --}}
+    <script>
+        (function () {
+            var e = document.documentElement;
+            e.className += " js";
+            try {
+                var s = localStorage.getItem("spike-theme");
+                if (s ? s === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) {
+                    e.className += " dark";
+                    document.getElementById("theme-color").content = "#161618";
+                }
+            } catch (x) {}
+        })();
     </script>
 
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "url": "https://spike.sh/glossary",
-        "name": "Spike.sh Incident Response Glossary",
-        "description": "A comprehensive glossary of 500+ incident response and management terms, helping teams understand key concepts in incident management, monitoring, on-call response, and DevOps.",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://spike.sh/glossary?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
+    {{!-- Self-hosted variable fonts. Preloaded so the swap happens before
+          first paint rather than shifting text afterwards. --}}
+    <link rel="preload" href="{{site.base}}/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{site.base}}/assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+    {{!-- The whole stylesheet is inlined: it is small enough that a separate
+          request would cost more than it saves, and this leaves the page with
+          zero render-blocking round trips. --}}
+    <style>{{{inlineCss}}}</style>
+
+    <link rel="icon" type="image/png" sizes="24x24" href="{{site.base}}/assets/images/spike-badge-icon.png">
+    <link rel="apple-touch-icon" href="{{site.base}}/assets/images/spike-badge-180.png">
+    <link rel="manifest" href="{{site.base}}/site.webmanifest">
+
+    <meta property="og:site_name" content="Spike">
+    <meta property="og:type" content="{{#if isTerm}}article{{else}}website{{/if}}">
+    <meta property="og:title" content="{{pageTitle}}">
+    <meta property="og:description" content="{{metaDescription}}">
+    <meta property="og:url" content="{{pageUrl}}">
+    <meta property="og:image" content="{{ogImage}}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{#if isTerm}}{{term}} — a term from the Spike incident response glossary{{else}}The Spike incident response glossary{{/if}}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@spikedhq">
+    <meta name="twitter:title" content="{{pageTitle}}">
+    <meta name="twitter:description" content="{{metaDescription}}">
+    <meta name="twitter:image" content="{{ogImage}}">
 
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
+        "@graph": [
             {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://spike.sh"
+                "@type": "Organization",
+                "@id": "https://spike.sh/#organization",
+                "name": "Spike.sh",
+                "url": "https://spike.sh",
+                "logo": "https://spike.sh/spike-badge-150.png",
+                "description": "Spike.sh is an incident response platform that helps engineering and ops teams stay ahead of incidents with real-time alerts, automated response playbooks, and status pages.",
+                "sameAs": [
+                    {{{json site.social.linkedin}}},
+                    {{{json site.social.reddit}}},
+                    {{{json site.social.youtube}}},
+                    {{{json site.social.x}}}
+                ]
             },
             {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Glossary",
-                "item": "https://spike.sh/glossary"
+                "@type": "DefinedTermSet",
+                "@id": {{{json (concat site.url "/#glossary")}}},
+                "name": "Spike Incident Response Glossary",
+                "description": {{{json site.description}}},
+                "url": {{{json (concat site.url "/")}}},
+                "inLanguage": "en",
+                "publisher": { "@id": "https://spike.sh/#organization" }
+            },
+            {{#if isTerm}}
+            {
+                "@type": "DefinedTerm",
+                "@id": {{{json pageUrl}}},
+                "name": {{{json term}}},
+                "description": {{{json excerpt}}},
+                "url": {{{json pageUrl}}},
+                "inDefinedTermSet": { "@id": {{{json (concat site.url "/#glossary")}}} }
+            },
+            {{else}}
+            {
+                "@type": "WebSite",
+                "@id": {{{json (concat site.url "/#website")}}},
+                "url": {{{json (concat site.url "/")}}},
+                "name": "Spike Incident Response Glossary",
+                "publisher": { "@id": "https://spike.sh/#organization" },
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": {{{json (concat site.url "/?q={search_term_string}")}}}
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@type": "FAQPage",
+                "@id": {{{json (concat site.url "/#faq")}}},
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "What is the Incident Response Glossary?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "It's a curated collection of 500+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How can I use this glossary?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "You can browse terms alphabetically, use the search, or explore related terms to learn incident response more effectively."
+                        }
+                    }
+                ]
+            },
+            {{/if}}
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "Spike", "item": "https://spike.sh" },
+                    { "@type": "ListItem", "position": 2, "name": "Glossary", "item": {{{json (concat site.url "/")}}} }{{#if isTerm}},
+                    { "@type": "ListItem", "position": 3, "name": {{{json term}}}, "item": {{{json pageUrl}}} }{{/if}}
+                ]
             }
         ]
     }
     </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "Incident Response Glossary",
-        "description": "A curated collection of 500+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps.",
-        "url": "https://spike.sh/glossary",
-        "numberOfItems": 500
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question", 
-                "name": "What is the Incident Response Glossary?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "It's a curated collection of 500+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How can I use this glossary?", 
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "You can browse terms alphabetically, use the search, or explore related terms to learn incident response more effectively."
-                }
-            }
-        ]
-    }
-    </script>
-
 </head>
 
 <body>
-    {{> header}}
-    <main>
-        <div class="main-container">
-            {{{content}}}
-        </div>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    {{> site-header}}
+
+    <main id="main">
+        {{{content}}}
     </main>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-        crossorigin="anonymous"></script>
-        
-    <!-- bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
-        integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
-        crossorigin="anonymous"></script>
+    {{> site-footer}}
 
-    <!-- Custom JS -->
-    <script src="https://cdn.spike.sh/website/js/app.min.js"></script>
-    <script src="/assets/js/glossary.js"></script>
-    <script src="/assets/js/main.js"></script>
+    <script src="{{site.base}}/assets/js/glossary.js" defer></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 ---
 excerpt: On-call load is the number of incidents, alerts, or pages an on-call engineer receives during their shift.
-term: " On-Call Load"
+term: On-Call Load
 ---
 ## What Is On-Call Load
 

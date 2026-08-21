@@ -1,0 +1,302 @@
+/* ==========================================================================
+   Spike — Central Theme Tokens
+   --------------------------------------------------------------------------
+   Framework-agnostic CSS custom properties for the whole Spike surface area:
+   the dashboard, the marketing site, docs, the glossary, one-off landers.
+   Drop this file in, `@import` it, and consume the variables below. Nothing
+   here depends on Tailwind or shadcn — but the naming mirrors them 1:1 so the
+   dashboard and a plain-CSS marketing page stay in lockstep.
+
+   Source of truth: dashboard `src/index.css`. Keep the two in sync when a
+   token changes. Human-readable spec lives next door in SPIKE-THEME.md.
+
+   Color space: the dashboard is oklch-native (light + dark). Every oklch
+   value below carries an `approx hex` comment so a project that can't use
+   oklch (older tooling, email, some CMS themes) has a safe fallback.
+   ========================================================================== */
+
+:root {
+    /* ----- Brand (the only hard-coded hex you should ever type) ---------- */
+    --spike-blue: #134ed9; /* primary CTAs, logo mark, brand accents        */
+    --spike-blue-hover: #1042b8; /* ~12% darker — hover/active of a blue CTA */
+    --spike-black: #161618; /* heading text (light), dark canvas, logo fill  */
+    --spike-white: #ffffff;
+
+    /* ----- Radius -------------------------------------------------------- */
+    --radius: 0.625rem; /* 10px — the base; everything else derives from it   */
+    --radius-sm: calc(var(--radius) - 4px); /* 6px  — chips, <kbd>          */
+    --radius-md: calc(var(--radius) - 2px); /* 8px  — inputs, buttons       */
+    --radius-lg: var(--radius); /*            10px — popovers, switchers     */
+    --radius-xl: calc(var(--radius) + 4px); /* 14px — cards                 */
+    --radius-full: 9999px; /*                       avatars, pills, dots     */
+
+    /* ----- Type families (self-hosted variable fonts) -------------------- */
+    --font-sans:
+        'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+        'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; /* body copy      */
+    --font-heading:
+        'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+        Arial, sans-serif; /* every h1–h6, card/dialog titles                */
+    --font-mono:
+        'Geist Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+        'Liberation Mono', monospace; /* code, payloads, IDs, tabular time    */
+
+    /* ----- Type scale (rem; 1rem = 16px) --------------------------------- */
+    --text-xs: 0.75rem; /* 12px — timestamps, meta, <kbd>                    */
+    --text-sm: 0.875rem; /* 14px — body / dense UI, labels                   */
+    --text-base: 1rem; /* 16px — reading copy, card titles                   */
+    --text-lg: 1.125rem; /* 18px — section / dialog headings                 */
+    --text-xl: 1.25rem; /* 20px — section sub-heading                        */
+    --text-2xl: 1.5rem; /* 24px — page title (h1)                            */
+    --text-3xl: 1.875rem; /* 30px — marketing display                        */
+    --text-4xl: 2.25rem; /* 36px — marketing hero                            */
+    --text-5xl: 3rem; /* 48px — marketing hero (large)                       */
+
+    --font-weight-normal: 400; /* body                                       */
+    --font-weight-medium: 500; /* labels, light headings                     */
+    --font-weight-semibold: 600; /* the workhorse heading weight             */
+    --font-weight-bold: 700; /* rare display only (404, marketing hero)      */
+
+    --leading-none: 1; /* compact headings                                   */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625; /* long-form body / marketing paragraphs       */
+
+    /* ----- Spacing (4px base — matches the Tailwind default scale) -------- */
+    --space-0: 0;
+    --space-1: 0.25rem; /* 4px   */
+    --space-2: 0.5rem; /* 8px    */
+    --space-3: 0.75rem; /* 12px  */
+    --space-4: 1rem; /* 16px     — default page/card padding on mobile       */
+    --space-5: 1.25rem; /* 20px  */
+    --space-6: 1.5rem; /* 24px   — card padding & internal gap (py-6, gap-6) */
+    --space-8: 2rem; /* 32px     */
+    --space-10: 2.5rem; /* 40px  */
+    --space-12: 3rem; /* 48px    — marketing section rhythm (small)          */
+    --space-16: 4rem; /* 64px    */
+    --space-24: 6rem; /* 96px    — marketing section rhythm (large)          */
+
+    --container-max: 72rem; /* max-w-6xl = 1152px — the app content cap       */
+
+    /* ----- Motion -------------------------------------------------------- */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --duration-hover: 120ms; /* color / transform hovers                     */
+    --duration-enter: 180ms; /* entrances & reveals (150–200ms)              */
+
+    /* ----- Elevation (card-on-canvas) ------------------------------------ */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+    /* ======================================================================
+       Semantic tokens — LIGHT (the default appearance)
+       Consume THESE, not the raw values, so light/dark just works.
+       ====================================================================== */
+    --background: #fcfbf9; /* warm off-white app canvas                      */
+    --foreground: oklch(0.145 0 0); /* approx #242424 — body text            */
+    --heading-foreground: var(--spike-black); /* headings read a touch richer */
+
+    --card: oklch(1 0 0); /* pure white — the elevated surface               */
+    --card-foreground: oklch(0.145 0 0); /* approx #242424                    */
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+
+    /* NOTE: --primary is a NEUTRAL near-black, NOT the brand blue. This is
+       deliberate — the blue is reserved for real CTAs (use --spike-blue),
+       so ordinary primary buttons don't paint the whole app blue.          */
+    --primary: oklch(0.205 0 0); /* approx #343434                           */
+    --primary-foreground: oklch(0.985 0 0); /* approx #fafafa                 */
+
+    --secondary: oklch(0.97 0 0); /* approx #f5f5f5                          */
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0); /* approx #f5f5f5                              */
+    --muted-foreground: oklch(0.556 0 0); /* approx #8e8e8e — descriptions    */
+    --accent: oklch(0.97 0 0); /* hover tint on ghost/list rows              */
+    --accent-foreground: oklch(0.205 0 0);
+
+    --destructive: oklch(0.577 0.245 27.325); /* approx #d33f3f — danger red  */
+    --destructive-foreground: oklch(0.985 0 0);
+
+    --border: oklch(0.922 0 0); /* approx #e5e5e5                            */
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0); /* approx #b5b5b5 — focus ring                 */
+
+    /* Charts / data-viz series (oklch; see SPIKE-THEME.md for meaning)      */
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+}
+
+/* ==========================================================================
+   Semantic tokens — DARK
+   Add the `.dark` class high in the tree (e.g. <html class="dark">) to flip.
+   The dark canvas IS the brand black, with cards lifted above it.
+   ========================================================================== */
+.dark {
+    --background: #161618; /* = --spike-black                                 */
+    --foreground: oklch(0.985 0 0); /* approx #fafafa                        */
+    --heading-foreground: var(--foreground); /* black canvas → light titles   */
+
+    --card: oklch(0.205 0 0); /* approx #343434 — lifted above the canvas    */
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+
+    --primary: oklch(0.922 0 0); /* approx #e5e5e5                           */
+    --primary-foreground: oklch(0.205 0 0);
+
+    --secondary: oklch(0.269 0 0); /* approx #434343                         */
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0); /* approx #b5b5b5                   */
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+
+    --destructive: oklch(0.704 0.191 22.216); /* approx #e5675a — brighter    */
+    --destructive-foreground: oklch(0.985 0 0);
+
+    --border: oklch(1 0 0 / 10%); /* white @ 10%                             */
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+}
+
+/* ==========================================================================
+   Status / priority / severity vocabulary
+   The shared "state" palette. Anywhere you show incident state (dashboard,
+   status pages, marketing screenshots, the glossary's example pills) these
+   are the exact colors. Recipe for a pill:
+     border: 1px solid <tone>-border; background: <tone>-bg; color: <tone>-fg;
+   Values are literal so they render identically outside Tailwind.
+   ========================================================================== */
+:root {
+    /* red — Triggered / P1 / SEV1 / destructive                            */
+    --tone-red-fg: #b91c1c;
+    --tone-red-fg-dark: #fca5a5;
+    --tone-red-bg: rgb(239 68 68 / 0.1);
+    --tone-red-border: rgb(239 68 68 / 0.4);
+
+    /* blue — Acknowledged / P3 / info                                      */
+    --tone-blue-fg: #1d4ed8;
+    --tone-blue-fg-dark: #93c5fd;
+    --tone-blue-bg: rgb(59 130 246 / 0.1);
+    --tone-blue-border: rgb(59 130 246 / 0.4);
+
+    /* green — Resolved / success (status pills)                            */
+    --tone-green-fg: #15803d;
+    --tone-green-fg-dark: #86efac;
+    --tone-green-bg: rgb(34 197 94 / 0.1);
+    --tone-green-border: rgb(34 197 94 / 0.4);
+
+    /* orange — P2 / SEV2                                                   */
+    --tone-orange-fg: #c2410c;
+    --tone-orange-fg-dark: #fdba74;
+    --tone-orange-bg: rgb(249 115 22 / 0.1);
+    --tone-orange-border: rgb(249 115 22 / 0.4);
+
+    /* yellow — SEV3                                                        */
+    --tone-yellow-fg: #a16207;
+    --tone-yellow-fg-dark: #fde047;
+    --tone-yellow-bg: rgb(234 179 8 / 0.1);
+    --tone-yellow-border: rgb(234 179 8 / 0.4);
+
+    /* amber — notes / waiting / active auto-resolve timer                  */
+    --tone-amber-fg: #b45309;
+    --tone-amber-fg-dark: #fcd34d;
+    --tone-amber-bg: rgb(245 158 11 / 0.1);
+    --tone-amber-border: rgb(245 158 11 / 0.4);
+
+    /* zinc — muted / neutral / P4–P5 / system                             */
+    --tone-zinc-fg: #3f3f46;
+    --tone-zinc-fg-dark: #d4d4d8;
+    --tone-zinc-bg: rgb(113 113 122 / 0.1);
+    --tone-zinc-border: rgb(113 113 122 / 0.4);
+}
+
+/* ==========================================================================
+   Optional starter styles — remove if you only want tokens.
+   These wire the tokens onto base elements so a plain HTML marketing page
+   inherits the Spike look without a framework.
+   ========================================================================== */
+
+/* Base surface + body font */
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Headings pick up Instrument Sans + the richer heading color automatically */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--heading-foreground);
+    line-height: var(--leading-none);
+    font-weight: var(--font-weight-semibold);
+}
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); font-weight: var(--font-weight-medium); }
+h3 { font-size: var(--text-base); }
+
+code, pre, kbd, samp { font-family: var(--font-mono); }
+
+/* The card-on-canvas primitive — the single most important layout pattern.
+   A page is a tinted canvas with white/lifted cards floating on top. */
+.spike-card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+}
+
+/* The canonical brand CTA (Spike Blue). In the dashboard this is the
+   `ctaBlue` helper: bg-spike-blue text-white hover:bg-spike-blue-hover. */
+.spike-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background-color: var(--spike-blue);
+    color: var(--spike-white);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-xs);
+    transition: background-color var(--duration-hover) var(--ease-out);
+}
+.spike-cta:hover { background-color: var(--spike-blue-hover); }
+
+/* Focus-visible ring — never strip this; keyboard parity is non-negotiable. */
+.spike-focusable:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+/* A state pill (status / priority / severity). Swap the three tone vars. */
+.spike-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--tone-zinc-border);
+    background: var(--tone-zinc-bg);
+    color: var(--tone-zinc-fg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-1) var(--space-3);
+    line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}

@@ -38,22 +38,17 @@ The front matter (the section between `---` at the top of the file) contains met
 ```
 - term: The name of the term as it should appear in headings and titles
 - excerpt: A short description (50-60 words) that appears in term listings and search results
-- featured (optional): Set to `true` to display this term on the home page
-- featuredHeading (optional): Custom heading to display when the term is featured
-- related (optional): List of slugs for related terms (these must match the filenames of other terms without the `.md` extension)
+- featuredHeading (optional): A heading inside your content that should get the same accent the "… With Spike" section gets
+- related (optional): List of slugs for related terms (these must match the filenames of other terms without the `.md` extension). Leave it out and the three terms that follow yours alphabetically are shown instead.
 ```
 Example front matter:
 ```yaml
 ---
 term: Incident Response
 excerpt: A structured approach to addressing and managing the aftermath of a security breach or cyberattack.
-featured: true
-featuredHeading: Critical Framework for Managing Security Events
 related:
-  - name: Name of related term
-    slug: related-term-slug
-  - name: 2nd related term
-    slug: 2nd-related-term-slug
+  - incident-management
+  - alert-correlation
 ---
 ```
 
@@ -73,11 +68,8 @@ You can add additional sections if needed, but these three are required for cons
 ---
 term: Term Name
 excerpt: A short description of the term.
-featured: true|false
-featuredHeading: Optional heading to display when featured
 related:
-  - name: Name of related term
-    slug: related-term-slug
+  - related-term-slug
 ---
 
 ## What Is [Term Name]
@@ -99,19 +91,19 @@ Real-world example...
 
 ### Featured Headings
 
-Featured terms can include a custom heading that appears when the term is shown on the homepage or in featured sections.
+Any `##` heading in your content that mentions **Spike** is set apart automatically with an accent rule — that's how the "How To … With Spike" section is highlighted on every term page.
 
-To add a featured heading:
+To give another heading the same treatment, name it in `featuredHeading`:
 
 ```yaml
 ---
 term: Zero Trust Architecture
-featured: true
-featuredHeading: Security Framework for Incident Management
+excerpt: ...
+featuredHeading: Why Zero Trust Matters For On-Call
 ---
 ```
 
-The `featuredHeading` provides context about why this term is important or worth highlighting. It should be concise (under 10 words) and focus on the term's significance in incident management.
+Separate multiple headings with commas. Keep each one concise (under 10 words) and focused on the term's significance in incident management.
 
 ## Adding Related Terms
 

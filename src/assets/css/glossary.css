@@ -1,0 +1,1530 @@
+/* ==========================================================================
+   Spike Glossary — page styles
+   --------------------------------------------------------------------------
+   This file is concatenated *after* brand/spike-theme.css at build time
+   (see .eleventy.js) and inlined into every page, so everything here consumes
+   the shared semantic tokens: --card, --border, --muted-foreground, --tone-*,
+   --radius-*, --space-*, --duration-*. No raw hex except the two brand colors
+   the theme itself allows.
+
+   `__BASE__` is replaced at build time with the path prefix the site is served
+   from ('' locally, '/glossary' in production).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Fonts — the three Spike families, self-hosted as variable woff2 and subset
+   at build time to the characters this site actually renders (see .eleventy.js).
+   Inter and Instrument Sans are preloaded from the document head; Geist Mono is
+   declared but only fetched if a page renders code. All three swap, and any
+   glyph outside the subset falls through to the next family in the stack.
+   -------------------------------------------------------------------------- */
+@font-face {
+    font-family: 'Inter Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 600;
+    src: url(__BASE__/assets/fonts/inter-latin.woff2) format('woff2-variations');
+}
+@font-face {
+    font-family: 'Instrument Sans Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 700;
+    src: url(__BASE__/assets/fonts/instrument-sans-latin.woff2) format('woff2-variations');
+}
+@font-face {
+    font-family: 'Geist Mono Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 500;
+    src: url(__BASE__/assets/fonts/geist-mono-latin.woff2) format('woff2-variations');
+}
+
+/* --------------------------------------------------------------------------
+   2. Token hardening (light mode only)
+
+   Two shared tokens fall short of WCAG AA on the white card surface, so they
+   are darkened here rather than being worked around per-component. Dark mode
+   already clears both, so the overrides are scoped with :not(.dark) — which
+   also keeps them from out-specifying the theme's own `.dark` block.
+
+     --muted-foreground  #8e8e8e → 3.3:1 on white (needs 4.5:1 for body text)
+     --ring              #b5b5b5 → 1.9:1 on white (needs 3:1 for a focus ring)
+
+   Worth pushing back into spike-theme.css / the dashboard's index.css.
+   -------------------------------------------------------------------------- */
+:root:not(.dark) {
+    --muted-foreground: oklch(0.47 0 0); /* approx #6b6b6b — 5.3:1 on white   */
+    --ring: oklch(0.55 0 0); /* approx #8a8a8a — 3.5:1 on white               */
+}
+
+:root {
+    --header-h: 3.5rem; /* 56px */
+    --toolbar-h: 4.5rem; /* 72px — the sticky bar's rendered height           */
+    --page-pad: var(--space-4);
+
+    /* Minimum interactive height. 48px on touch (WCAG 2.5.5 / Lighthouse tap
+       targets), tightened to 36px once there's a pointer. */
+    --tap: 3rem;
+
+    /* Inline links inside prose. --spike-blue is the light-mode value; on the
+       dark card it only reaches 3.1:1, so dark mode lifts it. The shared theme
+       has no link token yet — worth adding upstream. */
+    --link: var(--spike-blue);
+}
+.dark {
+    --link: #7ba4ff; /* 6.4:1 on --card in dark mode */
+}
+
+@media (pointer: fine) {
+    :root {
+        --tap: 2.25rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. Reset — the theme file ships tokens and base type, not a reset.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+* {
+    margin: 0;
+}
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+ul,
+ol {
+    list-style: none;
+    padding: 0;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+input,
+button,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+code,
+pre,
+samp {
+    font-family: var(--font-mono);
+}
+kbd {
+    font-family: var(--font-sans); /* per SPIKE-THEME.md: <kbd> is body type */
+}
+
+/* Focus-visible on everything, never suppressed. Outline (not box-shadow) so
+   it can't be clipped by an ancestor's overflow. */
+:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+::selection {
+    background: var(--tone-blue-bg);
+}
+
+/* --------------------------------------------------------------------------
+   4. Primitives
+   -------------------------------------------------------------------------- */
+.page {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--page-pad);
+}
+
+/* Card-on-canvas: the load-bearing pattern. Content never sits raw on the
+   canvas — it lives in one of these. */
+.card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-2);
+    z-index: 100;
+    transform: translateY(-250%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-hover) var(--ease-out);
+}
+.skip-link:focus-visible {
+    transform: translateY(0);
+}
+
+.eyebrow {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+/* State pill — the shared status vocabulary. Colour is never the only signal:
+   every pill carries its label, and the dot is decorative. */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--tone-zinc-border);
+    background: var(--tone-zinc-bg);
+    color: var(--tone-zinc-fg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    padding: 0.3rem var(--space-3);
+    line-height: 1;
+}
+.pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: currentcolor;
+    flex: none;
+}
+.pill--red {
+    border-color: var(--tone-red-border);
+    background: var(--tone-red-bg);
+    color: var(--tone-red-fg);
+}
+.pill--blue {
+    border-color: var(--tone-blue-border);
+    background: var(--tone-blue-bg);
+    color: var(--tone-blue-fg);
+}
+.pill--green {
+    border-color: var(--tone-green-border);
+    background: var(--tone-green-bg);
+    color: var(--tone-green-fg);
+}
+.dark .pill--red {
+    color: var(--tone-red-fg-dark);
+}
+.dark .pill--blue {
+    color: var(--tone-blue-fg-dark);
+}
+.dark .pill--green {
+    color: var(--tone-green-fg-dark);
+}
+.dark .pill {
+    color: var(--tone-zinc-fg-dark);
+}
+
+kbd.key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.375rem;
+    height: 1.375rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+}
+
+/* Buttons -------------------------------------------------------------- */
+
+/* Ordinary buttons are neutral. Spike Blue is NOT wired to --primary. */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    color: var(--foreground);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-xs);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
+}
+.btn:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn--ghost {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted-foreground);
+}
+.btn--ghost:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* The one blue thing on the page (plus the logo): the brand CTA. */
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: var(--spike-blue);
+    color: var(--spike-white);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-xs);
+    transition: background-color var(--duration-hover) var(--ease-out);
+}
+.cta:hover {
+    background-color: var(--spike-blue-hover);
+}
+.cta svg {
+    transition: transform var(--duration-hover) var(--ease-out);
+}
+.cta:hover svg {
+    transform: translateX(2px);
+}
+
+/* --------------------------------------------------------------------------
+   5. Site header — the marketing-site header: mono wordmark, product nav, and
+   Changelog / Get started / Login on the right. Transparent, so it sits on the
+   hero panel instead of cutting a line across it.
+   -------------------------------------------------------------------------- */
+.site-header {
+    position: relative;
+    z-index: 10;
+    background: transparent;
+}
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--header-h);
+    padding-block: var(--space-2);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    margin-right: var(--space-6);
+    margin-left: calc(var(--space-2) * -1);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: -0.01em;
+    color: var(--spike-blue);
+}
+.dark .brand {
+    color: var(--link);
+}
+.brand__dot {
+    opacity: 0.7;
+}
+
+.site-nav {
+    display: none;
+    align-items: center;
+}
+.site-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+.site-nav a,
+.site-header__link {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--foreground);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.site-nav a:hover,
+.site-header__link:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.site-header__end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+}
+.site-header__link {
+    display: none; /* secondary links appear from md up */
+}
+.site-header__link--accent,
+.site-header__link--accent:hover {
+    color: var(--link);
+}
+
+/* "Get started" is outlined rather than filled: blue stays a thin accent up
+   here so the hero headline can carry it. */
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--spike-blue);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--spike-blue);
+    background: transparent;
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.btn-outline:hover {
+    background: var(--spike-blue);
+    color: var(--spike-white);
+}
+.dark .btn-outline {
+    border-color: var(--link);
+    color: var(--link);
+}
+.dark .btn-outline:hover {
+    background: var(--link);
+    color: var(--spike-black);
+}
+
+/* Shown by the head script; hidden without JS so it can't be a dead control. */
+.theme-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap);
+    height: var(--tap);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.js .theme-toggle {
+    display: inline-flex;
+}
+.theme-toggle:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.theme-toggle svg {
+    width: 1rem;
+    height: 1rem;
+}
+.theme-toggle .icon-moon,
+.dark .theme-toggle .icon-sun {
+    display: none;
+}
+.dark .theme-toggle .icon-moon {
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero
+   -------------------------------------------------------------------------- */
+main {
+    display: block;
+    padding-bottom: var(--space-16);
+}
+/* The hero pulls itself up under the header; pages without one still need
+   breathing room below it. */
+main > .page:first-child {
+    padding-top: var(--space-6);
+}
+
+/* The marketing hero: a full-bleed panel, rounded off at the bottom, with the
+   brand swoosh sweeping in from the lower right. It is built entirely from
+   gradients — nothing to download, nothing to shift when it lands.
+
+   The swoosh is one big off-canvas ellipse: stops on either side of its edge
+   make the bright rim, and everything inside it is the wash. --brand-rgb is
+   --spike-blue as channels so the same colour can carry an alpha. */
+.hero {
+    --brand-rgb: 19 78 217; /* = --spike-blue #134ED9 */
+
+    /* The swoosh is one big off-canvas ellipse. On a phone the panel is far
+       taller than it is wide, so the same ellipse would cut straight through
+       the copy — there it flattens out and sits underneath instead. */
+    --swoosh: 121% 125% at 125% 165%;
+    position: relative;
+    isolation: isolate;
+    margin-top: calc(var(--header-h) * -1 - var(--space-4));
+    padding-top: calc(var(--header-h) + var(--space-4) + var(--space-16));
+    padding-bottom: var(--space-16);
+    border-end-start-radius: 3rem;
+    border-end-end-radius: 3rem;
+    background:
+        /* keeps the reading side of the panel clean — the wash lives on the
+           right and fades out well before it reaches the copy */
+        linear-gradient(
+            104deg,
+            var(--spike-white) 0%,
+            rgb(255 255 255 / 0.92) 20%,
+            rgb(255 255 255 / 0) 54%
+        ),
+        /* the light rim that catches along the swoosh edge */
+        radial-gradient(
+            var(--swoosh),
+            rgb(255 255 255 / 0) 0 96%,
+            rgb(255 255 255 / 0.6) 99.2%,
+            rgb(255 255 255 / 0.2) 100.6%,
+            rgb(255 255 255 / 0) 103%
+        ),
+        /* the swoosh itself: everything inside the ellipse */
+        radial-gradient(
+            var(--swoosh),
+            rgb(var(--brand-rgb) / 0.26) 0%,
+            rgb(var(--brand-rgb) / 0.21) 74%,
+            rgb(var(--brand-rgb) / 0.17) 100%,
+            rgb(var(--brand-rgb) / 0.04) 100.9%,
+            rgb(var(--brand-rgb) / 0) 105%
+        ),
+        /* haze off the top-right corner */
+        radial-gradient(
+            52% 78% at 99% -10%,
+            rgb(var(--brand-rgb) / 0.16) 0%,
+            rgb(var(--brand-rgb) / 0.05) 46%,
+            rgb(var(--brand-rgb) / 0) 74%
+        ),
+        linear-gradient(
+            118deg,
+            var(--spike-white) 0%,
+            var(--spike-white) 62%,
+            rgb(var(--brand-rgb) / 0.05) 100%
+        );
+}
+.dark .hero {
+    background:
+        linear-gradient(
+            104deg,
+            var(--background) 0%,
+            rgb(22 22 24 / 0.92) 22%,
+            rgb(22 22 24 / 0) 56%
+        ),
+        radial-gradient(
+            var(--swoosh),
+            rgb(255 255 255 / 0) 0 96%,
+            rgb(255 255 255 / 0.16) 99.2%,
+            rgb(255 255 255 / 0.05) 100.6%,
+            rgb(255 255 255 / 0) 103%
+        ),
+        radial-gradient(
+            var(--swoosh),
+            rgb(var(--brand-rgb) / 0.44) 0%,
+            rgb(var(--brand-rgb) / 0.33) 74%,
+            rgb(var(--brand-rgb) / 0.26) 100%,
+            rgb(var(--brand-rgb) / 0.05) 100.9%,
+            rgb(var(--brand-rgb) / 0) 105%
+        ),
+        radial-gradient(
+            52% 78% at 99% -10%,
+            rgb(var(--brand-rgb) / 0.22) 0%,
+            rgb(var(--brand-rgb) / 0.07) 46%,
+            rgb(var(--brand-rgb) / 0) 74%
+        ),
+        linear-gradient(118deg, var(--card) 0%, var(--background) 62%);
+}
+
+@media (max-width: 47.999rem) {
+    .hero {
+        --swoosh: 190% 62% at 120% 142%;
+    }
+    .hero,
+    .dark .hero {
+        background-position: 0 0;
+    }
+}
+
+.hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.hero h1 {
+    /* Sized to hold "Incident Response Glossary" on one line at desktop. */
+    font-size: clamp(2rem, 5.4vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--link); /* --spike-blue in light, lifted for AA in dark */
+}
+.hero__sub {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+    line-height: var(--leading-tight);
+}
+.hero__lede {
+    max-width: 60ch;
+    margin-top: var(--space-2);
+    color: var(--muted-foreground);
+    line-height: var(--leading-relaxed);
+}
+
+/* JS-only controls stay hidden until the head script marks the document as
+   scripted, so a no-JS reader never meets a dead input. */
+.js-only,
+.js .no-js-only {
+    display: none;
+}
+.js .js-only,
+.js .search {
+    display: flex;
+}
+
+.faq__list dt {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+    margin-top: var(--space-5);
+}
+.faq__list dd {
+    margin-top: var(--space-2);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+.faq .btn {
+    margin-top: var(--space-6);
+}
+
+/* Term-page toolbar: back link + the palette trigger. */
+.toolbar-wrap--slim {
+    top: 0; /* single row — nothing needs to scroll out of the way */
+}
+.toolbar.toolbar--slim {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+.search-button {
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 22rem;
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--duration-hover) var(--ease-out);
+}
+.search-button:hover {
+    border-color: var(--ring);
+}
+.search-button span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.search-button svg {
+    flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Toolbar — sticky search + A–Z jump
+   -------------------------------------------------------------------------- */
+/* On phones the A–Z strip is the toolbar's first row and is allowed to scroll
+   away — a negative sticky offset parks the search row alone at the top
+   instead of pinning 130px of chrome. From `md` up both fit on one row. */
+.toolbar-wrap {
+    position: sticky;
+    top: -4.5rem;
+    z-index: 20;
+    padding-block: var(--space-3);
+    margin-block: var(--space-6) var(--space-4);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    backdrop-filter: blur(8px);
+}
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+}
+.toolbar__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+/* The shortcut legend lives directly under the A–Z row, next to the thing it
+   drives. Hidden on touch, where it means nothing, and aria-hidden everywhere
+   because #search-help already says this to a screen reader. */
+.toolbar__meta {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+.toolbar__keys {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.toolbar__keys kbd + kbd {
+    margin-left: -2px;
+}
+
+/* Hidden until the head script proves scripting is on — a filter box that
+   can't filter is worse than no filter box. `.js .search` above re-shows it. */
+.search {
+    position: relative;
+    display: none;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.search__icon {
+    position: absolute;
+    left: var(--space-3);
+    width: 1rem;
+    height: 1rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+}
+.search input {
+    width: 100%;
+    min-height: var(--tap);
+    padding: var(--space-2) 4.5rem var(--space-2) 2.375rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: var(--text-base);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color var(--duration-hover) var(--ease-out);
+}
+.search input::placeholder {
+    color: var(--muted-foreground);
+}
+.search input:hover {
+    border-color: var(--ring);
+}
+.search__hint {
+    position: absolute;
+    right: var(--space-3);
+    display: flex;
+    gap: var(--space-1);
+    pointer-events: none;
+}
+/* The hint would collide with the browser's own clear button once typing. */
+.search input:not(:placeholder-shown) ~ .search__hint {
+    display: none;
+}
+
+/* The result count is a live region, so it stays in the accessibility tree at
+   every width — the wrapper above is what hides it visually on small screens. */
+.toolbar__count {
+    font-variant-numeric: tabular-nums;
+}
+
+/* A–Z: a disclosure on phones (48px targets in a grid), an inline strip from
+   `md` up. Both are the same list of links. */
+.az {
+    flex: 1 0 100%;
+    order: -1;
+    min-width: 0;
+}
+.az__list {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+}
+.az__list::-webkit-scrollbar {
+    display: none;
+}
+.az__list > li {
+    display: flex;
+    flex: none;
+}
+.az__list a,
+.az__list > li > span {
+    /* Positioned so each chip's .sr-only label anchors to the chip. Without
+       this it would resolve against the sticky toolbar instead, escape the
+       scroller's clipping, and stretch the page 1000px wide. */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 3rem;
+    min-height: 3rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--muted-foreground);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.az__list a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.az__list a[aria-current='true'] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+.az__list > li > span {
+    opacity: 0.35;
+}
+
+/* --------------------------------------------------------------------------
+   8. The term list
+   -------------------------------------------------------------------------- */
+.letters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.letter {
+    /* Keeps 549 cards off the render path until they're near the viewport —
+       the single biggest reason this page paints fast on mobile. `--n` is the
+       term count, set per section, so the placeholder height is close to the
+       real one and the scrollbar doesn't lurch as sections fill in. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.75rem);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+}
+.letter[hidden] {
+    display: none;
+}
+
+.letter__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+.letter__head h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+}
+.letter__count {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.terms {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+}
+.terms > li {
+    /* Second level of skipping: even inside the letter section you're reading,
+       only the cards near the viewport are laid out. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4rem;
+}
+.terms > li[hidden] {
+    display: none;
+}
+
+.term-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    height: 100%;
+    position: relative;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out),
+        transform var(--duration-hover) var(--ease-out);
+}
+.term-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+}
+.term-card p {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--muted-foreground);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+
+/* On phones the A–Z index is a directory, not a reading surface: 549 three-line
+   previews is a wall of text to scroll past, and the single most expensive
+   thing on the page to lay out. The summary stays in the HTML — search engines
+   and wider screens still get it — and each card becomes a compact row.
+
+   The row height is fixed rather than intrinsic, which is what lets the
+   contain-intrinsic-size placeholders below be exact: a section that renders
+   is exactly as tall as its placeholder, so nothing below it ever shifts. */
+.terms .term-card {
+    height: 4rem;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+}
+.terms .term-card h3 {
+    font-size: var(--text-sm);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+.terms .term-card p {
+    display: none;
+}
+.term-card:hover {
+    border-color: var(--ring);
+    transform: translateY(-1px);
+}
+
+/* The keyboard cursor. A tint plus a solid edge marker — never colour alone,
+   and neutral (--primary), because blue is reserved for the CTA. */
+.term-card.is-active {
+    background: var(--accent);
+    border-color: var(--primary);
+}
+.term-card.is-active::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    width: 3px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+}
+.empty-state p {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+}
+.empty-state[hidden] {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   9. Term page
+   -------------------------------------------------------------------------- */
+.crumbs {
+    margin-bottom: var(--space-4);
+}
+.crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-hover) var(--ease-out);
+}
+.crumbs a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.crumbs li[aria-current='page'] {
+    color: var(--foreground);
+    padding: var(--space-1) var(--space-2);
+}
+.crumbs__sep {
+    opacity: 0.5;
+}
+
+.term-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: start;
+}
+
+.term-head h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
+    margin-block: var(--space-2);
+}
+.term-head__lede {
+    color: var(--muted-foreground);
+    line-height: var(--leading-relaxed);
+    max-width: 70ch;
+}
+
+/* Markdown body ---------------------------------------------------------- */
+.prose {
+    margin-top: var(--space-4);
+    max-width: 72ch;
+}
+.prose > * + * {
+    margin-top: var(--space-4);
+}
+.prose h2 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    margin-top: var(--space-8);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+}
+.prose h2:first-child {
+    margin-top: 0;
+}
+/* The "How To … With Spike" section of a definition — set apart with a neutral
+   rule rather than brand colour, which stays reserved for the CTA. */
+.prose h2.prose__spike {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--primary);
+}
+.prose p,
+.prose li {
+    line-height: var(--leading-relaxed);
+}
+.prose ul {
+    list-style: disc;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.prose ul li::marker {
+    color: var(--muted-foreground);
+}
+.prose a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    border-radius: var(--radius-sm);
+}
+.prose a:hover {
+    text-decoration-thickness: 2px;
+}
+.prose strong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+}
+
+/* Sidebar ---------------------------------------------------------------- */
+.term-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.side-card {
+    padding: var(--space-5);
+}
+.side-card h2,
+.side-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+}
+.side-card p {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    line-height: var(--leading-normal);
+}
+.side-card .btn,
+.side-card .cta {
+    margin-top: var(--space-4);
+    width: 100%;
+}
+.side-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+.side-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    background: var(--muted);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.side-links a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.side-links svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* Prev / next ------------------------------------------------------------ */
+.pager {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+.pager a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
+}
+.pager a:hover {
+    border-color: var(--ring);
+    background: var(--accent);
+}
+.pager__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.pager__term {
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+}
+.pager__next {
+    text-align: right;
+}
+.pager__next .pager__label {
+    justify-content: flex-end;
+}
+
+/* Further reading -------------------------------------------------------- */
+.further {
+    margin-top: var(--space-12);
+}
+.further > h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+.further ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   10. Newsletter
+   -------------------------------------------------------------------------- */
+.subscribe input[type='email'] {
+    width: 100%;
+    min-height: 2.75rem;
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    font-size: var(--text-sm);
+}
+.subscribe button {
+    width: 100%;
+    margin-top: var(--space-2);
+    cursor: pointer;
+}
+.subscribe__msg {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+}
+.subscribe__msg[hidden] {
+    display: none;
+}
+.subscribe__msg--err {
+    color: var(--destructive);
+}
+
+/* --------------------------------------------------------------------------
+   11. Command palette (term pages) — progressive enhancement, ships hidden.
+   -------------------------------------------------------------------------- */
+.palette[hidden] {
+    display: none;
+}
+.palette {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    padding: var(--space-4);
+    padding-top: 10vh;
+}
+.palette__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.4);
+}
+.palette__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(34rem, 100%);
+    max-height: min(28rem, 75vh);
+    overflow: hidden;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow:
+        0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.palette__field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+}
+.palette__field svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--muted-foreground);
+}
+.palette__field input {
+    flex: 1;
+    min-width: 0;
+    min-height: 2.25rem;
+    border: 0;
+    background: transparent;
+    font-size: var(--text-base);
+    outline: none;
+}
+.palette__results {
+    overflow-y: auto;
+    padding: var(--space-2);
+    overscroll-behavior: contain;
+}
+.palette__results li {
+    display: block;
+}
+.palette__opt {
+    display: block;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    cursor: pointer;
+}
+.palette__opt[aria-selected='true'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.palette__empty {
+    padding: var(--space-6);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+.palette__foot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.palette__foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* --------------------------------------------------------------------------
+   12. Footer
+   -------------------------------------------------------------------------- */
+.site-footer {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-8);
+    margin-top: var(--space-12);
+}
+.site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    justify-content: space-between;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+.site-footer nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+.site-footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-hover) var(--ease-out);
+}
+.site-footer nav a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* --------------------------------------------------------------------------
+   13. Responsive
+   -------------------------------------------------------------------------- */
+@media (min-width: 40rem) {
+    :root {
+        --page-pad: var(--space-6);
+    }
+    .terms,
+    .further ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* Room for the summary again — and taller cards, so the placeholder
+       heights that back content-visibility grow to match. */
+    .terms .term-card {
+        height: auto;
+        justify-content: flex-start;
+        padding: var(--space-4);
+    }
+    .terms .term-card h3 {
+        font-size: var(--text-base);
+        display: block;
+        overflow: visible;
+    }
+    .terms .term-card p {
+        display: -webkit-box;
+    }
+    .terms > li {
+        contain-intrinsic-size: auto 9rem;
+    }
+    .letter {
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 5rem);
+    }
+    .pager {
+        grid-template-columns: 1fr 1fr;
+    }
+    .term-head h1 {
+        font-size: var(--text-4xl);
+    }
+}
+
+@media (min-width: 48rem) {
+    .site-header__link {
+        display: inline-flex;
+    }
+    .toolbar__meta {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+        padding-top: var(--space-1);
+        font-size: var(--text-xs);
+        color: var(--muted-foreground);
+    }
+    .js .toolbar__keys {
+        display: flex;
+    }
+    .search {
+        flex: 0 1 20rem;
+    }
+    .az {
+        flex: 1 1 12rem;
+        order: 0;
+    }
+    .az__list {
+        flex-wrap: wrap;
+        overflow: visible;
+        gap: 2px;
+    }
+    .az__list a,
+    .az__list > li > span {
+        min-width: 1.375rem;
+        min-height: 1.5rem;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-xs);
+    }
+    .toolbar-wrap {
+        top: 0;
+    }
+}
+
+@media (min-width: 64rem) {
+    .site-nav {
+        display: flex;
+    }
+    .terms,
+    .further ul {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .letter {
+        display: grid;
+        grid-template-columns: 4rem 1fr;
+        gap: var(--space-6);
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 3.5rem);
+    }
+    .letter__head {
+        display: block;
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-6));
+        margin-bottom: 0;
+    }
+    .letter__head h2 {
+        font-size: var(--text-4xl);
+        color: var(--muted-foreground);
+    }
+    .term-layout {
+        grid-template-columns: minmax(0, 1fr) 20rem;
+        gap: var(--space-8);
+    }
+    .term-aside {
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-6));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   14. Motion & print
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .term-card:hover {
+        transform: none;
+    }
+}
+
+@media print {
+    .toolbar-wrap,
+    .site-header,
+    .site-footer,
+    .term-aside,
+    .pager,
+    .palette {
+        display: none !important;
+    }
+    .card,
+    .term-card {
+        box-shadow: none;
+    }
+}

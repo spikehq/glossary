@@ -9,6 +9,9 @@ yarn-error.log
 .env.local
 .env.*.local
 
+# Lighthouse reports and screenshots (regenerate with npm run lighthouse)
+reports/*.json
+
 # Build output
 dist/
 build/
