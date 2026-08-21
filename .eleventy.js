@@ -49,6 +49,9 @@ module.exports = function(eleventyConfig) {
   
   // Pass-through the compiled CSS
   eleventyConfig.addPassthroughCopy("src/assets/css");
+
+  // Pass-through the llms.txt index
+  eleventyConfig.addPassthroughCopy("src/llms.txt");
   
   // Custom collection for glossary items
   eleventyConfig.addCollection("glossaryItems", function(collectionApi) {
