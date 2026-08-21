@@ -337,120 +337,547 @@ kbd.key {
 }
 
 /* --------------------------------------------------------------------------
-   5. Site header — the marketing-site header: mono wordmark, product nav, and
-   Changelog / Get started / Login on the right. Transparent, so it sits on the
-   hero panel instead of cutting a line across it.
+   5. Site header — ported close to verbatim from the standalone
+   spike-header-standalone.html mockup (mono wordmark → wordmark image, two-
+   panel mega-dropdown for Products/Resources, compacting sticky/fixed shell,
+   scroll-linked dark-hero flip). See glossary.js for the matching behaviour.
+
+   Its own local tokens are scoped to `#site-header` (not :root) because a few
+   names — --font-sans, --font-mono, --text-sm/base, --radius-sm/md/lg —
+   collide with brand/spike-theme.css; defining them globally would silently
+   change type/radii sitewide. Scoping to the header keeps every descendant
+   (including the fixed mega-panel and mobile sheet, which still inherit
+   custom properties through the DOM regardless of position) resolving the
+   header's own values without touching the rest of the page. `.btn` /
+   `.btn-outline` are likewise addressed as `#site-header .btn…` because the
+   bare class names are already used (with different styling) by the
+   subscribe form and the "Contribute a term" link elsewhere on the page.
    -------------------------------------------------------------------------- */
-.site-header {
-    position: relative;
-    z-index: 10;
-    background: transparent;
+@property --header-progress {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
 }
-.site-header__inner {
+@property --header-height {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 72px;
+}
+
+/* Scroll-linked compaction driver — glossary.js sets --header-progress on
+   <html> every scroll tick. These MUST live on :root, not on #site-header
+   itself: a same-element declaration always wins over an inherited one, so
+   redeclaring them on #site-header would permanently shadow the JS-driven
+   value with this static default and freeze the compaction at 0. */
+:root {
+    --header-progress: 0;
+    --header-height: 4.5rem;
+}
+
+#site-header {
+    --color-brand-primary: var(--spike-blue);
+    --color-brand-black: var(--spike-black);
+
+    --color-neutral-50: #f5f4f0;
+    --color-neutral-100: var(--spike-white);
+    --color-neutral-300: #bebcb4;
+    --color-neutral-600: #6a6a63;
+    --color-neutral-850: #28282a;
+
+    --color-border-default: var(--border);
+    --color-surface-subtle: #fcfbf9;
+    --color-surface-icon: #777777;
+
+    --color-light-neutral-300: #c3c1c0;
+    --color-dark-neutral-100: #717070;
+    --color-dark-neutral-200: #5f5e5f;
+    --color-dark-neutral-500: #313133;
+    --color-dark-neutral-600: #28282a;
+
+    --font-display: var(--font-heading);
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --tracking-mono: 0.06em;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-2xl: 20px;
+    --radius-3xl: 24px;
+}
+
+/* ---- Layout / chrome ----------------------------------------------------- */
+#site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-height);
+    font-family: var(--font-sans);
+}
+@media (min-width: 64rem) {
+    #site-header {
+        position: fixed;
+        inset-inline: 0;
+    }
+    #site-header {
+        --header-height: calc(4.5rem - 0.625rem * var(--header-progress));
+    }
+}
+
+/* Frosted glass fill on a pseudo-element (not the header itself) so nested
+   backdrop-filters — mega panel, mobile sheet — aren't trapped inside a
+   backdrop root. */
+#site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    transition: background-color 200ms;
+}
+#site-header.header-dark::before {
+    background-color: color-mix(in oklab, var(--color-brand-black) 70%, transparent);
+}
+
+#site-header::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--color-border-default);
+    opacity: 1;
+    pointer-events: none;
+}
+@media (min-width: 64rem) {
+    #site-header::after {
+        opacity: var(--header-progress);
+    }
+}
+#site-header.header-dark::after {
+    opacity: 0;
+}
+
+.header-spacer {
+    display: none;
+    height: 4.5rem;
+}
+@media (min-width: 64rem) {
+    .header-spacer {
+        display: block;
+    }
+}
+
+#site-header .site-nav {
+    margin-inline: auto;
+    max-width: 64rem;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-4);
+    border-inline: 1px solid transparent;
+    transition:
+        color 200ms,
+        background-color 200ms,
+        border-color 200ms;
+}
+@media (min-width: 40rem) {
+    #site-header .site-nav {
+        padding-inline: var(--space-6);
+    }
+}
+#site-header .site-nav:has(.mega-dropdown:hover),
+#site-header .site-nav:has(.mega-dropdown:focus-within) {
+    border-color: var(--color-border-default);
+}
+#site-header.header-dark .site-nav:has(.mega-dropdown:hover),
+#site-header.header-dark .site-nav:has(.mega-dropdown:focus-within) {
+    border-color: var(--color-dark-neutral-500);
+}
+
+/* ---- Logo ----------------------------------------------------------------- */
+#site-header .logo-link {
+    position: relative;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: var(--header-h);
-    padding-block: var(--space-2);
+}
+#site-logo-light,
+#site-logo-dark {
+    height: 1.5rem;
+    width: auto;
+    transform-origin: left center;
+    transition: opacity 200ms;
+}
+#site-logo-dark {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+}
+#site-logo-light.opacity-0,
+#site-logo-dark.opacity-0 {
+    opacity: 0;
+}
+@media (min-width: 64rem) {
+    #site-logo-light,
+    #site-logo-dark {
+        transform: translateY(calc(-0.3125rem * var(--header-progress)))
+            scale(calc(1 - 0.167 * var(--header-progress)));
+        will-change: transform;
+    }
 }
 
-.brand {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    margin-right: var(--space-6);
-    margin-left: calc(var(--space-2) * -1);
-    padding-inline: var(--space-2);
-    border-radius: var(--radius-md);
-    font-family: var(--font-mono);
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: -0.01em;
-    color: var(--spike-blue);
-}
-.dark .brand {
-    color: var(--link);
-}
-.brand__dot {
-    opacity: 0.7;
-}
-
-.site-nav {
+/* ---- Desktop nav ----------------------------------------------------------- */
+#site-header .desktop-nav {
     display: none;
     align-items: center;
+    gap: var(--space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
-.site-nav ul {
+@media (min-width: 64rem) {
+    #site-header .desktop-nav {
+        display: flex;
+    }
+}
+
+.mega-dropdown {
+    /* Deliberately NOT position:relative — .mega-wrapper below needs its
+       containing block to be #site-header (fixed/sticky) so the panel spans
+       the full header width, not just this trigger cluster. */
     display: flex;
+    align-items: center;
+    height: 4.5rem;
+}
+.mega-dropdown-triggers {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+#site-header .nav-link-text {
+    transform-origin: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-dark-neutral-200);
+    text-decoration: none;
+    transition: color 200ms;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
     align-items: center;
     gap: var(--space-1);
 }
-.site-nav a,
-.site-header__link {
+#site-header .nav-link-text:hover {
+    color: var(--color-brand-black);
+}
+#site-header.header-dark .nav-link-text:hover {
+    color: var(--color-light-neutral-300);
+}
+@media (min-width: 64rem) {
+    #site-header .nav-link-text {
+        transform: translateY(calc(-0.3125rem * var(--header-progress)))
+            scale(calc(1 - 0.143 * var(--header-progress)));
+        will-change: transform;
+    }
+}
+.nav-link-text .chevron {
+    transition: transform 200ms;
+}
+.mega-dropdown-triggers .nav-link-text[aria-expanded='true'] .chevron,
+.nav-trigger:hover .chevron,
+.nav-trigger:focus-within .chevron {
+    transform: rotate(-180deg);
+}
+
+/* Mega panel wrapper spans the full header width because #site-header is
+   itself the positioned ancestor once fixed (from the lg breakpoint up) and,
+   below it, the sticky header remains the containing block. */
+.mega-wrapper {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    z-index: 40;
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 200ms;
+}
+.mega-dropdown:hover .mega-wrapper,
+.mega-dropdown:focus-within .mega-wrapper {
+    visibility: visible;
+}
+
+.mega-panel {
+    pointer-events: auto;
+    margin-inline: auto;
+    max-width: 64rem;
+    overflow: hidden;
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+    border: 1px solid var(--color-border-default);
+    padding-inline: var(--space-4);
+    opacity: 0;
+    background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    transition:
+        opacity 200ms,
+        background-color 200ms,
+        border-color 200ms;
+}
+@media (min-width: 40rem) {
+    .mega-panel {
+        padding-inline: var(--space-6);
+    }
+}
+.mega-dropdown:hover .mega-panel,
+.mega-dropdown:focus-within .mega-panel {
+    opacity: 1;
+}
+#site-header.header-dark .mega-panel {
+    border-color: var(--color-dark-neutral-500);
+    background-color: color-mix(in oklab, var(--color-brand-black) 90%, transparent);
+}
+
+.mega-panel-inner {
+    display: flex;
+    gap: var(--space-16);
+    padding-block: 3.5rem;
+}
+
+.mega-links {
+    display: none;
+    width: 100%;
+}
+.mega-links.is-active {
+    display: block;
+}
+.mega-links ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3) var(--space-10);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.mega-link-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    padding: var(--space-3);
+    text-decoration: none;
+    transition: all 150ms;
+}
+.mega-link-item:hover {
+    border-color: var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+}
+#site-header.header-dark .mega-link-item:hover {
+    border-color: var(--color-dark-neutral-500);
+    background-color: var(--color-dark-neutral-600);
+}
+.mega-link-icon {
+    flex-shrink: 0;
+    display: flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+    color: var(--color-surface-icon);
+}
+#site-header.header-dark .mega-link-icon {
+    border-color: var(--color-dark-neutral-500);
+    background-color: var(--color-dark-neutral-600);
+    color: var(--color-light-neutral-300);
+}
+.mega-link-title {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-neutral-850);
+}
+#site-header.header-dark .mega-link-title {
+    color: #ffffff;
+}
+.mega-link-desc {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .mega-link-desc {
+    color: var(--color-dark-neutral-100);
+}
+
+.mega-sidebar {
+    width: 22rem;
+    flex-shrink: 0;
+}
+.mega-sidebar.is-hidden {
+    display: none;
+}
+.mega-sidebar-card {
+    border-radius: var(--radius-2xl);
+    border: 0.5px solid var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+    padding: var(--space-12);
+}
+#site-header.header-dark .mega-sidebar-card {
+    border-color: var(--color-dark-neutral-500);
+    background-color: var(--color-dark-neutral-600);
+}
+.integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+}
+.integration-tile {
+    display: flex;
+    aspect-ratio: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-default);
+    background: #ffffff;
+    padding: var(--space-2);
+    transition:
+        border-color 150ms,
+        background-color 150ms;
+}
+.integration-tile:hover {
+    border-color: var(--color-neutral-300);
+    background-color: var(--color-neutral-50);
+}
+.integration-tile img {
+    height: 2.5rem;
+    width: 2.5rem;
+    object-fit: contain;
+}
+
+.mega-sidebar-blurb {
+    margin-top: var(--space-6);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .mega-sidebar-blurb {
+    color: var(--color-dark-neutral-100);
+}
+.mega-sidebar-cta {
+    margin-top: var(--space-3);
     display: inline-flex;
     align-items: center;
-    white-space: nowrap;
-    min-height: var(--tap);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
+    gap: var(--space-1);
+    font-family: var(--font-sans);
     font-size: var(--text-sm);
-    color: var(--foreground);
-    transition:
-        background-color var(--duration-hover) var(--ease-out),
-        color var(--duration-hover) var(--ease-out);
+    font-weight: 500;
+    color: var(--color-neutral-600);
+    text-decoration: none;
 }
-.site-nav a:hover,
-.site-header__link:hover {
-    background: var(--accent);
-    color: var(--accent-foreground);
+.mega-sidebar-cta:hover {
+    color: #262626;
+}
+#site-header.header-dark .mega-sidebar-cta {
+    color: var(--color-light-neutral-300);
+}
+#site-header.header-dark .mega-sidebar-cta:hover {
+    color: #ffffff;
+}
+.mega-sidebar-image {
+    width: 100%;
+    display: block;
 }
 
-.site-header__end {
-    display: flex;
+/* ---- Desktop right side: log in, theme toggle, CTA ------------------------ */
+#site-header .desktop-actions {
+    display: none;
     align-items: center;
-    gap: var(--space-2);
-    margin-left: auto;
+    gap: var(--space-6);
 }
-.site-header__link {
-    display: none; /* secondary links appear from md up */
-}
-.site-header__link--accent,
-.site-header__link--accent:hover {
-    color: var(--link);
+@media (min-width: 64rem) {
+    #site-header .desktop-actions {
+        display: flex;
+    }
 }
 
-/* "Get started" is outlined rather than filled: blue stays a thin accent up
-   here so the hero headline can carry it. */
-.btn-outline {
+#site-header .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
-    min-height: var(--tap);
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid var(--spike-blue);
-    border-radius: var(--radius-md);
+    gap: var(--space-2);
+    height: 2.75rem;
+    border-radius: var(--radius-lg);
+    padding-inline: var(--space-5);
+    font-family: var(--font-mono);
     font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--spike-blue);
+    letter-spacing: var(--tracking-mono);
+    font-weight: 400;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 150ms;
+    transform-origin: right center;
+}
+#site-header .btn-primary {
+    color: #ffffff;
+    background: #134ed9;
+    box-shadow:
+        0 0 0 1px #1b56e1,
+        0 1.5px 9px 0 rgba(22, 22, 24, 0.078),
+        0 0.75px 1.5px -0.75px rgba(22, 22, 24, 0.078);
+}
+#site-header .btn-primary:hover {
+    background: #0d379a;
+}
+@media (min-width: 64rem) {
+    #header-cta-signup {
+        transform: translateY(calc(-0.3125rem * var(--header-progress)))
+            scale(calc(1 - 0.16 * var(--header-progress)));
+        will-change: transform;
+    }
+}
+#site-header .btn-outline {
+    color: var(--color-brand-black);
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+#site-header .btn-outline:hover {
+    background: #f3f3f3;
+}
+#site-header .btn-outline-light {
     background: transparent;
-    transition:
-        background-color var(--duration-hover) var(--ease-out),
-        color var(--duration-hover) var(--ease-out);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
-.btn-outline:hover {
-    background: var(--spike-blue);
-    color: var(--spike-white);
+#site-header .btn-outline-light:hover {
+    background: #ffffff;
+    color: var(--color-brand-black);
 }
-.dark .btn-outline {
-    border-color: var(--link);
-    color: var(--link);
-}
-.dark .btn-outline:hover {
-    background: var(--link);
-    color: var(--spike-black);
+#site-header .btn-full {
+    width: 100%;
 }
 
-/* Shown by the head script; hidden without JS so it can't be a dead control. */
+/* Theme toggle — the site's existing dark/light switch (not part of the
+   original mockup), dropped into the desktop and mobile action groups.
+   Reuses the same sun/moon markup and `.dark` class contract used
+   everywhere else on the page. */
 .theme-toggle {
     display: none;
     align-items: center;
@@ -470,6 +897,13 @@ kbd.key {
 .js .theme-toggle {
     display: inline-flex;
 }
+@media (min-width: 64rem) {
+    #site-header .desktop-actions .theme-toggle {
+        transform: translateY(calc(-0.3125rem * var(--header-progress)))
+            scale(calc(1 - 0.16 * var(--header-progress)));
+        will-change: transform;
+    }
+}
 .theme-toggle:hover {
     background: var(--accent);
     color: var(--accent-foreground);
@@ -484,6 +918,218 @@ kbd.key {
 }
 .dark .theme-toggle .icon-moon {
     display: block;
+}
+.mobile-actions .theme-toggle {
+    width: 100%;
+    gap: var(--space-2);
+}
+.mobile-actions .theme-toggle span {
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+/* ---- Mobile toggle ---------------------------------------------------- */
+.mobile-menu-toggle {
+    position: relative;
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--color-brand-black);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+@media (min-width: 64rem) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+.mobile-menu-toggle.is-dark {
+    color: #ffffff;
+}
+.mobile-menu-toggle svg {
+    position: absolute;
+    transition: all 300ms;
+}
+#mobile-menu-icon-close {
+    transform: rotate(-90deg) scale(0.75);
+    opacity: 0;
+}
+#mobile-menu-icon-open.is-open {
+    transform: rotate(90deg) scale(0.75);
+    opacity: 0;
+}
+#mobile-menu-icon-close.is-open {
+    transform: none;
+    opacity: 1;
+}
+
+/* ---- Mobile sheet ------------------------------------------------------ */
+#mobile-menu {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    top: var(--header-height);
+    z-index: 30;
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    border-top: 1px solid var(--color-border-default);
+    background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    transition:
+        opacity 300ms,
+        visibility 300ms;
+}
+@media (min-width: 64rem) {
+    #mobile-menu {
+        display: none;
+    }
+}
+#mobile-menu.is-open {
+    visibility: visible;
+    opacity: 1;
+}
+#site-header.header-dark #mobile-menu {
+    border-color: var(--color-dark-neutral-500);
+    background-color: color-mix(in oklab, var(--color-brand-black) 90%, transparent);
+}
+.mobile-menu-inner {
+    margin-inline: auto;
+    max-width: 64rem;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-10) var(--space-6) var(--space-8);
+}
+@media (min-width: 40rem) {
+    .mobile-menu-inner {
+        padding-inline: var(--space-8);
+    }
+}
+.mobile-nav-list {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.mobile-nav-item {
+    border-bottom: 1px solid var(--color-border-default);
+}
+#site-header.header-dark .mobile-nav-item {
+    border-color: var(--color-dark-neutral-500);
+}
+.mobile-nav-trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-brand-black);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+#site-header.header-dark .mobile-nav-trigger {
+    color: #ffffff;
+}
+.mobile-nav-trigger .chevron {
+    transition: transform 300ms;
+    flex-shrink: 0;
+}
+.mobile-nav-trigger[aria-expanded='true'] .chevron {
+    transform: rotate(90deg);
+}
+.mobile-nav-link {
+    display: block;
+    padding-block: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-brand-black);
+    text-decoration: none;
+}
+#site-header.header-dark .mobile-nav-link {
+    color: #ffffff;
+}
+.mobile-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms;
+}
+.mobile-panel.is-open {
+    grid-template-rows: 1fr;
+}
+.mobile-panel-scroll {
+    overflow: hidden;
+}
+.mobile-link-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+.mobile-link-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    padding: 0.625rem var(--space-2);
+    text-decoration: none;
+    transition: all 150ms;
+}
+.mobile-link-item:hover {
+    border-color: var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+}
+.mobile-link-icon {
+    flex-shrink: 0;
+    display: flex;
+    height: 2.125rem;
+    width: 2.125rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+    color: var(--color-surface-icon);
+}
+.mobile-link-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-neutral-850);
+}
+#site-header.header-dark .mobile-link-title {
+    color: #ffffff;
+}
+.mobile-actions {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.hidden-important {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #site-header * {
+        transition: none !important;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -507,7 +1153,7 @@ main > .page:first-child {
    make the bright rim, and everything inside it is the wash. --brand-rgb is
    --spike-blue as channels so the same colour can carry an alpha. */
 .hero {
-    --brand-rgb: 19 78 217; /* = --spike-blue #134ED9 */
+    --brand-rgb: 22 22 24; /* = --spike-black #161618 */
 
     /* The swoosh is one big off-canvas ellipse. On a phone the panel is far
        taller than it is wide, so the same ellipse would cut straight through
@@ -515,8 +1161,7 @@ main > .page:first-child {
     --swoosh: 121% 125% at 125% 165%;
     position: relative;
     isolation: isolate;
-    margin-top: calc(var(--header-h) * -1 - var(--space-4));
-    padding-top: calc(var(--header-h) + var(--space-4) + var(--space-16));
+    padding-top: var(--space-16);
     padding-bottom: var(--space-16);
     border-end-start-radius: 3rem;
     border-end-end-radius: 3rem;
@@ -658,7 +1303,7 @@ main > .page:first-child {
 
 /* Term-page toolbar: back link + the palette trigger. */
 .toolbar-wrap--slim {
-    top: 0; /* single row — nothing needs to scroll out of the way */
+    top: var(--header-height); /* single row, pinned right under the fixed header */
 }
 .toolbar.toolbar--slim {
     flex-direction: row;
@@ -699,12 +1344,12 @@ main > .page:first-child {
 /* --------------------------------------------------------------------------
    7. Toolbar — sticky search + A–Z jump
    -------------------------------------------------------------------------- */
-/* On phones the A–Z strip is the toolbar's first row and is allowed to scroll
-   away — a negative sticky offset parks the search row alone at the top
-   instead of pinning 130px of chrome. From `md` up both fit on one row. */
+/* Pinned right under the fixed/sticky site header (top tracks
+   --header-height live, so it stays flush even while the header is
+   compacting on scroll) rather than at the literal viewport top. */
 .toolbar-wrap {
     position: sticky;
-    top: -4.5rem;
+    top: var(--header-height);
     z-index: 20;
     padding-block: var(--space-3);
     margin-block: var(--space-6) var(--space-4);
@@ -794,9 +1439,16 @@ main > .page:first-child {
     display: none;
 }
 
-/* The result count is a live region, so it stays in the accessibility tree at
-   every width — the wrapper above is what hides it visually on small screens. */
+/* The result count stays in the accessibility tree as a live region (search
+   still announces "N terms match…" to screen readers) but isn't shown — kept
+   visually hidden at every width rather than only on small screens. */
 .toolbar__count {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
 
@@ -870,7 +1522,7 @@ main > .page:first-child {
        real one and the scrollbar doesn't lurch as sections fill in. */
     content-visibility: auto;
     contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.75rem);
-    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
 }
 .letter[hidden] {
     display: none;
@@ -919,7 +1571,7 @@ main > .page:first-child {
     border-radius: var(--radius-xl);
     background: var(--card);
     box-shadow: var(--shadow-sm);
-    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
     transition:
         background-color var(--duration-hover) var(--ease-out),
         border-color var(--duration-hover) var(--ease-out),
@@ -1069,7 +1721,7 @@ main > .page:first-child {
     font-weight: var(--font-weight-semibold);
     line-height: var(--leading-tight);
     margin-top: var(--space-8);
-    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
 }
 .prose h2:first-child {
     margin-top: 0;
@@ -1463,9 +2115,6 @@ main > .page:first-child {
         border-radius: var(--radius-sm);
         font-size: var(--text-xs);
     }
-    .toolbar-wrap {
-        top: 0;
-    }
 }
 
 @media (min-width: 64rem) {
@@ -1485,7 +2134,7 @@ main > .page:first-child {
     .letter__head {
         display: block;
         position: sticky;
-        top: calc(var(--toolbar-h) + var(--space-6));
+        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
         margin-bottom: 0;
     }
     .letter__head h2 {
@@ -1498,7 +2147,7 @@ main > .page:first-child {
     }
     .term-aside {
         position: sticky;
-        top: calc(var(--toolbar-h) + var(--space-6));
+        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
     }
 }
 

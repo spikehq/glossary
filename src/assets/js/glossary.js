@@ -36,26 +36,275 @@
        colour in sync.
        ==================================================================== */
     (function themeToggle() {
-        var btn = doc.getElementById('theme-toggle');
-        if (!btn) return;
+        // Two instances live in the header: one in the desktop actions, one in
+        // the mobile sheet. Both stay in sync with each other and the meta tag.
+        var btns = doc.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+        if (!btns.length) return;
         var meta = doc.getElementById('theme-color');
+
+        // The header's own `.header-dark` treatment (frosted-black chrome,
+        // white mobile "log in" outline) was built for scrolling over a dark
+        // hero section — this site has none, so it's otherwise unused.
+        // Driving it from the global theme switch instead gives one
+        // full-page dark mode rather than a light header floating over a
+        // dark page.
+        var siteHeader = doc.getElementById('site-header');
+        var menuToggleBtn = doc.getElementById('mobile-menu-toggle');
+        var mobileLoginLight = doc.getElementById('mobile-cta-login-light');
+        var mobileLoginDark = doc.getElementById('mobile-cta-login-dark');
 
         function sync() {
             var dark = root.classList.contains('dark');
-            btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+            Array.prototype.forEach.call(btns, function (btn) {
+                btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+            });
             if (meta) meta.setAttribute('content', dark ? '#161618' : '#fcfbf9');
+            if (siteHeader) siteHeader.classList.toggle('header-dark', dark);
+            if (menuToggleBtn) menuToggleBtn.classList.toggle('is-dark', dark);
+            if (mobileLoginLight) mobileLoginLight.classList.toggle('hidden-important', dark);
+            if (mobileLoginDark) mobileLoginDark.classList.toggle('hidden-important', !dark);
         }
 
         sync();
-        btn.addEventListener('click', function () {
-            var dark = root.classList.toggle('dark');
-            try {
-                localStorage.setItem('spike-theme', dark ? 'dark' : 'light');
-            } catch (e) {
-                /* private mode — the choice just won't persist */
-            }
-            sync();
+        Array.prototype.forEach.call(btns, function (btn) {
+            btn.addEventListener('click', function () {
+                var dark = root.classList.toggle('dark');
+                try {
+                    localStorage.setItem('spike-theme', dark ? 'dark' : 'light');
+                } catch (e) {
+                    /* private mode — the choice just won't persist */
+                }
+                sync();
+            });
         });
+    })();
+
+    /* ====================================================================
+       Header — ported close to verbatim from spike-header-standalone.html:
+       scroll-linked compaction + dark/light flip over `data-header-theme`
+       sections, the desktop mega-dropdown, and the mobile hamburger sheet.
+       ==================================================================== */
+    (function header() {
+        var siteHeader = doc.getElementById('site-header');
+        var logoLight = doc.getElementById('site-logo-light');
+        var logoDark = doc.getElementById('site-logo-dark');
+        var menuToggle = doc.getElementById('mobile-menu-toggle');
+        var mobileLoginLight = doc.getElementById('mobile-cta-login-light');
+        var mobileLoginDark = doc.getElementById('mobile-cta-login-dark');
+
+        if (siteHeader) {
+            var darkSections = doc.querySelectorAll('[data-header-theme="dark"]');
+            var activeDarkSections = [];
+            var reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            var desktop = window.matchMedia('(min-width: 64rem)');
+            // Hero-triggered flip (data-header-theme="dark") is independent of
+            // the global light/dark theme switch — either can put the header
+            // in its dark treatment, so the two are OR'd together below
+            // rather than one clobbering the other on the next scroll tick.
+            var heroDark = false;
+            var lastScrolled = null;
+            var lastIsDark = null;
+            var lastProgress = -1;
+
+            var SHRINK_DISTANCE = 100;
+            var easeOutCubic = function (t) {
+                return 1 - Math.pow(1 - t, 3);
+            };
+
+            var applyHeaderProgress = function () {
+                if (!desktop.matches) {
+                    if (lastProgress === 0) return;
+                    lastProgress = 0;
+                    root.style.setProperty('--header-progress', '0');
+                    return;
+                }
+                var travelled = Math.min(1, Math.max(0, window.scrollY / SHRINK_DISTANCE));
+                var progress = reduceMotionQuery.matches
+                    ? window.scrollY > 0
+                        ? 1
+                        : 0
+                    : easeOutCubic(travelled);
+                var rounded = Math.round(progress * 1000) / 1000;
+                if (rounded === lastProgress) return;
+                lastProgress = rounded;
+                root.style.setProperty('--header-progress', String(rounded));
+            };
+
+            var applyHeaderChrome = function () {
+                var scrolled = window.scrollY > 0;
+                var isDark = heroDark || root.classList.contains('dark');
+                if (scrolled === lastScrolled && isDark === lastIsDark) return;
+                lastScrolled = scrolled;
+                lastIsDark = isDark;
+
+                siteHeader.classList.toggle('header-dark', isDark);
+                if (logoLight) logoLight.classList.toggle('opacity-0', isDark);
+                if (logoDark) logoDark.classList.toggle('opacity-0', !isDark);
+                if (menuToggle) menuToggle.classList.toggle('is-dark', isDark);
+                if (mobileLoginLight) mobileLoginLight.classList.toggle('hidden-important', isDark);
+                if (mobileLoginDark) mobileLoginDark.classList.toggle('hidden-important', !isDark);
+            };
+
+            if (darkSections.length) {
+                var headerHeight = siteHeader.offsetHeight;
+                var bandMargin = function () {
+                    return Math.max(0, window.innerHeight - headerHeight);
+                };
+
+                var observer = null;
+                var createObserver = function () {
+                    if (observer) observer.disconnect();
+                    activeDarkSections = [];
+                    observer = new IntersectionObserver(
+                        function (entries) {
+                            entries.forEach(function (entry) {
+                                var i = activeDarkSections.indexOf(entry.target);
+                                if (entry.isIntersecting) {
+                                    if (i === -1) activeDarkSections.push(entry.target);
+                                } else if (i !== -1) {
+                                    activeDarkSections.splice(i, 1);
+                                }
+                            });
+                            heroDark = activeDarkSections.length > 0;
+                            applyHeaderChrome();
+                        },
+                        { rootMargin: '0px 0px -' + bandMargin() + 'px 0px', threshold: 0 }
+                    );
+                    darkSections.forEach(function (section) {
+                        observer.observe(section);
+                    });
+
+                    darkSections.forEach(function (section) {
+                        var rect = section.getBoundingClientRect();
+                        if (rect.top < headerHeight && rect.bottom > 0 && activeDarkSections.indexOf(section) === -1) {
+                            activeDarkSections.push(section);
+                        }
+                    });
+                    heroDark = activeDarkSections.length > 0;
+                };
+
+                createObserver();
+                window.addEventListener('resize', createObserver);
+            }
+
+            applyHeaderChrome();
+            applyHeaderProgress();
+
+            var recomputeProgress = function () {
+                lastProgress = -1;
+                applyHeaderProgress();
+            };
+            reduceMotionQuery.addEventListener('change', recomputeProgress);
+            desktop.addEventListener('change', recomputeProgress);
+
+            var scrollTicking = false;
+            window.addEventListener(
+                'scroll',
+                function () {
+                    if (scrollTicking) return;
+                    scrollTicking = true;
+                    requestAnimationFrame(function () {
+                        applyHeaderProgress();
+                        applyHeaderChrome();
+                        scrollTicking = false;
+                    });
+                },
+                { passive: true }
+            );
+        }
+
+        /* ---- desktop mega-dropdown: hover/focus swaps panel + sidebar --- */
+        var dropdown = doc.querySelector('.mega-dropdown');
+        if (dropdown) {
+            var triggers = dropdown.querySelectorAll('[data-trigger]');
+            var panels = dropdown.querySelectorAll('[data-panel]');
+            var sidebars = dropdown.querySelectorAll('[data-sidebar]');
+
+            var showPanel = function (name) {
+                panels.forEach(function (p) {
+                    p.classList.toggle('is-active', p.dataset.panel === name);
+                });
+                sidebars.forEach(function (s) {
+                    s.classList.toggle('is-hidden', s.dataset.sidebar !== name);
+                });
+                triggers.forEach(function (t) {
+                    t.setAttribute('aria-expanded', String(t.dataset.trigger === name));
+                });
+            };
+
+            triggers.forEach(function (trigger) {
+                trigger.addEventListener('mouseenter', function () {
+                    showPanel(trigger.dataset.trigger);
+                });
+                trigger.addEventListener('focus', function () {
+                    showPanel(trigger.dataset.trigger);
+                });
+            });
+
+            showPanel('products');
+        }
+
+        /* ---- mobile menu: hamburger toggle + accordion sections --------- */
+        var toggle = doc.getElementById('mobile-menu-toggle');
+        var menu = doc.getElementById('mobile-menu');
+        var iconOpen = doc.getElementById('mobile-menu-icon-open');
+        var iconClose = doc.getElementById('mobile-menu-icon-close');
+
+        if (toggle && menu && iconOpen && iconClose) {
+            var labelOpen = toggle.dataset.labelOpen || '';
+            var labelClose = toggle.dataset.labelClose || '';
+
+            var setOpen = function (open) {
+                toggle.setAttribute('aria-expanded', String(open));
+                toggle.setAttribute('aria-label', open ? labelClose : labelOpen);
+                menu.classList.toggle('is-open', open);
+                menu.setAttribute('aria-hidden', String(!open));
+                if (open) doc.documentElement.style.overflow = 'hidden';
+                else doc.documentElement.style.overflow = '';
+
+                iconOpen.classList.toggle('is-open', open);
+                iconClose.classList.toggle('is-open', open);
+
+                if (!open) {
+                    var collapseAccordions = function () {
+                        if (menu.getAttribute('aria-hidden') !== 'true') return;
+                        menu.querySelectorAll('[data-mobile-trigger]').forEach(function (t) {
+                            t.setAttribute('aria-expanded', 'false');
+                        });
+                        menu.querySelectorAll('[data-mobile-panel]').forEach(function (p) {
+                            p.classList.remove('is-open');
+                        });
+                    };
+                    if (reduceMotion) collapseAccordions();
+                    else menu.addEventListener('transitionend', collapseAccordions, { once: true });
+                }
+            };
+
+            toggle.addEventListener('click', function () {
+                setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+            });
+
+            doc.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+                    setOpen(false);
+                    toggle.focus();
+                }
+            });
+
+            window.matchMedia('(min-width: 64rem)').addEventListener('change', function (e) {
+                if (e.matches) setOpen(false);
+            });
+
+            menu.querySelectorAll('[data-mobile-trigger]').forEach(function (trigger) {
+                trigger.addEventListener('click', function () {
+                    var key = trigger.dataset.mobileTrigger;
+                    var panel = menu.querySelector('[data-mobile-panel="' + key + '"]');
+                    var isOpen = trigger.getAttribute('aria-expanded') === 'true';
+                    trigger.setAttribute('aria-expanded', String(!isOpen));
+                    if (panel) panel.classList.toggle('is-open', !isOpen);
+                });
+            });
+        }
     })();
 
     /* ====================================================================
