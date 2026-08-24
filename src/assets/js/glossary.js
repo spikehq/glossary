@@ -1042,6 +1042,39 @@
   })();
 
   /* ====================================================================
+       FAQ accordion. The CSS (see glossary.css) animates *opening* by
+       flipping `.faq__answer-wrap`'s grid-template-rows once `[open]`
+       lands — but a native <details> closes by having the browser yank
+       its content to `display: none` the instant `open` is removed,
+       before any transition gets a chance to run. Intercept the close,
+       animate it by hand, and only then let the attribute actually go.
+       ==================================================================== */
+  (function faqAccordion() {
+    var items = doc.querySelectorAll(".faq__item");
+    if (!items.length || reduceMotion) return;
+
+    Array.prototype.forEach.call(items, function (item) {
+      var summary = item.querySelector(".faq__question");
+      var wrap = item.querySelector(".faq__answer-wrap");
+      if (!summary || !wrap) return;
+
+      summary.addEventListener("click", function (e) {
+        if (!item.open) return; // opening: the browser's default action + CSS handle it
+        e.preventDefault();
+        wrap.addEventListener(
+          "transitionend",
+          function () {
+            item.open = false;
+            wrap.style.gridTemplateRows = "";
+          },
+          { once: true },
+        );
+        wrap.style.gridTemplateRows = "0fr";
+      });
+    });
+  })();
+
+  /* ====================================================================
        Newsletter (Loops). Without JS the form still posts normally; this only
        keeps the reader on the page and reports the result in a live region.
        ==================================================================== */

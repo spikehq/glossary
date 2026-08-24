@@ -84,12 +84,26 @@ permalink: /
 
     <section class="card faq" aria-labelledby="faq-title">
         <h2 id="faq-title">About this glossary</h2>
-        <dl class="faq__list">
-            <dt>What is the Incident Response Glossary?</dt>
-            <dd>It's a curated collection of {{collections.glossaryItems.length}}+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps.</dd>
-            <dt>How can I use this glossary?</dt>
-            <dd>You can browse terms alphabetically, use the search, or explore related terms to learn incident response more effectively.</dd>
-        </dl>
+        <div class="faq__list">
+            <details class="faq__item">
+                <summary class="faq__question">
+                    What is the Incident Response Glossary?
+                    <svg class="faq__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="faq__answer-wrap">
+                    <p class="faq__answer">It's a curated collection of {{collections.glossaryItems.length}}+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps.</p>
+                </div>
+            </details>
+            <details class="faq__item">
+                <summary class="faq__question">
+                    How can I use this glossary?
+                    <svg class="faq__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="faq__answer-wrap">
+                    <p class="faq__answer">You can browse terms alphabetically, use the search, or explore related terms to learn incident response more effectively.</p>
+                </div>
+            </details>
+        </div>
         <a class="btn" href="{{site.social.github}}">Contribute a term on GitHub</a>
     </section>
 </div>

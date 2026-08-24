@@ -1329,14 +1329,65 @@ main > .page:first-child {
     display: flex;
 }
 
-.faq__list dt {
+/* An accordion instead of a flat definition list — with only a couple of
+   questions a `<dl>` still read as "a white box with some text": no
+   structure to scan, no interaction, everything dumped on screen at once.
+   Native `<details>`/`<summary>` gets a real disclosure widget (keyboard
+   and no-JS support included) for free; both start closed. */
+.faq {
+    margin-top: var(--space-12);
+}
+#faq-title {
+    margin-bottom: var(--space-5);
+}
+.faq__item + .faq__item {
+    margin-top: var(--space-2);
+}
+.faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
     font-family: var(--font-heading);
     font-weight: var(--font-weight-semibold);
     color: var(--heading-foreground);
-    margin-top: var(--space-5);
+    cursor: pointer;
+    list-style: none;
 }
-.faq__list dd {
-    margin-top: var(--space-2);
+.faq__question::-webkit-details-marker {
+    display: none;
+}
+.faq__chevron {
+    flex: none;
+    color: var(--muted-foreground);
+    transition: transform var(--duration-enter) var(--ease-out);
+}
+.faq__item[open] .faq__chevron {
+    transform: rotate(180deg);
+}
+/* The animated part: `<details>` content is either fully laid out or, by
+   the UA stylesheet, `display: none` — nothing in between to transition.
+   Overriding that to an always-present grid row that animates between
+   0fr (no space at all, however tall the content actually is) and 1fr
+   sidesteps needing a JS-measured height, and costs nothing when the
+   browser doesn't support animating grid-template-rows: it simply snaps
+   instead of easing, same as a plain `<details>` would. */
+.faq__answer-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-enter) var(--ease-out);
+}
+.faq__item[open] .faq__answer-wrap {
+    grid-template-rows: 1fr;
+}
+.faq__answer-wrap > .faq__answer {
+    overflow: hidden;
+    min-height: 0;
+}
+.faq__answer {
+    padding-bottom: var(--space-4);
+    max-width: 65ch;
     color: var(--muted-foreground);
     font-size: var(--text-sm);
     line-height: var(--leading-relaxed);
