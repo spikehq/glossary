@@ -31,21 +31,25 @@ permalink: /
                 </form>
             </div>
 
-            <p class="sr-only" id="search-help">Results filter as you type. Press the down arrow to step into the list, Enter to open a term.</p>
+            <p class="sr-only" id="search-help">Results filter as you type. Press the down arrow to step into the list, arrow keys to move between terms, Enter to open a term.</p>
 
-            {{!-- Sits directly under the A–Z row: the shortcuts belong next to the
-                  thing they drive, not in the hero. Duplicated by #search-help for
-                  screen readers, so this copy is decorative. --}}
             <p class="toolbar__meta">
                 <span class="toolbar__count" id="result-count" role="status">{{collections.glossaryItems.length}} terms</span>
-                <span class="toolbar__keys" aria-hidden="true">
-                    <kbd class="key">&uarr;</kbd><kbd class="key">&darr;</kbd> move
-                    <kbd class="key">&crarr;</kbd> open
-                    <kbd class="key">/</kbd> search
-                </span>
             </p>
         </div>
     </div>
+</div>
+
+{{!-- Sits directly under the sticky toolbar, but outside it: unlike the count,
+      this legend doesn't need to stay pinned while scrolling, so it lives here
+      and scrolls away with the page. Duplicated by #search-help for screen
+      readers, so this copy is decorative. --}}
+<div class="page">
+    <p class="toolbar__keys" aria-hidden="true">
+        <kbd class="key">&uarr;</kbd><kbd class="key">&darr;</kbd><kbd class="key">&larr;</kbd><kbd class="key">&rarr;</kbd> move
+        <kbd class="key">&crarr;</kbd> open
+        <kbd class="key">/</kbd> search
+    </p>
 </div>
 
 <div class="page">

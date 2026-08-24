@@ -540,6 +540,11 @@ kbd.key {
     width: auto;
     transform-origin: left center;
 }
+/* Forces the fixed blue wordmark to solid white against the header's
+   frosted-black chrome — cheaper than shipping a second logo asset. */
+#site-header.header-dark #site-logo {
+    filter: brightness(0) invert(1);
+}
 @media (min-width: 64rem) {
     #site-logo {
         transform: translateY(calc(-0.3125rem * var(--header-progress)))
@@ -1402,7 +1407,9 @@ main > .page:first-child {
 .toolbar__keys {
     display: none;
     align-items: center;
+    justify-content: flex-end;
     gap: var(--space-2);
+    margin-block: 0 var(--space-4);
     font-size: var(--text-xs);
     color: var(--muted-foreground);
 }
@@ -1442,6 +1449,14 @@ main > .page:first-child {
 }
 .search input::placeholder {
     color: var(--muted-foreground);
+}
+/* Chromium's native search-input clear button renders as a blue-tinted
+   circle that clashes with the rest of the UI — drop it; Escape already
+   clears the field. */
+.search input::-webkit-search-cancel-button,
+.search input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
 }
 .search input:hover {
     border-color: var(--ring);
@@ -2284,20 +2299,6 @@ main > .page:first-child {
 @media (min-width: 48rem) {
     .site-header__link {
         display: inline-flex;
-    }
-    .toolbar__meta {
-        position: static;
-        width: auto;
-        height: auto;
-        overflow: visible;
-        clip-path: none;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--space-4);
-        padding-top: var(--space-1);
-        font-size: var(--text-xs);
-        color: var(--muted-foreground);
     }
     .js .toolbar__keys {
         display: flex;

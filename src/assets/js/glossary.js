@@ -483,6 +483,16 @@
       goTo(visible[next]);
     }
 
+    // Each letter section is its own grid, and the column count changes with
+    // viewport width — so up/down has to step by however many cards are
+    // actually in a row right now rather than a number baked in at load.
+    function columnCount(card) {
+      var grid = card.closest(".terms");
+      if (!grid) return 1;
+      var tracks = getComputedStyle(grid).gridTemplateColumns.split(" ");
+      return tracks.length || 1;
+    }
+
     doc.addEventListener("keydown", function (e) {
       if (e.defaultPrevented || e.altKey) return;
       var t = e.target;
@@ -524,8 +534,16 @@
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        move(1, card);
+        move(columnCount(card), card);
       } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        var cols = columnCount(card);
+        if (visible.indexOf(card) - cols < 0) focusSearch();
+        else move(-cols, card);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        move(1, card);
+      } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (visible.indexOf(card) === 0) focusSearch();
         else move(-1, card);
