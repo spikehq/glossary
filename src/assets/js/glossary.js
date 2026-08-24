@@ -558,66 +558,12 @@
       }
     });
 
-    /* ---- mobile search sheet: under 40rem the toolbar's search input
-           docks off-screen (see the max-width:39.999rem rules in
-           glossary.css) and surfaces through this floating trigger instead,
-           so it's reachable without scrolling back to the sticky toolbar. */
-    var mobileToggle = doc.getElementById("mobile-search-toggle");
-    if (mobileToggle) {
-      var mobileClose = doc.getElementById("mobile-search-close");
-      var mobileBackdrop = doc.getElementById("mobile-search-backdrop");
-      var mobilePortal = doc.getElementById("mobile-search-portal");
-      var searchHome = { parent: form.parentNode, next: form.nextSibling };
-      var mobileQuery = window.matchMedia("(max-width: 39.999rem)");
-
-      // .toolbar-wrap has its own backdrop-filter, which makes it a
-      // containing block for fixed-position descendants — a .search left
-      // inside it pins to the wrap's box, not the viewport, once CSS makes
-      // it position:fixed at this width. Keep it portaled out for as long
-      // as that CSS could apply (not just while the sheet is open): moving
-      // it only on open would mean the very first tap calls focus() on an
-      // element that had no correct layout a moment earlier, and iOS drops
-      // the keyboard for that instead of raising it.
-      var syncSearchHome = function () {
-        if (mobileQuery.matches) {
-          if (mobilePortal && form.parentNode !== mobilePortal) {
-            mobilePortal.appendChild(form);
-          }
-        } else {
-          form.classList.remove("is-open");
-          if (form.parentNode !== searchHome.parent) {
-            searchHome.parent.insertBefore(form, searchHome.next);
-          }
-        }
-      };
-      syncSearchHome();
-      mobileQuery.addEventListener("change", syncSearchHome);
-
-      var openMobileSearch = function () {
-        form.classList.add("is-open");
-        mobileToggle.setAttribute("aria-expanded", "true");
-        mobileToggle.hidden = true;
-        if (mobileBackdrop) mobileBackdrop.hidden = false;
-        focusSearch();
-      };
-      var closeMobileSearch = function () {
-        form.classList.remove("is-open");
-        mobileToggle.setAttribute("aria-expanded", "false");
-        mobileToggle.hidden = false;
-        if (mobileBackdrop) mobileBackdrop.hidden = true;
-        input.blur();
-      };
-
-      mobileToggle.addEventListener("click", openMobileSearch);
-      if (mobileClose) mobileClose.addEventListener("click", closeMobileSearch);
-      if (mobileBackdrop)
-        mobileBackdrop.addEventListener("click", closeMobileSearch);
-      doc.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && form.classList.contains("is-open")) {
-          closeMobileSearch();
-        }
-      });
-    }
+    /* ---- mobile search: under 40rem the inline toolbar search is hidden
+           entirely (see the max-width:39.999rem rules in glossary.css) and
+           reached instead through the #mobile-search-toggle FAB, which opens
+           the #palette overlay — same dropdown-results-over-a-scrim pattern
+           term pages use for Cmd+K, just without the keyboard-shortcut
+           footer. Wired up below, once the palette's own `open` exists. */
 
     /* ---- deep link: /?q=alert (the WebSite SearchAction target) ----- */
     try {
@@ -708,14 +654,23 @@
   /* ====================================================================
        Term pages: a ⌘K palette over the full term list, fetched lazily on
        first open so it costs nothing at load.
+
+       The homepage also carries one, marked data-scope="mobile" (see
+       src/index.hbs / palette.hbs): there it's reached only through the
+       #mobile-search-toggle FAB below 40rem, not Cmd+K or "/", and it must
+       never touch `focusSearch` or the global shortcuts further down —
+       those still belong to the homepage's own inline, live-filtering
+       search on every width the FAB isn't shown at.
        ==================================================================== */
   var palette = doc.getElementById("palette");
 
   if (palette) {
+    var paletteMobileOnly = palette.dataset.scope === "mobile";
     var panelInput = doc.getElementById("palette-input");
     var results = doc.getElementById("palette-results");
     var scrim = palette.querySelector(".palette__scrim");
     var openBtn = doc.getElementById("open-palette");
+    var mobileToggleBtn = doc.getElementById("mobile-search-toggle");
     var src = palette.dataset.src;
 
     var terms = null;
@@ -829,6 +784,7 @@
     }
 
     if (openBtn) openBtn.addEventListener("click", open);
+    if (mobileToggleBtn) mobileToggleBtn.addEventListener("click", open);
     if (scrim) scrim.addEventListener("click", close);
 
     panelInput.addEventListener("input", render);
@@ -859,32 +815,38 @@
       if (opt) window.location.href = opt.dataset.href;
     });
 
-    focusSearch = open;
+    // The homepage's mobile-only instance is reached solely by tapping the
+    // FAB above — Cmd+K, "/" and `focusSearch` stay with the homepage's own
+    // inline search (see the "Index: live filter" block above), which is
+    // still what desktop/tablet widths use.
+    if (!paletteMobileOnly) {
+      focusSearch = open;
 
-    /* ---- page-level shortcuts on term pages ------------------------ */
-    var prev = doc.querySelector('[data-pager="prev"]');
-    var next = doc.querySelector('[data-pager="next"]');
+      /* ---- page-level shortcuts on term pages ---------------------- */
+      var prev = doc.querySelector('[data-pager="prev"]');
+      var next = doc.querySelector('[data-pager="next"]');
 
-    doc.addEventListener("keydown", function (e) {
-      if (e.defaultPrevented || e.altKey || !palette.hidden) return;
-      var t = e.target;
+      doc.addEventListener("keydown", function (e) {
+        if (e.defaultPrevented || e.altKey || !palette.hidden) return;
+        var t = e.target;
 
-      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
-        e.preventDefault();
-        open();
-        return;
-      }
-      if (e.metaKey || e.ctrlKey || e.shiftKey || isTyping(t)) return;
+        if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+          e.preventDefault();
+          open();
+          return;
+        }
+        if (e.metaKey || e.ctrlKey || e.shiftKey || isTyping(t)) return;
 
-      if (e.key === "/") {
-        e.preventDefault();
-        open();
-      } else if (e.key === "ArrowLeft" && prev) {
-        window.location.href = prev.href;
-      } else if (e.key === "ArrowRight" && next) {
-        window.location.href = next.href;
-      }
-    });
+        if (e.key === "/") {
+          e.preventDefault();
+          open();
+        } else if (e.key === "ArrowLeft" && prev) {
+          window.location.href = prev.href;
+        } else if (e.key === "ArrowRight" && next) {
+          window.location.href = next.href;
+        }
+      });
+    }
   }
 
   /* ====================================================================

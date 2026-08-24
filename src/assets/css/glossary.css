@@ -1345,7 +1345,19 @@ main > .page:first-child {
     margin-top: var(--space-6);
 }
 
-/* Term-page toolbar: back link + the palette trigger. */
+/* Term-page toolbar: back link + the palette trigger. Sits inside
+   `.toolbar-wrap`'s own frosted, sticky fill (see §7 below), so the
+   `.card` it also carries in the markup — border, shadow, opaque
+   background, radius — painted a second boxed surface stacked directly
+   inside the first. Stripped here so it's just content sitting in the
+   sticky bar, not a card floating inside a bar. */
+.toolbar.toolbar--slim.card {
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    padding-inline: 0;
+}
 .toolbar-wrap--slim {
     top: 0;
 }
@@ -1502,23 +1514,12 @@ main > .page:first-child {
 .search input:not(:placeholder-shown) ~ .search__hint {
     display: none;
 }
-/* Only meaningful for the mobile search sheet (see the max-width:39.999rem
-   rules below) — hidden everywhere else. This base rule has to exist
-   outside that media query, or a browser default <button> renders in its
-   place (border, background, no icon sizing) on every other screen size. */
-.search__close {
-    display: none;
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
-}
-/* Same story as .search__close above: the floating trigger and its backdrop
-   are only ever shown from inside the max-width:39.999rem rules, so they
-   need an explicit off-by-default here too, or they render as an unstyled
-   button and a stray full-screen div on every other screen size. */
-.mobile-search-fab,
-.mobile-search-backdrop {
+/* The floating search trigger is only ever shown from inside the
+   max-width:39.999rem rules below, so it needs an explicit off-by-default
+   here too, or it renders as an unstyled button on every other screen
+   size. Below that width, the inline `.search` form it replaces is hidden
+   in favour of the mobile-scoped #palette overlay it opens. */
+.mobile-search-fab {
     display: none;
 }
 
@@ -1801,6 +1802,18 @@ main > .page:first-child {
     align-items: start;
 }
 
+/* The definition itself is the page's main reading surface, not a widget —
+   boxing it in a bordered, shadowed `.card` (its markup also carries that
+   class) made the whole page read as a stack of panels instead of an
+   article. Let it sit directly on the page background like normal prose. */
+.term-head.card {
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+}
+
 .term-head h1 {
     font-size: var(--text-3xl);
     font-weight: var(--font-weight-bold);
@@ -1872,8 +1885,15 @@ main > .page:first-child {
     flex-direction: column;
     gap: var(--space-4);
 }
-.side-card {
+/* Still visually set apart from the article (it's a promo panel, not
+   content), but as a soft fill rather than a hard-bordered, shadowed box —
+   the shadow in particular read as an odd 3D lift next to the now-flat
+   article beside it. */
+.side-card.card {
     padding: var(--space-5);
+    border: none;
+    box-shadow: none;
+    background: var(--muted);
 }
 .side-card h2,
 .side-card h3 {
@@ -1928,21 +1948,21 @@ main > .page:first-child {
     gap: var(--space-3);
     margin-top: var(--space-6);
 }
+/* A hairline top rule instead of a bordered, shadowed card — reads as a
+   divider between "the definition ends here" and "here's what's next",
+   rather than another boxed panel. */
 .pager a {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    background: var(--card);
-    box-shadow: var(--shadow-sm);
-    transition:
-        background-color var(--duration-hover) var(--ease-out),
-        border-color var(--duration-hover) var(--ease-out);
+    padding: var(--space-4) var(--space-1);
+    border: none;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+    transition: background-color var(--duration-hover) var(--ease-out);
 }
 .pager a:hover {
-    border-color: var(--ring);
     background: var(--accent);
 }
 .pager__label {
@@ -1977,6 +1997,23 @@ main > .page:first-child {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-3);
+}
+/* `.term-card` also drives the homepage's dense A-Z grid (with a keyboard
+   cursor and its own hover styling), so it stays a filled, shadowed card
+   there — that grid is a directory and needs the affordance. Here it's
+   three related links at the bottom of an article, so it's toned down to
+   just an outline: no fill, no shadow, on both the resting and hover
+   states from §8 above. */
+.further .term-card {
+    background: none;
+    box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .further .term-card:hover {
+        background: var(--accent);
+        box-shadow: none;
+        transform: none;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -2019,9 +2056,9 @@ main > .page:first-child {
     inset: 0;
     z-index: 60;
     display: flex;
+    align-items: center;
     justify-content: center;
     padding: var(--space-4);
-    padding-top: 10vh;
 }
 .palette__scrim {
     position: absolute;
@@ -2217,78 +2254,12 @@ main > .page:first-child {
         align-items: stretch;
         gap: var(--space-2);
     }
-    /* The search row moves out of the toolbar entirely at this width — it
-       docks as a floating bottom sheet, opened by the .mobile-search-fab
-       trigger below, instead of sitting inline above the A-Z scroller.
-
-       Kept as display:flex at all times (moved off-canvas with `transform`,
-       not `display:none`) so the input already has layout the instant the
-       trigger is tapped — a focus() called on an element that only became
-       display:flex in that same tick doesn't reliably raise the on-screen
-       keyboard on iOS/Android, since as far as the browser can tell nothing
-       focusable existed at the moment the tap started. `pointer-events`
-       still keeps it inert while parked off-canvas. A centered floating
-       pill, not an edge-to-edge dock — sized to its content (up to 26rem)
-       and inset from both sides, so it reads as one clean card floating
-       above the page rather than a strip nailed to the screen edges. */
+    /* The search row moves out of the toolbar entirely at this width — the
+       #mobile-search-fab trigger below opens the mobile-scoped #palette
+       overlay instead (see glossary.js), so the inline row has nothing
+       left to do here. */
     .js .search {
-        position: fixed;
-        left: 50%;
-        bottom: calc(var(--page-pad) + env(safe-area-inset-bottom, 0px));
-        transform: translate(-50%, 150%);
-        z-index: 95;
-        width: calc(100% - 2 * var(--page-pad));
-        max-width: 26rem;
-        padding: var(--space-2);
-        border-radius: var(--radius-xl);
-        border: 1px solid var(--border);
-        background: var(--card);
-        box-shadow: 0 20px 40px -12px rgb(0 0 0 / 0.45);
-        pointer-events: none;
-        transition: transform 220ms var(--ease-out);
-    }
-    .js .search.is-open {
-        transform: translate(-50%, 0);
-        pointer-events: auto;
-    }
-    .search input {
-        min-height: 2.75rem;
-        border-radius: var(--radius-lg);
-        background: color-mix(in srgb, var(--background) 72%, var(--card));
-        font-size: var(--text-sm);
-    }
-    /* Inside the pill the input's own border/background would draw a
-       second box nested in the first — flatten it so the pill is the only
-       visible edge. */
-    .js .search.is-open input {
-        border: none;
-        background: none;
-        padding-right: 2.5rem;
-    }
-    .search__hint {
         display: none;
-    }
-    .js .search.is-open .search__close {
-        position: absolute;
-        right: var(--space-3);
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: var(--radius-full);
-        color: var(--muted-foreground);
-        transition: background-color var(--duration-hover) var(--ease-out);
-    }
-    .js .search.is-open .search__close:hover {
-        background: var(--accent);
-        color: var(--accent-foreground);
-    }
-    .js .search.is-open .search__close svg {
-        width: 1.1rem;
-        height: 1.1rem;
     }
     .js .mobile-search-fab {
         display: flex;
@@ -2310,12 +2281,10 @@ main > .page:first-child {
         width: 1.35rem;
         height: 1.35rem;
     }
-    .js .mobile-search-backdrop:not([hidden]) {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 94;
-        background: rgb(0 0 0 / 0.35);
+    /* Centered like everywhere else (see §11), just allowed to grow taller
+       on a phone viewport so a short result list isn't wasting space. */
+    .palette__panel {
+        max-height: 80vh;
     }
     /* .az is a plain block (`display: block`, not a flex container itself),
        so — despite being a flex item of .toolbar__top — align-items:stretch
