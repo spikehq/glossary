@@ -424,18 +424,16 @@ kbd.key {
 }
 
 /* ---- Layout / chrome ----------------------------------------------------- */
+/* Scrolls away with the page rather than staying pinned — only the toolbar
+   below it stays sticky. `position: relative`, not `static`: the mega-panel
+   dropdown and the frosted-glass ::before/::after still need #site-header as
+   their positioned containing block. */
 #site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    position: relative;
     height: var(--header-height);
     font-family: var(--font-sans);
 }
 @media (min-width: 64rem) {
-    #site-header {
-        position: fixed;
-        inset-inline: 0;
-    }
     /* On :root, not #site-header: .toolbar-wrap (elsewhere in the page, not
        a descendant of the header) also reads --header-height to stay flush
        against it, and an element-scoped override wouldn't reach outside the
@@ -479,16 +477,6 @@ kbd.key {
 }
 #site-header.header-dark::after {
     opacity: 0;
-}
-
-.header-spacer {
-    display: none;
-    height: 4.5rem;
-}
-@media (min-width: 64rem) {
-    .header-spacer {
-        display: block;
-    }
 }
 
 #site-header .site-nav {
@@ -1322,7 +1310,7 @@ main > .page:first-child {
 
 /* Term-page toolbar: back link + the palette trigger. */
 .toolbar-wrap--slim {
-    top: var(--header-height); /* single row, pinned right under the fixed header */
+    top: 0;
 }
 .toolbar.toolbar--slim {
     flex-direction: row;
@@ -1363,12 +1351,11 @@ main > .page:first-child {
 /* --------------------------------------------------------------------------
    7. Toolbar — sticky search + A–Z jump
    -------------------------------------------------------------------------- */
-/* Pinned right under the fixed/sticky site header (top tracks
-   --header-height live, so it stays flush even while the header is
-   compacting on scroll) rather than at the literal viewport top. */
+/* The header is no longer pinned, so this is the only sticky bar — it
+   sticks at the literal viewport top. */
 .toolbar-wrap {
     position: sticky;
-    top: var(--header-height);
+    top: 0;
     z-index: 20;
     /* No padding-top and no margin-top. The sticky offset lands this
        wrapper's border edge flush under the header, so any top padding
@@ -1556,7 +1543,7 @@ main > .page:first-child {
        real one and the scrollbar doesn't lurch as sections fill in. */
     content-visibility: auto;
     contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.75rem);
-    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
 }
 .letter[hidden] {
     display: none;
@@ -1605,7 +1592,7 @@ main > .page:first-child {
     border-radius: var(--radius-xl);
     background: var(--card);
     box-shadow: var(--shadow-sm);
-    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
     transition:
         background-color 180ms var(--ease-out),
         border-color 180ms var(--ease-out),
@@ -1777,7 +1764,7 @@ main > .page:first-child {
     font-weight: var(--font-weight-semibold);
     line-height: var(--leading-tight);
     margin-top: var(--space-8);
-    scroll-margin-top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
 }
 .prose h2:first-child {
     margin-top: 0;
@@ -2138,7 +2125,7 @@ main > .page:first-child {
     }
 
     .toolbar-wrap {
-        top: 3.5rem;
+        top: 0;
         margin-bottom: var(--space-5);
         background: color-mix(in srgb, var(--background) 94%, transparent);
         backdrop-filter: blur(16px) saturate(140%);
@@ -2204,7 +2191,7 @@ main > .page:first-child {
     }
     .letter__head {
         position: sticky;
-        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-3));
+        top: calc(var(--toolbar-h) + var(--space-3));
         align-self: start;
         display: flex;
         flex-direction: column;
@@ -2345,7 +2332,7 @@ main > .page:first-child {
     .letter__head {
         display: block;
         position: sticky;
-        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
+        top: calc(var(--toolbar-h) + var(--space-6));
         margin-bottom: 0;
         /* Without this the heading is a stretched grid item filling the whole
            row, so it has no slack to travel in and sticky does nothing. */
@@ -2367,7 +2354,7 @@ main > .page:first-child {
     }
     .term-aside {
         position: sticky;
-        top: calc(var(--header-height) + var(--toolbar-h) + var(--space-6));
+        top: calc(var(--toolbar-h) + var(--space-6));
     }
 }
 
