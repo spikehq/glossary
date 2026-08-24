@@ -442,10 +442,18 @@
       });
     }
 
+    var toolbarWrap = doc.querySelector(".toolbar-wrap");
+
     focusSearch = function () {
       buildIndex();
       input.focus();
       input.select();
+      // From the top of the page the sticky toolbar (and every result below
+      // it) can still be a screen down, under the hero — scroll it flush to
+      // the top so results are actually visible right away. A no-op once
+      // it's already docked there, which `scroll-behavior: smooth` (see
+      // §3) makes gentle rather than a jump-cut either way.
+      if (toolbarWrap) toolbarWrap.scrollIntoView({ block: "start" });
     };
 
     // Warm the snapshot up the moment the reader shows any intent, so the
@@ -493,6 +501,53 @@
       return tracks.length || 1;
     }
 
+    // The cards a letter section is actually showing right now, in DOM
+    // order — filtered-out (`hidden`) items don't hold a grid slot, so the
+    // survivors are exactly what the grid is laying out into rows.
+    function sectionCards(s) {
+      var items = sections[s].items;
+      var out = [];
+      for (var i = 0; i < items.length; i++) {
+        if (!items[i].li.hidden) out.push(items[i].a);
+      }
+      return out;
+    }
+
+    function findInSections(card) {
+      for (var s = 0; s < sections.length; s++) {
+        var cards = sectionCards(s);
+        var i = cards.indexOf(card);
+        if (i !== -1) return { section: s, index: i, cards: cards };
+      }
+      return null;
+    }
+
+    // Up/down by row, *within the current letter section's own grid* — each
+    // `.terms` is a separate grid that restarts its own row layout, so a
+    // section's last (partial) row doesn't line up with the flat position
+    // `move()` above would compute once cards from another section follow
+    // it. Crossing a section boundary lands on the nearest column of the
+    // next/previous section's edge row instead of wherever a flat index
+    // offset happens to fall.
+    function stepRow(card, dir) {
+      var pos = findInSections(card);
+      if (!pos) return null;
+      var cols = columnCount(card);
+      var col = pos.index % cols;
+      var target = pos.index + dir * cols;
+
+      if (target >= 0 && target < pos.cards.length) return pos.cards[target];
+
+      for (var s = pos.section + dir; s >= 0 && s < sections.length; s += dir) {
+        var cards = sectionCards(s);
+        if (!cards.length) continue;
+        if (dir > 0) return cards[Math.min(col, cards.length - 1)];
+        var lastRowStart = cards.length - (cards.length % cols || cols);
+        return cards[Math.min(lastRowStart + col, cards.length - 1)];
+      }
+      return null;
+    }
+
     doc.addEventListener("keydown", function (e) {
       if (e.defaultPrevented || e.altKey) return;
       var t = e.target;
@@ -534,12 +589,13 @@
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        move(columnCount(card), card);
+        var down = stepRow(card, 1);
+        if (down) goTo(down);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        var cols = columnCount(card);
-        if (visible.indexOf(card) - cols < 0) focusSearch();
-        else move(-cols, card);
+        var up = stepRow(card, -1);
+        if (up) goTo(up);
+        else focusSearch();
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
         move(1, card);
