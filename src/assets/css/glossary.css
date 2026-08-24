@@ -1181,8 +1181,17 @@ main > .page:first-child {
     isolation: isolate;
     padding-top: var(--space-16);
     padding-bottom: var(--space-16);
-    border-end-start-radius: 3rem;
-    border-end-end-radius: 3rem;
+}
+/* The wash lives on a full-bleed pseudo-element, not on .hero itself, so it
+   can be alpha-masked independently of the section's content box. No card
+   edge, no border-radius: the colour just thins out toward nothing, so the
+   page's own --background shows through and the section reads as one
+   continuous surface rather than a panel dropped on top of the page. */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background:
         /* keeps the reading side of the panel clean — the wash lives on the
            right and fades out well before it reaches the copy */
@@ -1222,8 +1231,19 @@ main > .page:first-child {
             var(--spike-white) 62%,
             rgb(var(--brand-rgb) / 0.05) 100%
         );
+    /* Soft fall-off: fully present through the copy, then dissolves toward
+       the bottom and both side edges so it blends into the page background
+       instead of stopping at a hard line. */
+    mask-image:
+        linear-gradient(to bottom, black 0%, black 58%, transparent 100%),
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+        linear-gradient(to bottom, black 0%, black 58%, transparent 100%),
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
 }
-.dark .hero {
+.dark .hero::before {
     background:
         linear-gradient(
             104deg,
@@ -1259,8 +1279,7 @@ main > .page:first-child {
     .hero {
         --swoosh: 190% 62% at 120% 142%;
     }
-    .hero,
-    .dark .hero {
+    .hero::before {
         background-position: 0 0;
     }
 }
@@ -2153,8 +2172,6 @@ main > .page:first-child {
     .hero {
         --swoosh: 175% 78% at 124% 154%;
         padding-block: var(--space-8) var(--space-10);
-        border-end-start-radius: 1.5rem;
-        border-end-end-radius: 1.5rem;
     }
     .hero__inner {
         gap: var(--space-2);
