@@ -1407,10 +1407,35 @@ main > .page:first-child {
     border-radius: 0;
     background: none;
     box-shadow: none;
-    padding-inline: 0;
+}
+@media (min-width: 40rem) {
+    /* Below 40rem, `.toolbar-wrap > .page` (see the max-width:39.999rem
+       rules) hands its own horizontal padding over to `.toolbar` itself
+       (`padding: var(--space-3) var(--page-pad)`), so the toolbar needs
+       that padding to land at the same edge as the page content below
+       it. Only cancel it back out to 0 above that width, where the page
+       wrapper is the one still supplying `--page-pad` and doubling up
+       would over-indent everything. */
+    .toolbar.toolbar--slim.card {
+        padding-inline: 0;
+    }
 }
 .toolbar-wrap--slim {
     top: 0;
+}
+@media (max-width: 39.999rem) {
+    /* Term pages only — the homepage's toolbar carries the A-Z jump and
+       live search, worth keeping pinned while scrolling a 549-term list.
+       This slim one is just "All terms" + a search trigger, not worth
+       permanently occupying a mobile viewport's limited height for; let
+       it scroll away with the rest of the page below this width.
+       `.toolbar-wrap.toolbar-wrap--slim` (both classes), not just
+       `.toolbar-wrap--slim` — same specificity as the base `.toolbar-wrap`
+       sticky rule otherwise loses the tie, since that rule comes later in
+       the file regardless of which media query either sits in. */
+    .toolbar-wrap.toolbar-wrap--slim {
+        position: static;
+    }
 }
 .toolbar.toolbar--slim {
     flex-direction: row;
@@ -2306,11 +2331,13 @@ main > .page:first-child {
         align-items: stretch;
         gap: var(--space-2);
     }
-    /* The search row moves out of the toolbar entirely at this width — the
-       #mobile-search-fab trigger below opens the mobile-scoped #palette
-       overlay instead (see glossary.js), so the inline row has nothing
-       left to do here. */
-    .js .search {
+    /* The inline search controls move out of the toolbar entirely at this
+       width, on both pages — the #mobile-search-toggle FAB below opens
+       #palette instead (see glossary.js), so neither the homepage's
+       live-filter row nor the term page's "Search the glossary" button
+       has anything left to do here. */
+    .js .search,
+    .js .search-button {
         display: none;
     }
     .js .mobile-search-fab {
@@ -2337,6 +2364,15 @@ main > .page:first-child {
        on a phone viewport so a short result list isn't wasting space. */
     .palette__panel {
         max-height: 80vh;
+    }
+    /* The term page's palette instance still ships the arrow/enter/esc
+       keyboard-shortcut legend (unlike the homepage's mobile-only one,
+       which never renders it — see palette.hbs) since it's also reachable
+       there via Cmd+K/"/" on a real keyboard. Below this width it's only
+       ever opened by tapping the FAB, so the hints don't apply — hide
+       them here rather than duplicating a mobileOnly-flagged instance. */
+    .palette__foot {
+        display: none;
     }
     /* .az is a plain block (`display: block`, not a flex container itself),
        so — despite being a flex item of .toolbar__top — align-items:stretch

@@ -17,6 +17,14 @@ layout: layouts/base.hbs
     </div>
 </div>
 
+{{!-- Mobile only: the toolbar's "Search the glossary" button is hidden
+      entirely at this width (see the max-width:39.999rem rules in
+      glossary.css) and reached instead through this FAB, same as the
+      homepage's mobile search trigger — opens the #palette below. --}}
+<button type="button" id="mobile-search-toggle" class="mobile-search-fab" aria-label="Search terms" aria-haspopup="dialog" aria-controls="palette">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+</button>
+
 <div class="page">
     <div class="term-layout">
         <div class="term-main">
