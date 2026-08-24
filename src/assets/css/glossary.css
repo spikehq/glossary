@@ -1367,6 +1367,14 @@ main > .page:first-child {
     justify-content: space-between;
     flex-wrap: nowrap;
 }
+/* `.btn`'s own inline padding (var(--space-4), for a comfortable tap
+   target) otherwise sits its icon and label a further 1rem in from the
+   page edge than the heading below it or the header above it — pull it
+   back out by exactly that much so the arrow lines up with both, while
+   the tap target itself still extends the same amount past the edge. */
+.toolbar--slim .btn--ghost {
+    margin-inline-start: calc(var(--space-4) * -1);
+}
 .search-button {
     align-items: center;
     gap: var(--space-2);
@@ -1764,37 +1772,6 @@ main > .page:first-child {
 /* --------------------------------------------------------------------------
    9. Term page
    -------------------------------------------------------------------------- */
-.crumbs {
-    margin-bottom: var(--space-4);
-}
-.crumbs ol {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    color: var(--muted-foreground);
-}
-.crumbs a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-full);
-    transition: background-color var(--duration-hover) var(--ease-out);
-}
-.crumbs a:hover {
-    background: var(--accent);
-    color: var(--accent-foreground);
-}
-.crumbs li[aria-current='page'] {
-    color: var(--foreground);
-    padding: var(--space-1) var(--space-2);
-}
-.crumbs__sep {
-    opacity: 0.5;
-}
-
 .term-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -1814,14 +1791,33 @@ main > .page:first-child {
     padding: 0;
 }
 
+/* Display treatment for the term itself. --heading-foreground, same as
+   every other heading on the page — near-black in light mode, near-white
+   in dark. */
 .term-head h1 {
-    font-size: var(--text-3xl);
+    font-family: var(--font-heading);
+    font-size: clamp(2.25rem, 6vw, 4rem);
     font-weight: var(--font-weight-bold);
-    line-height: var(--leading-tight);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
     margin-block: var(--space-2);
+    color: var(--heading-foreground);
+}
+/* The opening letter set in Monoton — the same striped display face the
+   A-Z index uses for its oversized section letters — as a small
+   wordmark-like flourish on the one word every reader came to this page
+   for. Sized up a little of its own accord: Monoton is a thin, striped
+   face that only reads as one at size (see the index's letter__head rule),
+   and it'd otherwise look under-weight next to the bold heading font
+   beside it. */
+.term-head h1::first-letter {
+    font-family: 'Monoton', var(--font-heading);
+    font-size: 1.15em;
+    font-weight: 400;
 }
 .term-head__lede {
     color: var(--muted-foreground);
+    font-size: var(--text-lg);
     line-height: var(--leading-relaxed);
     max-width: 70ch;
 }
@@ -1948,22 +1944,27 @@ main > .page:first-child {
     gap: var(--space-3);
     margin-top: var(--space-6);
 }
-/* A hairline top rule instead of a bordered, shadowed card — reads as a
-   divider between "the definition ends here" and "here's what's next",
-   rather than another boxed panel. */
+/* A full outline rather than the old bordered-and-shadowed card — enough
+   to read as one complete, tappable control (not a stray line floating
+   above the text), without the drop shadow that made it look lifted off
+   the now-flat article beside it. Transparent-filled for the same reason
+   the article itself has no background: a solid `--card` fill here read
+   as a white chip against the page's off-white canvas. */
 .pager a {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-    padding: var(--space-4) var(--space-1);
-    border: none;
-    border-top: 1px solid var(--border);
-    border-radius: 0;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     background: none;
-    transition: background-color var(--duration-hover) var(--ease-out);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
 }
 .pager a:hover {
     background: var(--accent);
+    border-color: var(--ring);
 }
 .pager__label {
     display: flex;
@@ -2350,7 +2351,9 @@ main > .page:first-child {
         border-radius: var(--radius-md);
         background: var(--primary);
         color: var(--primary-foreground);
+        font-family: 'Monoton', var(--font-heading);
         font-size: var(--text-lg);
+        font-weight: 400;
         line-height: 1;
     }
     .letter__count {
@@ -2419,9 +2422,6 @@ main > .page:first-child {
     }
     .pager {
         grid-template-columns: 1fr 1fr;
-    }
-    .term-head h1 {
-        font-size: var(--text-4xl);
     }
 }
 

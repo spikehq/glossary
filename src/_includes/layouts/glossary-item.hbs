@@ -1,18 +1,6 @@
 ---
 layout: layouts/base.hbs
 ---
-<div class="page">
-    <nav class="crumbs" aria-label="Breadcrumb">
-        <ol>
-            <li><a href="{{site.homeUrl}}">Spike</a></li>
-            <li class="crumbs__sep" aria-hidden="true">/</li>
-            <li><a href="{{site.base}}/">Glossary</a></li>
-            <li class="crumbs__sep" aria-hidden="true">/</li>
-            <li aria-current="page">{{term}}</li>
-        </ol>
-    </nav>
-</div>
-
 <div class="toolbar-wrap toolbar-wrap--slim">
     <div class="page">
         <div class="toolbar toolbar--slim card">
@@ -33,7 +21,6 @@ layout: layouts/base.hbs
     <div class="term-layout">
         <div class="term-main">
             <article class="card term-head">
-                <p class="eyebrow">Incident response glossary</p>
                 <h1>{{term}}</h1>
                 <p class="term-head__lede">{{excerpt}}</p>
 
