@@ -451,21 +451,13 @@ kbd.key {
     position: absolute;
     inset: 0;
     z-index: -1;
-    /* A faint corner tint, echoing the hue of the hero's own top-right haze
-       (see .hero::before), sits under the flat glass fill so the header
-       reads as a continuation of that gradient rather than a flat,
-       unrelated white bar dropped on top of it. */
-    background:
-        radial-gradient(60% 260% at 100% 130%, rgb(22 22 24 / 0.12) 0%, rgb(22 22 24 / 0.04) 45%, transparent 75%),
-        color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
+    background-color: color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
     transition: background-color 200ms;
 }
 #site-header.header-dark::before {
-    background:
-        radial-gradient(60% 260% at 100% 130%, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.03) 45%, transparent 75%),
-        color-mix(in oklab, var(--color-brand-black) 70%, transparent);
+    background-color: color-mix(in oklab, var(--color-brand-black) 70%, transparent);
 }
 
 #site-header::after {
@@ -1226,13 +1218,6 @@ main > .page:first-child {
             rgb(var(--brand-rgb) / 0.04) 100.9%,
             rgb(var(--brand-rgb) / 0) 105%
         ),
-        /* haze off the top-right corner */
-        radial-gradient(
-            52% 78% at 99% -10%,
-            rgb(var(--brand-rgb) / 0.16) 0%,
-            rgb(var(--brand-rgb) / 0.05) 46%,
-            rgb(var(--brand-rgb) / 0) 74%
-        ),
         linear-gradient(
             118deg,
             var(--spike-white) 0%,
@@ -1273,12 +1258,6 @@ main > .page:first-child {
             rgb(var(--brand-rgb) / 0.26) 100%,
             rgb(var(--brand-rgb) / 0.05) 100.9%,
             rgb(var(--brand-rgb) / 0) 105%
-        ),
-        radial-gradient(
-            52% 78% at 99% -10%,
-            rgb(var(--brand-rgb) / 0.22) 0%,
-            rgb(var(--brand-rgb) / 0.07) 46%,
-            rgb(var(--brand-rgb) / 0) 74%
         ),
         linear-gradient(118deg, var(--card) 0%, var(--background) 62%);
 }
