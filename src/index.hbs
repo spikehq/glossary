@@ -24,6 +24,9 @@ permalink: /
                 </nav>
 
                 <form class="search" role="search" id="search-form" autocomplete="off">
+                    <button type="button" id="mobile-search-close" class="search__close" aria-label="Close search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
                     <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     <label class="sr-only" for="q">Search {{collections.glossaryItems.length}} glossary terms</label>
                     <input type="search" id="q" name="q" placeholder="Search terms…" enterkeyhint="search" autocomplete="off" aria-describedby="search-help">
@@ -39,6 +42,21 @@ permalink: /
         </div>
     </div>
 </div>
+
+{{!-- Mobile only: the search row above is docked off-screen at this width and
+      surfaced as a bottom sheet through this trigger instead — see
+      .mobile-search-fab / #mobile-search-toggle in glossary.js. --}}
+<button type="button" id="mobile-search-toggle" class="mobile-search-fab" aria-label="Search terms" aria-expanded="false" aria-controls="search-form">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+</button>
+<div id="mobile-search-backdrop" class="mobile-search-backdrop" hidden></div>
+{{!-- .toolbar-wrap has its own backdrop-filter, which makes it a containing
+      block for fixed-position descendants — a fixed .search inside it pins
+      to the wrap's box, not the viewport. glossary.js moves the form here
+      for as long as the mobile sheet's CSS could apply (not just while
+      it's open — see the focus() timing note there), and back to the
+      toolbar once the viewport is wide enough for the inline layout. --}}
+<div id="mobile-search-portal"></div>
 
 {{!-- Sits directly under the sticky toolbar, but outside it: unlike the count,
       this legend doesn't need to stay pinned while scrolling, so it lives here

@@ -558,6 +558,67 @@
       }
     });
 
+    /* ---- mobile search sheet: under 40rem the toolbar's search input
+           docks off-screen (see the max-width:39.999rem rules in
+           glossary.css) and surfaces through this floating trigger instead,
+           so it's reachable without scrolling back to the sticky toolbar. */
+    var mobileToggle = doc.getElementById("mobile-search-toggle");
+    if (mobileToggle) {
+      var mobileClose = doc.getElementById("mobile-search-close");
+      var mobileBackdrop = doc.getElementById("mobile-search-backdrop");
+      var mobilePortal = doc.getElementById("mobile-search-portal");
+      var searchHome = { parent: form.parentNode, next: form.nextSibling };
+      var mobileQuery = window.matchMedia("(max-width: 39.999rem)");
+
+      // .toolbar-wrap has its own backdrop-filter, which makes it a
+      // containing block for fixed-position descendants — a .search left
+      // inside it pins to the wrap's box, not the viewport, once CSS makes
+      // it position:fixed at this width. Keep it portaled out for as long
+      // as that CSS could apply (not just while the sheet is open): moving
+      // it only on open would mean the very first tap calls focus() on an
+      // element that had no correct layout a moment earlier, and iOS drops
+      // the keyboard for that instead of raising it.
+      var syncSearchHome = function () {
+        if (mobileQuery.matches) {
+          if (mobilePortal && form.parentNode !== mobilePortal) {
+            mobilePortal.appendChild(form);
+          }
+        } else {
+          form.classList.remove("is-open");
+          if (form.parentNode !== searchHome.parent) {
+            searchHome.parent.insertBefore(form, searchHome.next);
+          }
+        }
+      };
+      syncSearchHome();
+      mobileQuery.addEventListener("change", syncSearchHome);
+
+      var openMobileSearch = function () {
+        form.classList.add("is-open");
+        mobileToggle.setAttribute("aria-expanded", "true");
+        mobileToggle.hidden = true;
+        if (mobileBackdrop) mobileBackdrop.hidden = false;
+        focusSearch();
+      };
+      var closeMobileSearch = function () {
+        form.classList.remove("is-open");
+        mobileToggle.setAttribute("aria-expanded", "false");
+        mobileToggle.hidden = false;
+        if (mobileBackdrop) mobileBackdrop.hidden = true;
+        input.blur();
+      };
+
+      mobileToggle.addEventListener("click", openMobileSearch);
+      if (mobileClose) mobileClose.addEventListener("click", closeMobileSearch);
+      if (mobileBackdrop)
+        mobileBackdrop.addEventListener("click", closeMobileSearch);
+      doc.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && form.classList.contains("is-open")) {
+          closeMobileSearch();
+        }
+      });
+    }
+
     /* ---- deep link: /?q=alert (the WebSite SearchAction target) ----- */
     try {
       var q0 = new URLSearchParams(window.location.search).get("q");

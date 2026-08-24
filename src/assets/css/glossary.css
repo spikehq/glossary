@@ -905,7 +905,13 @@ kbd.key {
     display: inline-flex;
 }
 @media (min-width: 64rem) {
+    /* var(--tap) drops to 2.25rem under pointer:fine (mouse/trackpad) — 8px
+       shorter than the 2.75rem .btn next to it, so LOG IN / GET STARTED
+       sat visibly higher than the toggle instead of on the same line. Pin
+       it to the same 2.75rem so all three sit flush. */
     #site-header .desktop-actions .theme-toggle {
+        width: 2.75rem;
+        height: 2.75rem;
         transform: translateY(calc(-0.3125rem * var(--header-progress)))
             scale(calc(1 - 0.16 * var(--header-progress)));
         will-change: transform;
@@ -926,16 +932,21 @@ kbd.key {
 .dark .theme-toggle .icon-moon {
     display: block;
 }
-.mobile-actions .theme-toggle {
-    width: 100%;
+/* ---- Mobile toggle ---------------------------------------------------- */
+/* Groups the theme toggle and the hamburger so .site-nav's
+   justify-content:space-between treats them as one cluster pinned to the
+   right, instead of spreading two separate flex children across the row. */
+.mobile-header-actions {
+    display: flex;
+    align-items: center;
     gap: var(--space-2);
 }
-.mobile-actions .theme-toggle span {
-    font-size: var(--text-sm);
-    font-weight: 500;
+@media (min-width: 64rem) {
+    /* The desktop-actions copy (#theme-toggle) takes over from here. */
+    #theme-toggle-mobile {
+        display: none;
+    }
 }
-
-/* ---- Mobile toggle ---------------------------------------------------- */
 .mobile-menu-toggle {
     position: relative;
     display: inline-flex;
@@ -1378,6 +1389,12 @@ main > .page:first-child {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
+    /* .toolbar is a column flex container, so this is a cross-axis (width)
+       flex item — without this, its default auto min-width is its content's
+       min-content size, so the A-Z scroller's un-shrinking chips inside it
+       force this whole row (and the page under it) wider than the viewport
+       instead of scrolling internally. */
+    min-width: 0;
 }
 
 /* The shortcut legend lives directly under the A–Z row, next to the thing it
@@ -1457,6 +1474,25 @@ main > .page:first-child {
 }
 /* The hint would collide with the browser's own clear button once typing. */
 .search input:not(:placeholder-shown) ~ .search__hint {
+    display: none;
+}
+/* Only meaningful for the mobile search sheet (see the max-width:39.999rem
+   rules below) — hidden everywhere else. This base rule has to exist
+   outside that media query, or a browser default <button> renders in its
+   place (border, background, no icon sizing) on every other screen size. */
+.search__close {
+    display: none;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+/* Same story as .search__close above: the floating trigger and its backdrop
+   are only ever shown from inside the max-width:39.999rem rules, so they
+   need an explicit off-by-default here too, or they render as an unstyled
+   button and a stray full-screen div on every other screen size. */
+.mobile-search-fab,
+.mobile-search-backdrop {
     display: none;
 }
 
@@ -2100,6 +2136,19 @@ main > .page:first-child {
         width: 2.75rem;
         height: 2.75rem;
     }
+    /* The shared .theme-toggle rule sizes the box to var(--tap) (3rem, the
+       accessible touch-target floor) around a 1rem icon — a lot of empty
+       padding around a small glyph in this compact header. Tighten the box
+       and size the icon up to fill more of it, keeping the same bordered
+       chip look the desktop copy has. */
+    #theme-toggle-mobile {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    #theme-toggle-mobile svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
 
     .hero {
         --swoosh: 175% 78% at 124% 154%;
@@ -2145,10 +2194,39 @@ main > .page:first-child {
         align-items: stretch;
         gap: var(--space-2);
     }
-    .search {
-        order: -2;
-        flex-basis: auto;
-        width: 100%;
+    /* The search row moves out of the toolbar entirely at this width — it
+       docks as a floating bottom sheet, opened by the .mobile-search-fab
+       trigger below, instead of sitting inline above the A-Z scroller.
+
+       Kept as display:flex at all times (moved off-canvas with `transform`,
+       not `display:none`) so the input already has layout the instant the
+       trigger is tapped — a focus() called on an element that only became
+       display:flex in that same tick doesn't reliably raise the on-screen
+       keyboard on iOS/Android, since as far as the browser can tell nothing
+       focusable existed at the moment the tap started. `pointer-events`
+       still keeps it inert while parked off-canvas. A centered floating
+       pill, not an edge-to-edge dock — sized to its content (up to 26rem)
+       and inset from both sides, so it reads as one clean card floating
+       above the page rather than a strip nailed to the screen edges. */
+    .js .search {
+        position: fixed;
+        left: 50%;
+        bottom: calc(var(--page-pad) + env(safe-area-inset-bottom, 0px));
+        transform: translate(-50%, 150%);
+        z-index: 95;
+        width: calc(100% - 2 * var(--page-pad));
+        max-width: 26rem;
+        padding: var(--space-2);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        background: var(--card);
+        box-shadow: 0 20px 40px -12px rgb(0 0 0 / 0.45);
+        pointer-events: none;
+        transition: transform 220ms var(--ease-out);
+    }
+    .js .search.is-open {
+        transform: translate(-50%, 0);
+        pointer-events: auto;
     }
     .search input {
         min-height: 2.75rem;
@@ -2156,25 +2234,97 @@ main > .page:first-child {
         background: color-mix(in srgb, var(--background) 72%, var(--card));
         font-size: var(--text-sm);
     }
+    /* Inside the pill the input's own border/background would draw a
+       second box nested in the first — flatten it so the pill is the only
+       visible edge. */
+    .js .search.is-open input {
+        border: none;
+        background: none;
+        padding-right: 2.5rem;
+    }
     .search__hint {
         display: none;
     }
+    .js .search.is-open .search__close {
+        position: absolute;
+        right: var(--space-3);
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--radius-full);
+        color: var(--muted-foreground);
+        transition: background-color var(--duration-hover) var(--ease-out);
+    }
+    .js .search.is-open .search__close:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+    }
+    .js .search.is-open .search__close svg {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+    .js .mobile-search-fab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: var(--page-pad);
+        bottom: calc(var(--page-pad) + env(safe-area-inset-bottom, 0px));
+        z-index: 90;
+        width: 3.25rem;
+        height: 3.25rem;
+        border: none;
+        border-radius: var(--radius-full);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        box-shadow: 0 8px 20px -6px rgb(0 0 0 / 0.45);
+    }
+    .js .mobile-search-fab svg {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+    .js .mobile-search-backdrop:not([hidden]) {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 94;
+        background: rgb(0 0 0 / 0.35);
+    }
+    /* .az is a plain block (`display: block`, not a flex container itself),
+       so — despite being a flex item of .toolbar__top — align-items:stretch
+       does not reliably clamp it to the row's width once its .az__list
+       child wants to be 1090px wide. Pin it explicitly: without this
+       `width: 100%`, .az renders at its content's full intrinsic width,
+       overflowing .toolbar__top (and the page under it) instead of the
+       chips scrolling inside .az__list. Verified by measuring in a real
+       375px viewport, not just reasoning about the flexbox spec. */
     .az {
         order: -1;
         flex-basis: auto;
+        width: 100%;
+        min-width: 0;
     }
+    /* Horizontal scroller, not a wrapped grid: the row inherits display:flex
+       + overflow-x:auto from the base .az__list rule below — this just sizes
+       the chips for touch and snaps them as you swipe. */
     .az__list {
-        display: grid;
-        grid-template-columns: repeat(13, minmax(0, 1fr));
+        min-width: 0;
         gap: 2px;
-        overflow: visible;
+        /* Z would otherwise sit flush against the scroller's own right
+           edge — no breathing room, easy to miss as "the end". */
+        padding-inline-end: var(--page-pad);
+        scroll-snap-type: x proximity;
     }
     .az__list > li {
-        min-width: 0;
+        scroll-snap-align: start;
     }
     .az__list a,
     .az__list > li > span {
-        min-width: 0;
+        min-width: 2rem;
         min-height: 2rem;
         border-radius: var(--radius-sm);
         font-size: 0.6875rem;

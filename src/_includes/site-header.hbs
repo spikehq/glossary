@@ -130,16 +130,23 @@
             <a id="header-cta-signup" href="{{site.signupUrl}}?utm_source=glossary" class="btn btn-primary">GET STARTED</a>
         </div>
 
-        <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle"
-            aria-expanded="false" aria-controls="mobile-menu" aria-label="Open main menu"
-            data-label-open="Open main menu" data-label-close="Close main menu">
-            <svg id="mobile-menu-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <svg id="mobile-menu-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </button>
+        <div class="mobile-header-actions">
+            <button type="button" id="theme-toggle-mobile" class="theme-toggle" aria-pressed="false" aria-label="Use dark theme">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            </button>
+
+            <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle"
+                aria-expanded="false" aria-controls="mobile-menu" aria-label="Open main menu"
+                data-label-open="Open main menu" data-label-close="Close main menu">
+                <svg id="mobile-menu-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg id="mobile-menu-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <div id="mobile-menu" aria-hidden="true">
@@ -185,11 +192,6 @@
             </ul>
 
             <div class="mobile-actions">
-                <button type="button" id="theme-toggle-mobile" class="theme-toggle" aria-pressed="false" aria-label="Use dark theme">
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-                    <span>Toggle theme</span>
-                </button>
                 <a id="mobile-cta-login-light" href="https://app.spike.sh/login" class="btn btn-outline btn-full">LOG IN</a>
                 <a id="mobile-cta-login-dark" href="https://app.spike.sh/login" class="btn btn-outline-light btn-full hidden-important">LOG IN</a>
                 <a href="{{site.signupUrl}}?utm_source=glossary" class="btn btn-primary btn-full">GET STARTED</a>
