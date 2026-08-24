@@ -857,7 +857,17 @@ kbd.key {
 /* Theme toggle — the site's existing dark/light switch (not part of the
    original mockup), dropped into the desktop and mobile action groups.
    Reuses the same sun/moon markup and `.dark` class contract used
-   everywhere else on the page. */
+   everywhere else on the page. The header itself paints no fill (see the
+   comment above `#site-header .site-nav`), so a solid white background
+   here read as a hardcoded white chip on any page whose background isn't
+   the hero wash — e.g. flat #fcfbf9 on glossary item pages. Kept the
+   bordered-chip affordance, but transparent-filled and colored off
+   `--color-border-default` (same token the nav row's own border uses) so
+   the ring reads correctly against whatever's behind the header. In
+   `header-dark`, it keeps using the same `--border` token rather than a
+   one-off white value — `--border` already resolves to white @ 10% under
+   the site's `.dark` theme (see brand/spike-theme.css), which is what
+   every other bordered surface on the page uses. */
 .theme-toggle {
     display: none;
     align-items: center;
@@ -865,14 +875,18 @@ kbd.key {
     width: var(--tap);
     height: var(--tap);
     padding: 0;
-    border: 1px solid var(--border);
+    border: 1px solid var(--color-border-default);
     border-radius: var(--radius-md);
-    background: var(--card);
-    color: var(--muted-foreground);
+    background: none;
+    color: var(--color-brand-black);
     cursor: pointer;
     transition:
-        background-color var(--duration-hover) var(--ease-out),
-        color var(--duration-hover) var(--ease-out);
+        color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
+}
+#site-header.header-dark .theme-toggle {
+    color: #ffffff;
+    border-color: var(--border);
 }
 .js .theme-toggle {
     display: inline-flex;
@@ -891,8 +905,10 @@ kbd.key {
     }
 }
 .theme-toggle:hover {
-    background: var(--accent);
-    color: var(--accent-foreground);
+    color: var(--color-dark-neutral-100);
+}
+#site-header.header-dark .theme-toggle:hover {
+    color: var(--color-light-neutral-300);
 }
 .theme-toggle svg {
     width: 1rem;
@@ -2149,8 +2165,7 @@ main > .page:first-child {
     /* The shared .theme-toggle rule sizes the box to var(--tap) (3rem, the
        accessible touch-target floor) around a 1rem icon — a lot of empty
        padding around a small glyph in this compact header. Tighten the box
-       and size the icon up to fill more of it, keeping the same bordered
-       chip look the desktop copy has. */
+       and size the icon up to fill more of it. */
     #theme-toggle-mobile {
         width: 2.5rem;
         height: 2.5rem;
