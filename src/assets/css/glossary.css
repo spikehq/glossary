@@ -426,8 +426,7 @@ kbd.key {
 /* ---- Layout / chrome ----------------------------------------------------- */
 /* Scrolls away with the page rather than staying pinned — only the toolbar
    below it stays sticky. `position: relative`, not `static`: the mega-panel
-   dropdown and the frosted-glass ::before/::after still need #site-header as
-   their positioned containing block. */
+   dropdown still needs #site-header as its positioned containing block. */
 #site-header {
     position: relative;
     height: var(--header-height);
@@ -443,42 +442,16 @@ kbd.key {
     }
 }
 
-/* Frosted glass fill on a pseudo-element (not the header itself) so nested
-   backdrop-filters — mega panel, mobile sheet — aren't trapped inside a
-   backdrop root. */
-#site-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    transition: background-color 200ms;
-}
-#site-header.header-dark::before {
-    background-color: color-mix(in oklab, var(--color-brand-black) 70%, transparent);
-}
-
-#site-header::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    height: 1px;
-    background-color: var(--color-border-default);
-    opacity: 1;
-    pointer-events: none;
-}
-@media (min-width: 64rem) {
-    #site-header::after {
-        opacity: var(--header-progress);
-    }
-}
-#site-header.header-dark::after {
-    opacity: 0;
-}
-
+/* The header paints no fill and no bottom rule of its own. It used to wear a
+   frosted-white bar plus a hairline edge, both inherited from the mockup where
+   it stayed pinned over scrolling content — but it scrolls away with the page
+   now, so the glass had nothing to blur, and the flat white read as a second
+   surface stacked on the hero: a hard horizontal seam right under the nav.
+   Transparent instead, so whatever is behind it shows through — the page
+   background on most pages, and on the index the hero wash, which runs up
+   behind the header (see .hero::before) so the two read as one continuous
+   surface. The mega panel and the mobile sheet carry their own glass fills, so
+   they stay legible without one here. */
 #site-header .site-nav {
     margin-inline: auto;
     max-width: var(--container-max);
@@ -1175,10 +1148,22 @@ main > .page:first-child {
 
     /* The swoosh is one big off-canvas ellipse. On a phone the panel is far
        taller than it is wide, so the same ellipse would cut straight through
-       the copy — there it flattens out and sits underneath instead. */
-    --swoosh: 121% 125% at 125% 165%;
+       the copy — there it flattens out and sits underneath instead.
+
+       Both numbers are percentages of the wash box, and that box is one header
+       taller than the hero itself (see .hero::before). Read against the taller
+       box, the old 125%/165% pair put the ellipse ~30px higher up the hero than
+       it used to sit, so the values are restated here against the new height:
+       125% × 392 / 464 ≈ 105.5%, and (165% × 392 + 72) / 464 ≈ 155%. Same
+       curve in the same place on the page, just measured from a top edge that
+       now starts above the nav. */
+    --swoosh: 121% 105.5% at 125% 155%;
     position: relative;
-    isolation: isolate;
+    /* No `isolation: isolate` here, deliberately. Without a stacking context of
+       its own the z-index:-1 wash below escapes into the root's negative layer,
+       which paints above the canvas (body's --background) but behind every
+       element on the page — the header included. That is what lets one gradient
+       cover both the header band and the hero. */
     padding-top: var(--space-16);
     padding-bottom: var(--space-16);
 }
@@ -1186,11 +1171,18 @@ main > .page:first-child {
    can be alpha-masked independently of the section's content box. No card
    edge, no border-radius: the colour just thins out toward nothing, so the
    page's own --background shows through and the section reads as one
-   continuous surface rather than a panel dropped on top of the page. */
+   continuous surface rather than a panel dropped on top of the page.
+
+   It starts one header above the hero's own top edge, so the gradient runs
+   unbroken from the very top of the page down through the copy. The header
+   itself paints nothing, so the band behind the nav is this same wash rather
+   than a second surface butted up against it. --header-height is the live,
+   scroll-compacted value: at scroll 0 — the only moment this edge is on
+   screen — it is exactly the header's height. */
 .hero::before {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: calc(-1 * var(--header-height)) 0 0;
     z-index: -1;
     background:
         /* keeps the reading side of the panel clean — the wash lives on the
@@ -1226,13 +1218,15 @@ main > .page:first-child {
         );
     /* Soft fall-off: fully present through the copy, then dissolves toward
        the bottom and both side edges so it blends into the page background
-       instead of stopping at a hard line. */
+       instead of stopping at a hard line. 65%, not the 58% this was before the
+       box grew a header taller — same restatement as --swoosh, so the fade
+       still starts at the same point in the hero. */
     mask-image:
-        linear-gradient(to bottom, black 0%, black 58%, transparent 100%),
+        linear-gradient(to bottom, black 0%, black 65%, transparent 100%),
         linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
     mask-composite: intersect;
     -webkit-mask-image:
-        linear-gradient(to bottom, black 0%, black 58%, transparent 100%),
+        linear-gradient(to bottom, black 0%, black 65%, transparent 100%),
         linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
     -webkit-mask-composite: source-in;
 }
@@ -1264,7 +1258,10 @@ main > .page:first-child {
 
 @media (max-width: 47.999rem) {
     .hero {
-        --swoosh: 190% 62% at 120% 142%;
+        /* Same restatement as above against the header-taller box, with the
+           phone's shorter hero and 56px header: 62% × 210 / 266 ≈ 49%,
+           (142% × 210 + 56) / 266 ≈ 133%. */
+        --swoosh: 190% 49% at 120% 133%;
     }
     .hero::before {
         background-position: 0 0;
