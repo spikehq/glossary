@@ -1900,7 +1900,9 @@ main > .page:first-child {
 
 /* Markdown body ---------------------------------------------------------- */
 .prose {
-    margin-top: var(--space-4);
+    /* A big, quiet gap — no rule — between the term + its one-line lede and
+       the body copy, so they read as two clearly distinct sections. */
+    margin-top: clamp(5rem, 13vw, 9rem);
     max-width: 72ch;
 }
 .prose > * + * {
