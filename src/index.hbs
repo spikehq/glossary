@@ -55,7 +55,7 @@ permalink: /
       readers, so this copy is decorative. --}}
 <div class="page">
     <p class="toolbar__keys" aria-hidden="true">
-        <kbd class="key">&uarr;</kbd><kbd class="key">&darr;</kbd><kbd class="key">&larr;</kbd><kbd class="key">&rarr;</kbd> move
+        <kbd class="key">&uarr;</kbd><kbd class="key">&darr;</kbd> move
         <kbd class="key">&crarr;</kbd> open
         <kbd class="key">/</kbd> search
     </p>
@@ -72,10 +72,21 @@ permalink: /
                 {{!-- Emitted without indentation on purpose: at 549 cards the
                       pretty-printing alone is tens of kilobytes to download
                       and parse. --}}
-                <ul class="terms">{{#each this}}<li><a class="term-card" href="{{@root.site.base}}/{{this.slug}}/" data-k="{{lower this.title}}"><h3>{{this.title}}</h3><p>{{truncate this.excerpt 130}}</p></a></li>{{/each}}</ul>
+                <ul class="terms">{{#each this}}<li><a class="term-card" href="{{@root.site.base}}/{{this.slug}}/" data-k="{{lower this.title}}"><span class="term-card__term"><span class="term-card__ix" aria-hidden="true">{{pad2 @index}}</span><h3>{{this.title}}</h3></span><p class="term-card__def">{{truncate this.excerpt 130}}</p><svg class="term-card__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>{{/each}}</ul>
             </section>
         {{/each}}
     </div>
+
+    {{!-- Fixed vertical A–Z rail pinned to the right edge (desktop only — see
+          .charnav in glossary.css). Plain anchor links: they already work
+          without JS via each .letter's scroll-margin-top. glossary.js adds
+          the animated jump, the scroll-spy "current letter" highlight, and
+          the pointer dock-magnify + Monoton flag bubble (ported from the
+          .scrubber in design-explorations/glossary-homepage-concepts.html). --}}
+    <nav class="charnav" aria-label="Alphabetical index">
+        <ul>{{#each collections.alphabetNav}}<li>{{#if this.count}}<a href="#letter-{{this.letter}}" data-charnav="letter-{{this.letter}}">{{this.letter}}<span class="sr-only"> — {{this.count}} terms</span></a>{{else}}<span aria-hidden="true">{{this.letter}}</span>{{/if}}</li>{{/each}}</ul>
+    </nav>
+    <span class="charnav__flag" aria-hidden="true"></span>
 
     <div class="card empty-state" id="no-results" hidden>
         <h2>No matching terms</h2>

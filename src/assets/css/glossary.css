@@ -2588,6 +2588,309 @@ main > .page:first-child {
 }
 
 /* --------------------------------------------------------------------------
+   13b. Homepage A–Z list — Ledger layout
+
+   The sticky left-column letter (see §8 and the 40rem / 64rem blocks above)
+   is untouched — the oversized letter still pins while its terms scroll past.
+   Only the right-hand term list changes: the card grid becomes a single
+   column of editorial rows — running index, term, definition, a blue left
+   accent bar and an arrow that slides in on hover / focus. Every selector is
+   scoped under `.letters` so the shared `.term-card` (further-reading lists
+   on term pages) keeps its own look.
+   -------------------------------------------------------------------------- */
+.letters .terms {
+    /* A single-column grid (not `display: block`): the term list keeps
+       behaving like a grid for `content-visibility`, and — importantly —
+       `grid-template-columns` computes to one track, so the keyboard
+       navigation in glossary.js reads a column count of 1 and steps row by
+       row instead of inheriting the old 2-/3-up `repeat()` from the cascade. */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+.letters .terms > li {
+    /* No per-row render deferral. Ledger rows are variable height (a 1- vs
+       2-line definition), so any single `contain-intrinsic-size` estimate is
+       wrong for half of them — and a not-yet-rendered row then snaps to its
+       real height the moment it's hovered or scrolled to, shifting
+       everything below it. Section-level `content-visibility: auto` on
+       `.letter` still keeps offscreen letters off the render path. */
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+}
+.letters .term-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    align-items: baseline;
+    height: auto;
+    min-height: 0;
+    justify-content: initial;
+    padding: var(--space-3) 2.25rem var(--space-3) var(--space-4);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    transition:
+        background-color 160ms var(--ease-out),
+        border-color 160ms var(--ease-out);
+}
+.letters .terms > li:first-child .term-card {
+    border-top: 1px solid var(--border);
+}
+/* the compact `›` glyph the mobile card rows carry is replaced by the arrow */
+.letters .term-card::after {
+    content: none;
+}
+.letters .term-card__term {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-width: 0;
+}
+.letters .term-card__ix {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+}
+.letters .term-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    color: var(--heading-foreground);
+    display: block;
+    overflow: visible;
+    /* underline that draws in from the left on hover, per the Ledger concept */
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1.5px;
+    transition: background-size 220ms var(--ease-out);
+}
+/* `.letters .terms` prefix (not just `.letters`) so this out-specifies the
+   `.terms .term-card p { display: none }` mobile rule, which carries a type
+   selector. */
+.letters .terms .term-card__def {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--muted-foreground);
+}
+.letters .term-card__go {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--muted-foreground);
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+    transition:
+        opacity 150ms var(--ease-out),
+        transform 150ms var(--ease-out);
+}
+
+.letters .term-card:hover,
+.letters .term-card:focus-within,
+.letters .term-card.is-active {
+    background: var(--accent);
+    /* neutralise the base card's lift / shadow / border-tint on hover */
+    border-color: var(--border);
+    box-shadow: none;
+    transform: none;
+}
+.letters .term-card:hover h3,
+.letters .term-card:focus-within h3,
+.letters .term-card.is-active h3 {
+    background-size: 100% 1.5px;
+}
+.letters .term-card:hover .term-card__go,
+.letters .term-card:focus-within .term-card__go,
+.letters .term-card.is-active .term-card__go {
+    opacity: 1;
+    transform: translateY(-50%);
+}
+/* one cohesive keyboard cursor: an inset ring on the row, not the boxed card */
+.letters .term-card.is-active {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+}
+
+/* From 40rem up the row is genuinely two-column: term | definition. */
+@media (min-width: 40rem) {
+    .letters .term-card {
+        grid-template-columns: minmax(9rem, 32%) 1fr;
+        gap: var(--space-5);
+    }
+    /* The list is one column of rows now (not the old 2-/3-up grid), so a
+       letter's placeholder height is n whole rows — ~4.25rem each with a
+       2-line definition — plus the section head. */
+    .letters .letter {
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 4.25rem);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .letters .term-card h3,
+    .letters .term-card__go {
+        transition: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   13c. Fixed vertical alphabet rail — right edge, desktop only
+
+   A second face of the toolbar A–Z: same links (`#letter-X`), same
+   `aria-current` scroll-spy (wired in glossary.js). Sits in the right page
+   gutter on wide viewports and tucks to the edge on narrower desktops.
+   -------------------------------------------------------------------------- */
+.charnav {
+    display: none;
+}
+/* Only once the viewport is wide enough for a real gutter beside the 72rem
+   content column — below this the fixed rail would sit on top of the
+   definitions, and the toolbar A–Z already covers the narrower widths. */
+@media (min-width: 78rem) {
+    .charnav {
+        display: block;
+        position: fixed;
+        /* Pinned just under the sticky toolbar — the same offset the sticky
+           letter heads use — so the rail lines up with the top of the term
+           list rather than floating at viewport centre over the hero. */
+        top: calc(var(--toolbar-h) + var(--space-6));
+        right: max(0.75rem, calc((100vw - var(--container-max)) / 2 - 2.25rem));
+        /* Above the sticky toolbar (z-index 20); below the palette (60). */
+        z-index: 30;
+        /* glossary.js adds `is-live` only while the term list is on screen,
+           so the rail isn't shown over the hero or the footer. */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 200ms var(--ease-out);
+    }
+    .charnav.is-live {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .charnav ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Tight enough that the whole A–Z fits between the toolbar and the
+           bottom of a short desktop viewport (~26 × 15px ≈ 400px). */
+        gap: 1px;
+        margin: 0;
+        padding: var(--space-1) 0.25rem;
+        list-style: none;
+    }
+    .charnav li {
+        display: flex;
+    }
+    .charnav a,
+    .charnav > ul > li > span {
+        display: grid;
+        place-items: center;
+        width: 1.15rem;
+        height: 0.95rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.625rem;
+        line-height: 1;
+        color: var(--muted-foreground);
+        /* Scale only, grown toward the page — no positional nudging, so the
+           column never reflows under the pointer. The centres stay fixed, so
+           even the enlarged glyphs clear their neighbours (see glossary.js
+           for the gentle peak scale). */
+        transform-origin: right center;
+        transition:
+            color 120ms var(--ease-out),
+            transform 120ms var(--ease-out);
+    }
+    .charnav > ul > li > span {
+        opacity: 0.3;
+    }
+    .charnav a:hover {
+        color: var(--link);
+    }
+    /* Current section: weight + colour only — no background pill, which would
+       be the one thing that visually overlaps neighbours once it scales. */
+    .charnav a[aria-current="true"] {
+        color: var(--heading-foreground);
+        font-weight: var(--font-weight-medium);
+    }
+}
+
+/* The dock-magnify "flag": the letter under the pointer, blown up in the
+   Monoton display face inside a round chat bubble that tracks the cursor
+   down the rail. Position (top / right) is set live by glossary.js;
+   everything else is here. Ported from `.scrubber__flag` in the prototype. */
+.charnav__flag {
+    display: none;
+}
+@media (min-width: 78rem) {
+    .charnav__flag {
+        display: grid;
+        place-items: center;
+        position: fixed;
+        top: 50%;
+        right: 3rem;
+        z-index: 31;
+        width: 4rem;
+        height: 4rem;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: var(--card);
+        box-shadow:
+            0 18px 40px -24px rgb(0 0 0 / 0.4),
+            0 6px 14px -8px rgb(0 0 0 / 0.2);
+        font-family: 'Monoton', var(--font-heading);
+        font-weight: 400;
+        font-size: 36px;
+        line-height: 1;
+        color: var(--heading-foreground);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(-50%) scale(0.9);
+        transition:
+            opacity 160ms var(--ease-out),
+            transform 160ms var(--ease-out),
+            top 140ms var(--ease-out);
+    }
+    /* small nub pointing right toward the rail */
+    .charnav__flag::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 50%;
+        width: 9px;
+        height: 9px;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        border-top-right-radius: 2px;
+        transform: translateY(-50%) rotate(45deg);
+    }
+    .charnav__flag.is-visible {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .charnav a,
+    .charnav > ul > li > span,
+    .charnav__flag {
+        transition: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
    14. Motion & print
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {

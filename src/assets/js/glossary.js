@@ -482,18 +482,9 @@
       card.scrollIntoView({ block: "nearest", behavior: "auto" });
     }
 
-    function move(dir, from) {
-      buildIndex();
-      if (!visible.length) return;
-      var i = from ? visible.indexOf(from) : -1;
-      var next = i === -1 ? (dir > 0 ? 0 : visible.length - 1) : i + dir;
-      if (next < 0 || next >= visible.length) return;
-      goTo(visible[next]);
-    }
-
-    // Each letter section is its own grid, and the column count changes with
-    // viewport width — so up/down has to step by however many cards are
-    // actually in a row right now rather than a number baked in at load.
+    // The homepage list is a single column of ledger rows, so this is 1 —
+    // but it's read live rather than hardcoded so the row-stepping below
+    // still holds if the list ever goes multi-column again.
     function columnCount(card) {
       var grid = card.closest(".terms");
       if (!grid) return 1;
@@ -523,12 +514,9 @@
     }
 
     // Up/down by row, *within the current letter section's own grid* — each
-    // `.terms` is a separate grid that restarts its own row layout, so a
-    // section's last (partial) row doesn't line up with the flat position
-    // `move()` above would compute once cards from another section follow
-    // it. Crossing a section boundary lands on the nearest column of the
-    // next/previous section's edge row instead of wherever a flat index
-    // offset happens to fall.
+    // `.terms` is a separate grid that restarts its own row layout. Crossing
+    // a section boundary lands on the nearest column of the next/previous
+    // section's edge row.
     function stepRow(card, dir) {
       var pos = findInSections(card);
       if (!pos) return null;
@@ -596,13 +584,6 @@
         var up = stepRow(card, -1);
         if (up) goTo(up);
         else focusSearch();
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        move(1, card);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (visible.indexOf(card) === 0) focusSearch();
-        else move(-1, card);
       } else if (e.key === "Home") {
         e.preventDefault();
         goTo(visible[0]);
@@ -651,6 +632,17 @@
             },
           );
 
+          // The vertical rail carries the same targets — spy it in step
+          // with the toolbar strip.
+          var railLinks = {};
+          Array.prototype.forEach.call(
+            doc.querySelectorAll(".charnav a[data-charnav]"),
+            function (a) {
+              railLinks[a.dataset.charnav] = a;
+            },
+          );
+          var currentRail = null;
+
           // Document order, so "which section am I reading" can be
           // answered as "the topmost one still in the band" rather
           // than "whichever entry the observer happened to report
@@ -688,6 +680,13 @@
               var topmost = inBand.reduce(function (a, b) {
                 return order.indexOf(a) <= order.indexOf(b) ? a : b;
               });
+
+              var rail = railLinks[topmost.id];
+              if (rail && rail !== currentRail) {
+                if (currentRail) currentRail.removeAttribute("aria-current");
+                rail.setAttribute("aria-current", "true");
+                currentRail = rail;
+              }
 
               var link = links[topmost.id];
               if (!link || link === current) return;
@@ -951,7 +950,9 @@
        content renders, then correct any remaining drift once it settles.
        ==================================================================== */
   (function letterJump() {
-    var links = doc.querySelectorAll('.az__list a[href^="#letter-"]');
+    var links = doc.querySelectorAll(
+      '.az__list a[href^="#letter-"], .charnav a[href^="#letter-"]',
+    );
     if (!links.length) return;
     var activeJump = 0;
 
@@ -1026,11 +1027,17 @@
         e.preventDefault();
 
         // Mark it straight away rather than waiting for the scroll
-        // observer to catch up mid-jump.
+        // observer to catch up mid-jump. Both faces of the A–Z (the
+        // toolbar strip and the vertical rail) point at the same
+        // `#letter-X`, so light up every link for this target, not just
+        // the one that was clicked.
         Array.prototype.forEach.call(links, function (other) {
-          other.removeAttribute("aria-current");
+          if (other.getAttribute("href") === href) {
+            other.setAttribute("aria-current", "true");
+          } else {
+            other.removeAttribute("aria-current");
+          }
         });
-        link.setAttribute("aria-current", "true");
 
         jump(target);
         // Keep the URL shareable even though the default was stopped.
@@ -1039,6 +1046,120 @@
         }
       });
     });
+  })();
+
+  /* ====================================================================
+       Right-edge A–Z rail: pointer dock-magnify + a Monoton "flag" bubble
+       that tracks the cursor down the rail. Ported from the `.scrubber` in
+       design-explorations/glossary-homepage-concepts.html. The rail's
+       navigation (click → animated jump) and the current-letter highlight
+       are wired above; this is only the hover flourish, and only where the
+       rail is actually shown (>=78rem).
+       ==================================================================== */
+  (function charnavFlag() {
+    var rail = doc.querySelector(".charnav");
+    var flag = doc.querySelector(".charnav__flag");
+    if (!rail || !flag) return;
+
+    var cells = Array.prototype.slice.call(
+      rail.querySelectorAll("ul > li > a, ul > li > span"),
+    );
+    if (!cells.length) return;
+
+    var wide = window.matchMedia("(min-width: 78rem)");
+    var raf = 0;
+
+    // Peak extra scale right under the pointer, and how far (px) the effect
+    // reaches. Scale only — no positional nudging — so the rail column never
+    // reflows and there's nothing to "shift". Kept small: at the rail's ~16px
+    // pitch the fixed glyph centres keep even the enlarged letters clear of
+    // each other, and the flag bubble is what actually reads out the letter.
+    var PEAK = 0.6;
+    var REACH = 38;
+
+    // Resting mid-Y of each cell, cached so last frame's transforms can't
+    // feed into this frame's measurements. The rail is `position: fixed`, so
+    // this only goes stale on resize.
+    var rest = null;
+    function measure() {
+      rest = cells.map(function (c) {
+        var r = c.getBoundingClientRect();
+        return { el: c, mid: r.top + r.height / 2, left: r.left };
+      });
+    }
+    window.addEventListener("resize", function () {
+      rest = null;
+    });
+
+    function onMove(ev) {
+      if (raf) return;
+      var y = ev.clientY;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        if (!wide.matches) return;
+        if (!rest) measure();
+
+        var focus = null;
+        var focusD = Infinity;
+
+        rest.forEach(function (g) {
+          var d = Math.abs(y - g.mid);
+          if (d < focusD) {
+            focusD = d;
+            focus = g;
+          }
+          if (!reduceMotion) {
+            var s = Math.max(0, 1 - d / REACH);
+            g.el.style.transform = s ? "scale(" + (1 + s * PEAK) + ")" : "";
+            g.el.style.color = s > 0.5 ? "var(--heading-foreground)" : "";
+          }
+        });
+
+        if (!focus) return;
+        flag.textContent = (focus.el.textContent || "").trim().charAt(0);
+        flag.style.top = focus.mid + "px";
+        flag.style.right = window.innerWidth - focus.left + 14 + "px";
+        flag.classList.add("is-visible");
+      });
+    }
+
+    function onLeave() {
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      cells.forEach(function (c) {
+        c.style.transform = "";
+        c.style.color = "";
+      });
+      flag.classList.remove("is-visible");
+    }
+
+    rail.addEventListener("pointerenter", measure);
+    rail.addEventListener("pointermove", onMove);
+    rail.addEventListener("pointerleave", onLeave);
+
+    // Only light the rail up while the term list actually owns the screen —
+    // i.e. it still crosses the vertical middle of the viewport. That keeps
+    // it off the hero above the list and off the FAQ / footer below it.
+    // (An IntersectionObserver can't express this: the list is ~40 000px
+    // tall, so it "intersects" almost any band almost all the time.)
+    var list = doc.getElementById("term-list");
+    if (list) {
+      var visRaf = 0;
+      var syncVis = function () {
+        visRaf = 0;
+        var r = list.getBoundingClientRect();
+        var mid = window.innerHeight / 2;
+        rail.classList.toggle("is-live", r.top < mid && r.bottom > mid);
+      };
+      var queueVis = function () {
+        if (!visRaf) visRaf = requestAnimationFrame(syncVis);
+      };
+      window.addEventListener("scroll", queueVis, { passive: true });
+      window.addEventListener("resize", queueVis);
+      syncVis();
+    }
   })();
 
   /* ====================================================================

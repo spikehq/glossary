@@ -234,6 +234,14 @@ module.exports = function (eleventyConfig) {
     String(value || "").toLowerCase()
   );
 
+  // 0-based loop index → 1-based, zero-padded to two digits ("01", "02", …).
+  // Used for the ledger running index on the homepage; a CSS counter can't do
+  // it there because the letter sections carry `content-visibility: auto`
+  // (style containment), which scopes counters per-section-item.
+  eleventyConfig.addFilter("pad2", (n) =>
+    String(Number(n) + 1).padStart(2, "0")
+  );
+
   eleventyConfig.addFilter("isoDate", (value) =>
     new Date(value || Date.now()).toISOString().slice(0, 10)
   );
