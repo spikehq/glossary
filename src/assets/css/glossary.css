@@ -818,6 +818,11 @@ kbd.key {
 #site-header .btn-primary {
     color: #ffffff;
     background: #134ed9;
+    /* No border — the generic `.btn` (shared with the subscribe form) adds a
+       1px neutral one, which in light mode sits between the blue fill and the
+       blue ring below and reads as a detached outline. The reference header
+       (spike-header-standalone.html) carries the ring only. */
+    border: 0;
     box-shadow:
         0 0 0 1px #1b56e1,
         0 1.5px 9px 0 rgba(22, 22, 24, 0.078),
