@@ -1163,12 +1163,12 @@
   })();
 
   /* ====================================================================
-       FAQ accordion. The CSS (see glossary.css) animates *opening* by
-       flipping `.faq__answer-wrap`'s grid-template-rows once `[open]`
-       lands — but a native <details> closes by having the browser yank
-       its content to `display: none` the instant `open` is removed,
-       before any transition gets a chance to run. Intercept the close,
-       animate it by hand, and only then let the attribute actually go.
+       FAQ accordion. `<details>` has no state between "laid out" and
+       `display: none`, so both directions are driven here: measure the
+       content once and run a single `height` px→px transition (see the
+       `.faq__answer-wrap` rules in glossary.css), then hand back to
+       `height: auto` so the panel reflows naturally afterwards. Without JS
+       or with reduced motion the CSS just snaps.
        ==================================================================== */
   (function faqAccordion() {
     var items = doc.querySelectorAll(".faq__item");
@@ -1180,17 +1180,29 @@
       if (!summary || !wrap) return;
 
       summary.addEventListener("click", function (e) {
-        if (!item.open) return; // opening: the browser's default action + CSS handle it
-        e.preventDefault();
-        wrap.addEventListener(
-          "transitionend",
-          function () {
-            item.open = false;
-            wrap.style.gridTemplateRows = "";
-          },
-          { once: true },
-        );
-        wrap.style.gridTemplateRows = "0fr";
+        e.preventDefault(); // we drive the toggle in both directions
+
+        // Drop any handler still pending from a mid-animation re-click.
+        if (wrap._faqDone) wrap.removeEventListener("transitionend", wrap._faqDone);
+
+        var opening = !item.open;
+        var start = wrap.getBoundingClientRect().height;
+        if (opening) item.open = true;
+        var end = opening ? wrap.scrollHeight : 0;
+
+        wrap.style.height = start + "px";
+        wrap.offsetHeight; // flush the start height before changing it
+        wrap.style.height = end + "px";
+
+        var done = function (ev) {
+          if (ev && ev.propertyName !== "height") return;
+          wrap.removeEventListener("transitionend", done);
+          wrap._faqDone = null;
+          if (!opening) item.open = false;
+          wrap.style.height = ""; // back to the CSS (0 / auto)
+        };
+        wrap._faqDone = done;
+        wrap.addEventListener("transitionend", done);
       });
     });
   })();

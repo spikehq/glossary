@@ -1371,24 +1371,28 @@ main > .page:first-child {
 .faq__item[open] .faq__chevron {
     transform: rotate(180deg);
 }
-/* The animated part: `<details>` content is either fully laid out or, by
-   the UA stylesheet, `display: none` — nothing in between to transition.
-   Overriding that to an always-present grid row that animates between
-   0fr (no space at all, however tall the content actually is) and 1fr
-   sidesteps needing a JS-measured height, and costs nothing when the
-   browser doesn't support animating grid-template-rows: it simply snaps
-   instead of easing, same as a plain `<details>` would. */
+/* The animated part. `<details>` content is either fully laid out or, by
+   the UA stylesheet, `display: none` — nothing in between to transition —
+   so this wrapper is forced to stay in the render tree (`display: block`
+   overrides that) and collapses via `height`. Closed is `height: 0`; open
+   is `height: auto` for the no-JS / reduced-motion path (snaps). With JS
+   and motion, glossary.js swaps in the measured pixel height for one clean
+   `height` transition — animating grid-template-rows between 0fr/1fr, which
+   this used to do, interpolates the fr unit against a re-resolved content
+   box every frame and visibly jitters. */
 .faq__answer-wrap {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--duration-enter) var(--ease-out);
+    display: block;
+    overflow: hidden;
+    height: 0;
+    transition: height var(--duration-enter) var(--ease-out);
 }
 .faq__item[open] .faq__answer-wrap {
-    grid-template-rows: 1fr;
+    height: auto;
 }
-.faq__answer-wrap > .faq__answer {
-    overflow: hidden;
-    min-height: 0;
+@media (prefers-reduced-motion: reduce) {
+    .faq__answer-wrap {
+        transition: none;
+    }
 }
 .faq__answer {
     padding-bottom: var(--space-4);
