@@ -497,12 +497,13 @@ kbd.key {
    exists yet) — it just stays put across the light/dark switch instead of
    cross-fading between a shown and a permanently-invisible twin. */
 #site-logo {
-    height: 1.5rem;
+    height: 2.125rem;
     width: auto;
     transform-origin: left center;
 }
-/* Forces the fixed blue wordmark to solid white against the header's
-   frosted-black chrome — cheaper than shipping a second logo asset. */
+/* Flattens the two-tone wordmark (dark text + blue spike) to solid white
+   against the header's frosted-black chrome — cheaper than shipping a
+   second logo asset. */
 #site-header.header-dark #site-logo {
     filter: brightness(0) invert(1);
 }
@@ -1909,9 +1910,10 @@ main > .page:first-child {
 
 /* Markdown body ---------------------------------------------------------- */
 .prose {
-    /* A big, quiet gap — no rule — between the term + its one-line lede and
-       the body copy, so they read as two clearly distinct sections. */
-    margin-top: clamp(5rem, 13vw, 9rem);
+    /* A touch more than the step above the <h1> (~40px) — enough air that
+       the lede → first heading gap reads as a deliberate section break
+       without the rule-less canyon it used to be. */
+    margin-top: var(--space-12);
     max-width: 72ch;
 }
 .prose > * + * {
