@@ -2283,7 +2283,7 @@ main > .page:first-child {
         padding-inline: var(--page-pad);
     }
     #site-logo {
-        height: 1.25rem;
+        height: 1.75rem;
     }
     .mobile-menu-toggle {
         width: 2.75rem;
