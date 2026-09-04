@@ -6,115 +6,175 @@
         </a>
 
         <ul class="desktop-nav">
-            <li class="mega-dropdown">
-                <div class="mega-dropdown-triggers">
-                    <button type="button" data-trigger="products" aria-haspopup="true" aria-expanded="false"
-                        class="nav-link-text nav-trigger">
-                        Products
-                        <svg class="chevron lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <button type="button" data-trigger="resources" aria-haspopup="true" aria-expanded="false"
-                        class="nav-link-text nav-trigger">
-                        Resources
-                        <svg class="chevron lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                    </button>
-                </div>
+            {{!-- Products — its own wide rounded panel: a titled link list on
+                  the left, a "works with your stack" integrations aside on the
+                  right. Opens on hover / focus-within (pure CSS); glossary.js
+                  only mirrors aria-expanded. --}}
+            <li class="nav-item">
+                <button type="button" aria-haspopup="true" aria-expanded="false" class="nav-link-text nav-trigger">
+                    Products
+                    <svg class="chevron lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div class="nav-panel-wrap">
+                    <div class="nav-panel nav-panel--wide" data-nav-panel>
+                        <div class="nav-panel-grid">
+                            <ul class="nav-panel-list">
+                                <li><a href="https://spike.sh/incidents" class="nav-panel-link">
+                                    <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-badge-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>
+                                    <span class="nav-panel-title">Incidents</span>
+                                    <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a></li>
+                                <li><a href="https://spike.sh/incident-response" class="nav-panel-link">
+                                    <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-fire-extinguisher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5V3a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3.5"/><path d="M9 18h8"/><path d="M18 3h-3"/><path d="M11 3a6 6 0 0 0-6 6v11"/><path d="M5 13h4"/><path d="M17 10a4 4 0 0 0-8 0v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2Z"/></svg></span>
+                                    <span class="nav-panel-title">Response</span>
+                                    <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a></li>
+                                <li><a href="https://spike.sh/on-call" class="nav-panel-link">
+                                    <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-calendar-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="m9 15 2 2 4-4"/></svg></span>
+                                    <span class="nav-panel-title">On Call</span>
+                                    <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a></li>
+                                <li><a href="https://spike.sh/escalations" class="nav-panel-link">
+                                    <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-chevrons-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m17 11-5-5-5 5"/><path d="m17 18-5-5-5 5"/></svg></span>
+                                    <span class="nav-panel-title">Escalation</span>
+                                    <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a></li>
+                                <li><a href="https://spike.sh/alert-routing" class="nav-panel-link">
+                                    <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-split" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></svg></span>
+                                    <span class="nav-panel-title">Alert Routing</span>
+                                    <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a></li>
+                            </ul>
 
-                <div class="mega-wrapper">
-                    <div data-mega-panel class="mega-panel">
-                        <div class="mega-panel-inner">
-
-                            <div data-panel="products" class="mega-links is-active">
-                                <ul>
-                                    <li><a href="https://spike.sh/incidents" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-badge-alert" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>
-                                        <span><span class="mega-link-title">Incidents</span><span class="mega-link-desc">Detect and act on incidents in seconds</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/incident-response" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-fire-extinguisher" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5V3a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3.5"/><path d="M9 18h8"/><path d="M18 3h-3"/><path d="M11 3a6 6 0 0 0-6 6v11"/><path d="M5 13h4"/><path d="M17 10a4 4 0 0 0-8 0v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2Z"/></svg></span>
-                                        <span><span class="mega-link-title">Response</span><span class="mega-link-desc">Coordinate the fix from alert to resolution</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/on-call" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-calendar-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="m9 15 2 2 4-4"/></svg></span>
-                                        <span><span class="mega-link-title">On Call</span><span class="mega-link-desc">Schedules and rotations that just work</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/escalations" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-chevrons-up" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m17 11-5-5-5 5"/><path d="m17 18-5-5-5 5"/></svg></span>
-                                        <span><span class="mega-link-title">Escalation</span><span class="mega-link-desc">Nobody misses a page that matters</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/alert-routing" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-split" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></svg></span>
-                                        <span><span class="mega-link-title">Alert Routing</span><span class="mega-link-desc">Alerts land with the right responder</span></span>
-                                    </a></li>
-                                </ul>
-                            </div>
-
-                            <div data-panel="resources" class="mega-links">
-                                <ul>
-                                    <li><a href="https://spike.sh/blog/" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-rss" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>
-                                        <span><span class="mega-link-title">Blog</span><span class="mega-link-desc">Notes on incidents, on-call and SRE</span></span>
-                                    </a></li>
-                                    <li><a href="https://docs.spike.sh/" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-book-open-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v16"/><path d="m16 12 2 2 4-4"/><path d="M22 6V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2h4.001A2 2 0 0 0 22 17v-1.344"/></svg></span>
-                                        <span><span class="mega-link-title">Documentation</span><span class="mega-link-desc">Set up Spike end to end</span></span>
-                                    </a></li>
-                                    <li><a href="https://api.spike.sh" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-braces" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg></span>
-                                        <span><span class="mega-link-title">API</span><span class="mega-link-desc">Build directly on the Spike platform</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/templates" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-layout-template" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></svg></span>
-                                        <span><span class="mega-link-title">Templates</span><span class="mega-link-desc">Ready-made runbooks and workflows</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/demo" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-monitor-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 10 2 2 4-4"/><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/></svg></span>
-                                        <span><span class="mega-link-title">Demo</span><span class="mega-link-desc">See Spike run on a live incident</span></span>
-                                    </a></li>
-                                    <li><a href="https://spike.sh/faq" class="mega-link-item">
-                                        <span class="mega-link-icon" aria-hidden="true"><svg class="lucide lucide-circle-help" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
-                                        <span><span class="mega-link-title">FAQ</span><span class="mega-link-desc">Common questions, answered</span></span>
-                                    </a></li>
-                                </ul>
-                            </div>
-
-                            <div class="mega-sidebar" data-sidebar="products">
-                                <div class="mega-sidebar-card">
-                                    <div class="integrations-grid">
-                                        <a href="/incidents/zapier" class="integration-tile" title="Zapier"><img src="{{site.base}}/assets/images/zapier.png" alt="Zapier" loading="lazy"></a>
-                                        <a href="/incidents/aws" class="integration-tile" title="AWS"><img src="{{site.base}}/assets/images/aws.png" alt="AWS" loading="lazy"></a>
-                                        <a href="/incidents/checkly" class="integration-tile" title="Checkly"><img src="{{site.base}}/assets/images/checkly.png" alt="Checkly" loading="lazy"></a>
-                                        <a href="/incidents/gcp" class="integration-tile" title="GCP"><img src="{{site.base}}/assets/images/GCP.png" alt="GCP" loading="lazy"></a>
-                                        <a href="/incidents/google-cloud" class="integration-tile" title="Google Cloud"><img src="{{site.base}}/assets/images/GC.png" alt="Google Cloud" loading="lazy"></a>
-                                        <a href="/incidents/sentry" class="integration-tile" title="Sentry"><img src="{{site.base}}/assets/images/sentry.png" alt="Sentry" loading="lazy"></a>
+                            <div class="nav-panel-aside">
+                                <div>
+                                    <p class="nav-panel-aside-label">Works with your stack</p>
+                                    <div class="nav-panel-integrations">
+                                        <a href="https://spike.sh/integrations/zapier" title="Zapier"><img src="{{site.base}}/assets/images/zapier.png" alt="Zapier" loading="lazy"></a>
+                                        <a href="https://spike.sh/integrations/aws" title="AWS"><img src="{{site.base}}/assets/images/aws.png" alt="AWS" loading="lazy"></a>
+                                        <a href="https://spike.sh/integrations/checkly" title="Checkly"><img src="{{site.base}}/assets/images/checkly.png" alt="Checkly" loading="lazy"></a>
+                                        <a href="https://spike.sh/integrations/google-cloud" title="GCP"><img src="{{site.base}}/assets/images/GCP.png" alt="GCP" loading="lazy"></a>
+                                        <a href="https://spike.sh/integrations/google-cloud" title="Google Cloud"><img src="{{site.base}}/assets/images/GC.png" alt="Google Cloud" loading="lazy"></a>
+                                        <a href="https://spike.sh/integrations/sentry" title="Sentry"><img src="{{site.base}}/assets/images/sentry.png" alt="Sentry" loading="lazy"></a>
                                     </div>
                                 </div>
-                                <p class="mega-sidebar-blurb">Monitoring tools, cloud platforms, error tracking and more, there are over 80+ integrations</p>
-                                <a href="/integrations" class="mega-sidebar-cta">
-                                    Integrations
-                                    <svg class="lucide lucide-arrow-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                <a href="https://spike.sh/integrations" class="nav-panel-aside-cta">
+                                    Explore all integrations
+                                    <svg class="lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                                 </a>
                             </div>
-
-                            <div class="mega-sidebar is-hidden" data-sidebar="resources">
-                                <img class="mega-sidebar-image" src="{{site.base}}/assets/images/resources-section.png" alt="Resources" loading="lazy">
-                                <p class="mega-sidebar-blurb">How to handle midnight incidents without waking everyone up</p>
-                                <a href="/blog" class="mega-sidebar-cta">
-                                    Read more
-                                    <svg class="lucide lucide-arrow-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                                </a>
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </li>
 
-            <li><a href="https://spike.sh/customers" class="nav-link-text">Customers</a></li>
+            {{!-- Resources — its own narrow rounded panel: a simple icon + label
+                  list, no aside. --}}
+            <li class="nav-item">
+                <button type="button" aria-haspopup="true" aria-expanded="false" class="nav-link-text nav-trigger">
+                    Resources
+                    <svg class="chevron lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div class="nav-panel-wrap">
+                    <div class="nav-panel nav-panel--narrow" data-nav-panel>
+                        <ul class="nav-panel-list">
+                            <li><a href="https://spike.sh/blog/" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-rss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>
+                                <span class="nav-panel-title">Blog</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                            <li><a href="https://docs.spike.sh/" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-book-open-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v16"/><path d="m16 12 2 2 4-4"/><path d="M22 6V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2h4.001A2 2 0 0 0 22 17v-1.344"/></svg></span>
+                                <span class="nav-panel-title">Documentation</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                            <li><a href="https://api.spike.sh" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-braces" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg></span>
+                                <span class="nav-panel-title">API</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                            <li><a href="https://spike.sh/templates" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-layout-template" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></svg></span>
+                                <span class="nav-panel-title">Templates</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                            <li><a href="https://spike.sh/demo" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-monitor-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 10 2 2 4-4"/><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/></svg></span>
+                                <span class="nav-panel-title">Demo</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                            <li><a href="https://spike.sh/faq" class="nav-panel-link">
+                                <span class="nav-panel-icon" aria-hidden="true"><svg class="lucide lucide-circle-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+                                <span class="nav-panel-title">FAQ</span>
+                                <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+
+            {{!-- Customers — one featured story card + a short list, ported
+                  from Header.astro. Panel is centred under its trigger. --}}
+            <li class="nav-item">
+                <button type="button" aria-haspopup="true" aria-expanded="false" class="nav-link-text nav-trigger">
+                    Customers
+                    <svg class="chevron lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div class="nav-panel-wrap nav-panel-wrap--center">
+                    <div class="nav-panel nav-panel--wide" data-nav-panel>
+                        <div class="nav-panel-grid nav-panel-grid--customers">
+                            <div class="nav-panel-col">
+                                <p class="nav-panel-aside-label nav-panel-col-label">Customer stories</p>
+                                <ul class="nav-panel-list">
+                                    <li><a href="https://spike.sh/customers/neat" class="nav-panel-link nav-panel-link--plain">
+                                        <span class="nav-panel-title">Neat</span>
+                                        <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                    </a></li>
+                                    <li><a href="https://spike.sh/customers/thndr" class="nav-panel-link nav-panel-link--plain">
+                                        <span class="nav-panel-title">Thndr</span>
+                                        <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                    </a></li>
+                                    <li><a href="https://spike.sh/customers/sportskeeda" class="nav-panel-link nav-panel-link--plain">
+                                        <span class="nav-panel-title">Sportskeeda</span>
+                                        <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                    </a></li>
+                                    <li><a href="https://spike.sh/customers/virtually-human" class="nav-panel-link nav-panel-link--plain">
+                                        <span class="nav-panel-title">Virtually Human</span>
+                                        <svg class="nav-panel-arrow lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                    </a></li>
+                                </ul>
+                                <a href="https://spike.sh/customers" class="nav-panel-col-cta">
+                                    See all customers
+                                    <svg class="lucide lucide-arrow-right" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a>
+                            </div>
+
+                            <a href="https://spike.sh/customers/socialbee" class="nav-panel-story">
+                                <img class="nav-panel-story-bg" src="{{site.base}}/assets/images/customers/socialbee-img.jpg" alt="" aria-hidden="true" width="440" height="320" loading="lazy">
+                                <span class="nav-panel-story-scrim" aria-hidden="true"></span>
+                                <span class="nav-panel-story-body">
+                                    <img class="nav-panel-story-logo" src="{{site.base}}/assets/images/customers/socialbee-logo.png" alt="SocialBee" width="96" height="24" loading="lazy">
+                                    <span class="nav-panel-story-quote">“Getting timely alerts through Spike has helped us prevent issues from turning into customer-facing problems.”</span>
+                                    <span class="nav-panel-story-author">
+                                        <img class="nav-panel-story-avatar" src="{{site.base}}/assets/images/customers/vlad-ardelean.png" alt="" aria-hidden="true" width="32" height="32" loading="lazy">
+                                        <span class="nav-panel-story-meta">
+                                            <span class="nav-panel-story-name">Vlad Ardelean</span>
+                                            <span class="nav-panel-story-role">Co-Founder &amp; CTO, SocialBee (WebPros)</span>
+                                        </span>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <li><a href="https://spike.sh/pricing" class="nav-link-text">Pricing</a></li>
         </ul>
 
@@ -124,9 +184,15 @@
                 <svg class="icon-moon lucide lucide-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
             </button>
 
-            <a href="https://app.spike.sh/login" class="nav-link-text">LOG IN</a>
+            <a id="header-cta-login" href="https://app.spike.sh/login" class="nav-link-text" aria-keyshortcuts="L">
+                LOG IN
+                <kbd class="nav-kbd" aria-hidden="true">L</kbd>
+            </a>
 
-            <a id="header-cta-signup" href="{{site.signupUrl}}?utm_source=glossary" class="btn btn-primary">GET STARTED</a>
+            <a id="header-cta-signup" href="{{site.signupUrl}}?utm_source=glossary" class="btn btn-primary" aria-keyshortcuts="S">
+                GET STARTED
+                <kbd class="nav-kbd nav-kbd--on-brand" aria-hidden="true">S</kbd>
+            </a>
         </div>
 
         <div class="mobile-header-actions">

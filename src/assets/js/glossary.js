@@ -124,175 +124,69 @@
   })();
 
   /* ====================================================================
-       Header — ported close to verbatim from spike-header-standalone.html:
-       scroll-linked compaction + dark/light flip over `data-header-theme`
-       sections, the desktop mega-dropdown, and the mobile hamburger sheet.
+       Header — the desktop dropdown panels and the mobile hamburger sheet.
+       The header is NOT pinned and does NOT compact on scroll: it scrolls
+       away with the page like any other section. The light/dark treatment
+       is driven by themeToggle's sync() above (which sets .header-dark, the
+       mobile toggle's .is-dark, and the mobile "log in" variant); the only
+       thing left to do here is lift the first-paint transition guard once
+       that sync has run, so a dark-mode load doesn't fade the pill in.
        ==================================================================== */
   (function header() {
-    var siteHeader = doc.getElementById("site-header");
-    var menuToggle = doc.getElementById("mobile-menu-toggle");
-    var mobileLoginLight = doc.getElementById("mobile-cta-login-light");
-    var mobileLoginDark = doc.getElementById("mobile-cta-login-dark");
+    requestAnimationFrame(function () {
+      root.classList.remove("header-booting");
+    });
 
-    if (siteHeader) {
-      var darkSections = doc.querySelectorAll('[data-header-theme="dark"]');
-      var activeDarkSections = [];
-      var reduceMotionQuery = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      );
-      var desktop = window.matchMedia("(min-width: 64rem)");
-      // Hero-triggered flip (data-header-theme="dark") is independent of
-      // the global light/dark theme switch — either can put the header
-      // in its dark treatment, so the two are OR'd together below
-      // rather than one clobbering the other on the next scroll tick.
-      var heroDark = false;
-      var lastScrolled = null;
-      var lastIsDark = null;
-      var lastProgress = -1;
+    /* ---- desktop nav: each item owns its own dropdown panel --------
+       The panels open purely on CSS :hover / :focus-within; this only
+       keeps every trigger's aria-expanded in step for assistive tech. */
+    Array.prototype.forEach.call(
+      doc.querySelectorAll(".nav-item"),
+      function (item, i) {
+        var trigger = item.querySelector("button[aria-haspopup]");
+        var panel = item.querySelector("[data-nav-panel]");
+        if (!trigger || !panel) return;
+        if (!panel.id) panel.id = "nav-panel-" + i;
+        trigger.setAttribute("aria-controls", panel.id);
 
-      var SHRINK_DISTANCE = 100;
-      var easeOutCubic = function (t) {
-        return 1 - Math.pow(1 - t, 3);
-      };
-
-      var applyHeaderProgress = function () {
-        if (!desktop.matches) {
-          if (lastProgress === 0) return;
-          lastProgress = 0;
-          root.style.setProperty("--header-progress", "0");
-          return;
-        }
-        var travelled = Math.min(
-          1,
-          Math.max(0, window.scrollY / SHRINK_DISTANCE),
-        );
-        var progress = reduceMotionQuery.matches
-          ? window.scrollY > 0
-            ? 1
-            : 0
-          : easeOutCubic(travelled);
-        var rounded = Math.round(progress * 1000) / 1000;
-        if (rounded === lastProgress) return;
-        lastProgress = rounded;
-        root.style.setProperty("--header-progress", String(rounded));
-      };
-
-      var applyHeaderChrome = function () {
-        var scrolled = window.scrollY > 0;
-        var isDark = heroDark || root.classList.contains("dark");
-        if (scrolled === lastScrolled && isDark === lastIsDark) return;
-        lastScrolled = scrolled;
-        lastIsDark = isDark;
-
-        siteHeader.classList.toggle("header-dark", isDark);
-        if (menuToggle) menuToggle.classList.toggle("is-dark", isDark);
-        if (mobileLoginLight)
-          mobileLoginLight.classList.toggle("hidden-important", isDark);
-        if (mobileLoginDark)
-          mobileLoginDark.classList.toggle("hidden-important", !isDark);
-      };
-
-      if (darkSections.length) {
-        var headerHeight = siteHeader.offsetHeight;
-        var bandMargin = function () {
-          return Math.max(0, window.innerHeight - headerHeight);
+        var setOpen = function (open) {
+          trigger.setAttribute("aria-expanded", String(open));
         };
+        item.addEventListener("mouseenter", function () {
+          setOpen(true);
+        });
+        item.addEventListener("mouseleave", function () {
+          setOpen(false);
+        });
+        item.addEventListener("focusin", function () {
+          setOpen(true);
+        });
+        item.addEventListener("focusout", function (e) {
+          if (!item.contains(e.relatedTarget)) setOpen(false);
+        });
+      },
+    );
 
-        var observer = null;
-        var createObserver = function () {
-          if (observer) observer.disconnect();
-          activeDarkSections = [];
-          observer = new IntersectionObserver(
-            function (entries) {
-              entries.forEach(function (entry) {
-                var i = activeDarkSections.indexOf(entry.target);
-                if (entry.isIntersecting) {
-                  if (i === -1) activeDarkSections.push(entry.target);
-                } else if (i !== -1) {
-                  activeDarkSections.splice(i, 1);
-                }
-              });
-              heroDark = activeDarkSections.length > 0;
-              applyHeaderChrome();
-            },
-            { rootMargin: "0px 0px -" + bandMargin() + "px 0px", threshold: 0 },
-          );
-          darkSections.forEach(function (section) {
-            observer.observe(section);
-          });
-
-          darkSections.forEach(function (section) {
-            var rect = section.getBoundingClientRect();
-            if (
-              rect.top < headerHeight &&
-              rect.bottom > 0 &&
-              activeDarkSections.indexOf(section) === -1
-            ) {
-              activeDarkSections.push(section);
-            }
-          });
-          heroDark = activeDarkSections.length > 0;
-        };
-
-        createObserver();
-        window.addEventListener("resize", createObserver);
-      }
-
-      applyHeaderChrome();
-      applyHeaderProgress();
-
-      var recomputeProgress = function () {
-        lastProgress = -1;
-        applyHeaderProgress();
+    /* ---- L / S keyboard shortcuts, matching the chips on LOG IN and
+       GET STARTED (ported from Header.astro). Bare single keys: only with
+       no Ctrl/Meta/Alt held, and never while focus is in a text field, so
+       they stay clear of ordinary typing and the "/" search. URLs are read
+       off the links themselves so they live in one place (the markup). */
+    var loginLink = doc.getElementById("header-cta-login");
+    var signupLink = doc.getElementById("header-cta-signup");
+    if (loginLink || signupLink) {
+      var shortcutTargets = {
+        l: loginLink && loginLink.href,
+        s: signupLink && signupLink.href,
       };
-      reduceMotionQuery.addEventListener("change", recomputeProgress);
-      desktop.addEventListener("change", recomputeProgress);
-
-      var scrollTicking = false;
-      window.addEventListener(
-        "scroll",
-        function () {
-          if (scrollTicking) return;
-          scrollTicking = true;
-          requestAnimationFrame(function () {
-            applyHeaderProgress();
-            applyHeaderChrome();
-            scrollTicking = false;
-          });
-        },
-        { passive: true },
-      );
-    }
-
-    /* ---- desktop mega-dropdown: hover/focus swaps panel + sidebar --- */
-    var dropdown = doc.querySelector(".mega-dropdown");
-    if (dropdown) {
-      var triggers = dropdown.querySelectorAll("[data-trigger]");
-      var panels = dropdown.querySelectorAll("[data-panel]");
-      var sidebars = dropdown.querySelectorAll("[data-sidebar]");
-
-      var showPanel = function (name) {
-        panels.forEach(function (p) {
-          p.classList.toggle("is-active", p.dataset.panel === name);
-        });
-        sidebars.forEach(function (s) {
-          s.classList.toggle("is-hidden", s.dataset.sidebar !== name);
-        });
-        triggers.forEach(function (t) {
-          t.setAttribute("aria-expanded", String(t.dataset.trigger === name));
-        });
-      };
-
-      triggers.forEach(function (trigger) {
-        trigger.addEventListener("mouseenter", function () {
-          showPanel(trigger.dataset.trigger);
-        });
-        trigger.addEventListener("focus", function () {
-          showPanel(trigger.dataset.trigger);
-        });
+      doc.addEventListener("keydown", function (e) {
+        if (e.altKey || e.metaKey || e.ctrlKey) return;
+        if (isTyping(e.target)) return;
+        var url = shortcutTargets[e.key.toLowerCase()];
+        if (!url) return;
+        e.preventDefault();
+        window.location.href = url;
       });
-
-      showPanel("products");
     }
 
     /* ---- mobile menu: hamburger toggle + accordion sections --------- */

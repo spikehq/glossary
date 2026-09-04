@@ -351,40 +351,41 @@ kbd.key {
 }
 
 /* --------------------------------------------------------------------------
-   5. Site header — ported close to verbatim from the standalone
-   spike-header-standalone.html mockup (mono wordmark → wordmark image, two-
-   panel mega-dropdown for Products/Resources, compacting sticky/fixed shell,
-   scroll-linked dark-hero flip). See glossary.js for the matching behaviour.
+   5. Site header — modelled on website_astro-production's Header.astro
+   (wordmark image, one independently-sized rounded dropdown panel per nav
+   item — a wide Products panel with an integrations aside, a narrow Resources
+   list — compacting shell, scroll-linked dark-hero flip). The transparent,
+   scroll-away shell is a deliberate glossary-only departure so the header
+   merges into the hero wash. See glossary.js for the matching behaviour.
 
    Its own local tokens are scoped to `#site-header` (not :root) because a few
    names — --font-sans, --font-mono, --text-sm/base, --radius-sm/md/lg —
    collide with brand/spike-theme.css; defining them globally would silently
    change type/radii sitewide. Scoping to the header keeps every descendant
-   (including the fixed mega-panel and mobile sheet, which still inherit
-   custom properties through the DOM regardless of position) resolving the
+   (including the dropdown panels and the fixed mobile sheet, which still
+   inherit custom properties through the DOM regardless of position) resolving the
    header's own values without touching the rest of the page. `.btn` /
    `.btn-outline` are likewise addressed as `#site-header .btn…` because the
    bare class names are already used (with different styling) by the
    subscribe form and the "Contribute a term" link elsewhere on the page.
    -------------------------------------------------------------------------- */
-@property --header-progress {
-    syntax: '<number>';
-    inherits: true;
-    initial-value: 0;
-}
 @property --header-height {
     syntax: '<length>';
     inherits: true;
     initial-value: 72px;
 }
 
-/* Scroll-linked compaction driver — glossary.js sets --header-progress on
-   <html> every scroll tick. These MUST live on :root, not on #site-header
-   itself: a same-element declaration always wins over an inherited one, so
-   redeclaring them on #site-header would permanently shadow the JS-driven
-   value with this static default and freeze the compaction at 0. */
+/* Header geometry. The header is NOT pinned and does NOT compact on scroll —
+   it scrolls away with the page like any other section. These are static:
+   --float-gap / --bar-height shape the frosted pill's ::before box from lg up,
+   --pill-width sets its (and the nav row's) width, and --header-height is the
+   pill's full footprint = gap + bar, which .hero::before reads to run the hero
+   wash up behind the header. On mobile the gap is 0 and the pill styling is
+   off, so --header-height is just the flat bar height. */
 :root {
-    --header-progress: 0;
+    --float-gap: 0rem;
+    --bar-height: 4.5rem;
+    --pill-width: 60rem;
     --header-height: 4.5rem;
 }
 
@@ -400,7 +401,9 @@ kbd.key {
 
     --color-border-default: var(--border);
     --color-surface-subtle: #fcfbf9;
+    --color-surface-2: #f4f3ef;
     --color-surface-icon: #777777;
+    --color-neutral-400: #9a988f;
 
     --color-light-neutral-300: #c3c1c0;
     --color-dark-neutral-100: #717070;
@@ -412,7 +415,7 @@ kbd.key {
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
 
-    --text-sm: 0.875rem;
+    --text-sm: 0.8125rem;
     --text-base: 1rem;
     --tracking-mono: 0.06em;
 
@@ -424,65 +427,141 @@ kbd.key {
 }
 
 /* ---- Layout / chrome ----------------------------------------------------- */
-/* Scrolls away with the page rather than staying pinned — only the toolbar
-   below it stays sticky. `position: relative`, not `static`: the mega-panel
-   dropdown still needs #site-header as its positioned containing block. */
+/* NOT pinned — the header scrolls away with the page. `position: relative`
+   only so it stays a positioning context and its z-index keeps the dropdown
+   panels above the content that follows. From lg up the visible chrome is a
+   frosted, rounded, centred pill (::before, below); it just scrolls with
+   everything else rather than staying stuck to the top. */
 #site-header {
     position: relative;
+    z-index: 50;
     height: var(--header-height);
     font-family: var(--font-sans);
 }
 @media (min-width: 64rem) {
-    /* On :root, not #site-header: .toolbar-wrap (elsewhere in the page, not
-       a descendant of the header) also reads --header-height to stay flush
-       against it, and an element-scoped override wouldn't reach outside the
-       header's own subtree. */
+    /* Pill sits 0.75rem down from the header's top edge and is 3.75rem tall,
+       so the header box (gap + bar) is still 4.5rem — same as the mobile bar,
+       so --header-height needs no breakpoint override. */
     :root {
-        --header-height: calc(4.5rem - 0.625rem * var(--header-progress));
+        --float-gap: 0.75rem;
+        --bar-height: 3.75rem;
+    }
+    /* The float gap is padding on the header (box-sizing: border-box keeps the
+       total at --header-height), so the nav row and the pill ::before both
+       start at the same 0.75rem offset and stay vertically locked. */
+    #site-header {
+        padding-top: var(--float-gap);
     }
 }
 
-/* The header paints no fill and no bottom rule of its own. It used to wear a
-   frosted-white bar plus a hairline edge, both inherited from the mockup where
-   it stayed pinned over scrolling content — but it scrolls away with the page
-   now, so the glass had nothing to blur, and the flat white read as a second
-   surface stacked on the hero: a hard horizontal seam right under the nav.
-   Transparent instead, so whatever is behind it shows through — the page
-   background on most pages, and on the index the hero wash, which runs up
-   behind the header (see .hero::before) so the two read as one continuous
-   surface. The mega panel and the mobile sheet carry their own glass fills, so
-   they stay legible without one here. */
+/* Frosted-glass fill, painted on a pseudo-element (never on #site-header
+   itself) so the nested backdrop-filters on the dropdown panels and the
+   mobile sheet aren't trapped inside a backdrop root — see the long note in
+   Header.astro. Below lg it's the full-bleed flat bar; from lg up it becomes
+   the centred, fully-rounded pill with an all-around border, a soft float
+   shadow and a 1px inner top-edge highlight. On the index the hero wash runs
+   up behind it (see .hero::before) so the blur always has real content to
+   sample. */
+#site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    transition: background-color 200ms;
+}
+#site-header.header-dark::before {
+    background-color: color-mix(in oklab, var(--color-brand-black) 70%, transparent);
+}
+@media (min-width: 64rem) {
+    #site-header::before {
+        inset: auto;
+        top: var(--float-gap);
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(var(--pill-width), 100% - 2rem);
+        height: var(--bar-height);
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--color-border-default);
+        backdrop-filter: blur(28px) saturate(185%);
+        -webkit-backdrop-filter: blur(28px) saturate(185%);
+        box-shadow:
+            var(--shadow-sm),
+            inset 0 1px 0 0 color-mix(in oklab, var(--color-neutral-100) 55%, transparent);
+        transition:
+            background-color 200ms,
+            border-color 200ms,
+            box-shadow 200ms;
+    }
+    #site-header.header-dark::before {
+        border-color: var(--color-dark-neutral-500);
+        box-shadow:
+            var(--shadow-sm),
+            inset 0 1px 0 0 color-mix(in oklab, var(--color-neutral-100) 14%, transparent);
+    }
+}
+
+/* First-paint guard. `.header-booting` is on <html> from the inline theme
+   script and removed by glossary.js on the first frame, once the theme has
+   been synced onto the header — so a dark-mode load lands with the pill
+   already its dark tint instead of fading from light. */
+.header-booting #site-header::before,
+.header-booting #site-header::after,
+.header-booting #site-header #site-logo {
+    transition: none !important;
+}
+
+/* Bottom divider as an overlay (not a real border) so the header's box stays
+   exactly the bar height. Full-bleed on the flat mobile bar; gone from lg up
+   where the pill carries its own all-around border; suppressed in the dark
+   treatment where it's a redundant seam over an identical background. */
+#site-header::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--color-border-default);
+    opacity: 1;
+    pointer-events: none;
+}
+@media (min-width: 64rem) {
+    #site-header::after {
+        display: none;
+    }
+}
+#site-header.header-dark::after {
+    opacity: 0;
+}
+
+/* Below lg: the flat bar, centred to the content column. From lg up: centred
+   to the pill width and a 3.75rem row that sits inside the frosted pill
+   (::before). The row is pushed down by the float gap with padding on
+   #site-header (see above) rather than a margin here — a top margin on this
+   child collapses through the non-fixed header and desyncs it from the pill
+   by exactly that gap. */
 #site-header .site-nav {
     margin-inline: auto;
     max-width: var(--container-max);
-    /* Tracks the same shrinking value as the header box itself (not a fixed
-       4.5rem) — otherwise this row keeps rendering at its full height and
-       visibly overflows the now-shorter header once compaction kicks in,
-       leaving the toolbar's flush-under-the-header offset floating short
-       of where the nav content actually ends. */
     height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-inline: var(--space-4);
-    border-inline: 1px solid transparent;
-    transition:
-        color 200ms,
-        background-color 200ms,
-        border-color 200ms;
 }
 @media (min-width: 40rem) {
     #site-header .site-nav {
         padding-inline: var(--space-6);
     }
 }
-#site-header .site-nav:has(.mega-dropdown:hover),
-#site-header .site-nav:has(.mega-dropdown:focus-within) {
-    border-color: var(--color-border-default);
-}
-#site-header.header-dark .site-nav:has(.mega-dropdown:hover),
-#site-header.header-dark .site-nav:has(.mega-dropdown:focus-within) {
-    border-color: var(--color-dark-neutral-500);
+@media (min-width: 64rem) {
+    #site-header .site-nav {
+        width: min(var(--pill-width), 100% - 2rem);
+        max-width: none;
+        height: var(--bar-height);
+    }
 }
 
 /* ---- Logo ----------------------------------------------------------------- */
@@ -497,9 +576,8 @@ kbd.key {
    exists yet) — it just stays put across the light/dark switch instead of
    cross-fading between a shown and a permanently-invisible twin. */
 #site-logo {
-    height: 2.125rem;
+    height: 1.75rem;
     width: auto;
-    transform-origin: left center;
 }
 /* Flattens the two-tone wordmark (dark text + blue spike) to solid white
    against the header's frosted-black chrome — cheaper than shipping a
@@ -507,19 +585,12 @@ kbd.key {
 #site-header.header-dark #site-logo {
     filter: brightness(0) invert(1);
 }
-@media (min-width: 64rem) {
-    #site-logo {
-        transform: translateY(calc(-0.3125rem * var(--header-progress)))
-            scale(calc(1 - 0.167 * var(--header-progress)));
-        will-change: transform;
-    }
-}
 
 /* ---- Desktop nav ----------------------------------------------------------- */
 #site-header .desktop-nav {
     display: none;
     align-items: center;
-    gap: var(--space-8);
+    gap: var(--space-6);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -529,28 +600,31 @@ kbd.key {
         display: flex;
     }
 }
-
-.mega-dropdown {
-    /* Deliberately NOT position:relative — .mega-wrapper below needs its
-       containing block to be #site-header (fixed/sticky) so the panel spans
-       the full header width, not just this trigger cluster. */
+/* Every top-level item is a constant-height flex box (matching the pill's
+   resting row height, like Header.astro's h-15) so the whole row is a hover
+   target for its dropdown and the plain Pricing link shares the triggers'
+   baseline. The pill compacts on a transform, so this stays fixed. */
+#site-header .desktop-nav > li {
     display: flex;
     align-items: center;
-    height: var(--header-height); /* tracks the same shrink as .site-nav */
+    height: 3.75rem;
 }
-.mega-dropdown-triggers {
-    display: flex;
-    align-items: center;
-    gap: var(--space-8);
+
+/* Each dropdown item is its own positioning context: unlike the old single
+   full-width mega panel, every panel is now anchored to (and sized for) its
+   own trigger. */
+.nav-item {
+    position: relative;
 }
 
 #site-header .nav-link-text {
-    transform-origin: center;
     font-family: var(--font-mono);
-    font-size: var(--text-sm);
+    font-size: 0.875rem; /* 14px — the nav items hold their size; the rest of
+                            the header chrome uses the smaller --text-sm */
     font-weight: 400;
     letter-spacing: var(--tracking-mono);
     text-transform: uppercase;
+    white-space: nowrap;
     color: var(--color-dark-neutral-200);
     text-decoration: none;
     transition: color 200ms;
@@ -567,47 +641,75 @@ kbd.key {
 #site-header.header-dark .nav-link-text:hover {
     color: var(--color-light-neutral-300);
 }
-@media (min-width: 64rem) {
-    #site-header .nav-link-text {
-        transform: translateY(calc(-0.3125rem * var(--header-progress)))
-            scale(calc(1 - 0.143 * var(--header-progress)));
-        will-change: transform;
+
+/* Keyboard-shortcut chips on LOG IN (L) and GET STARTED (S) — the bare-key
+   handler lives in glossary.js's header(). Ported from Header.astro. Only
+   meaningful with a real keyboard, so hidden on coarse pointers. */
+#site-header .nav-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
+    padding: 0.1875rem 0.4375rem;
+    border: 1px solid var(--color-border-default);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .nav-kbd {
+    border-color: var(--color-dark-neutral-500);
+    color: var(--color-light-neutral-300);
+}
+#site-header .nav-kbd--on-brand {
+    border-color: rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / 0.8);
+}
+#site-header.header-dark .nav-kbd--on-brand {
+    border-color: rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / 0.8);
+}
+@media (pointer: coarse) {
+    #site-header .nav-kbd {
+        display: none;
     }
 }
 .nav-link-text .chevron {
     transition: transform 200ms;
 }
-.mega-dropdown-triggers .nav-link-text[aria-expanded='true'] .chevron,
+.nav-item .nav-link-text[aria-expanded='true'] .chevron,
 .nav-trigger:hover .chevron,
-.nav-trigger:focus-within .chevron {
+.nav-item:focus-within .nav-trigger .chevron {
     transform: rotate(-180deg);
 }
 
-/* Mega panel wrapper spans the full header width because #site-header is
-   itself the positioned ancestor once fixed (from the lg breakpoint up) and,
-   below it, the sticky header remains the containing block. */
-.mega-wrapper {
+/* ---- Dropdown panels ----------------------------------------------------- */
+/* A small top padding on the wrapper (not a margin on the panel) bridges the
+   gap between the trigger and the panel so the pointer can travel across it
+   without :hover dropping. Anchored to the .nav-item, left-aligned to its
+   trigger — the panel is only as wide as its own content needs. */
+.nav-panel-wrap {
     position: absolute;
-    inset-inline: 0;
     top: 100%;
+    left: 0;
     z-index: 40;
+    padding-top: var(--space-3);
     visibility: hidden;
     pointer-events: none;
     transition: visibility 200ms;
 }
-.mega-dropdown:hover .mega-wrapper,
-.mega-dropdown:focus-within .mega-wrapper {
+.nav-item:hover .nav-panel-wrap,
+.nav-item:focus-within .nav-panel-wrap {
     visibility: visible;
+    pointer-events: auto;
 }
 
-.mega-panel {
-    pointer-events: auto;
-    margin-inline: auto;
-    max-width: var(--container-max);
+.nav-panel {
     overflow: hidden;
-    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+    max-width: calc(100vw - 2rem);
+    border-radius: var(--radius-2xl);
     border: 1px solid var(--color-border-default);
-    padding-inline: var(--space-4);
     opacity: 0;
     background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
     backdrop-filter: blur(32px) saturate(180%);
@@ -617,174 +719,314 @@ kbd.key {
         background-color 200ms,
         border-color 200ms;
 }
-@media (min-width: 40rem) {
-    .mega-panel {
-        padding-inline: var(--space-6);
-    }
-}
-.mega-dropdown:hover .mega-panel,
-.mega-dropdown:focus-within .mega-panel {
+.nav-item:hover .nav-panel,
+.nav-item:focus-within .nav-panel {
     opacity: 1;
 }
-#site-header.header-dark .mega-panel {
+#site-header.header-dark .nav-panel {
     border-color: var(--color-dark-neutral-500);
     background-color: color-mix(in oklab, var(--color-brand-black) 90%, transparent);
 }
 
-.mega-panel-inner {
-    display: flex;
-    gap: var(--space-16);
-    padding-block: 3.5rem;
+.nav-panel--wide {
+    width: 36rem;
+}
+.nav-panel--narrow {
+    width: 15rem;
+}
+.nav-panel--wide .nav-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
 }
 
-.mega-links {
-    display: none;
-    width: 100%;
-}
-.mega-links.is-active {
-    display: block;
-}
-.mega-links ul {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3) var(--space-10);
+.nav-panel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
     list-style: none;
     margin: 0;
-    padding: 0;
-}
-.mega-link-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    border-radius: var(--radius-md);
-    border: 1px solid transparent;
     padding: var(--space-3);
-    text-decoration: none;
-    transition: all 150ms;
 }
-.mega-link-item:hover {
-    border-color: var(--color-border-default);
+.nav-panel--narrow .nav-panel-list {
+    padding: var(--space-2);
+}
+
+.nav-panel-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    border-radius: var(--radius-lg);
+    padding: 0.625rem var(--space-3);
+    text-decoration: none;
+    transition: background-color 150ms;
+}
+.nav-panel-link:hover {
     background-color: var(--color-surface-subtle);
 }
-#site-header.header-dark .mega-link-item:hover {
-    border-color: var(--color-dark-neutral-500);
+#site-header.header-dark .nav-panel-link:hover {
     background-color: var(--color-dark-neutral-600);
 }
-.mega-link-icon {
+
+.nav-panel-icon {
     flex-shrink: 0;
     display: flex;
-    height: 2.75rem;
-    width: 2.75rem;
+    height: 2rem;
+    width: 2rem;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     border: 1px solid var(--color-border-default);
     background-color: var(--color-surface-subtle);
     color: var(--color-surface-icon);
 }
-#site-header.header-dark .mega-link-icon {
+.nav-panel-icon svg {
+    width: 17px;
+    height: 17px;
+}
+#site-header.header-dark .nav-panel-icon {
     border-color: var(--color-dark-neutral-500);
     background-color: var(--color-dark-neutral-600);
     color: var(--color-light-neutral-300);
 }
-.mega-link-title {
-    display: block;
+
+.nav-panel-title {
+    flex: 1;
     font-family: var(--font-sans);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--color-neutral-850);
 }
-#site-header.header-dark .mega-link-title {
+#site-header.header-dark .nav-panel-title {
     color: #ffffff;
 }
-.mega-link-desc {
-    display: block;
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    font-weight: 400;
-    color: var(--color-neutral-600);
+
+/* Arrow slides in from the left on row hover / keyboard focus. */
+.nav-panel-arrow {
+    flex-shrink: 0;
+    transform: translateX(-0.25rem);
+    color: var(--color-neutral-400);
+    opacity: 0;
+    transition:
+        transform 200ms,
+        opacity 200ms;
 }
-#site-header.header-dark .mega-link-desc {
-    color: var(--color-dark-neutral-100);
+.nav-panel-link:hover .nav-panel-arrow,
+.nav-panel-link:focus-visible .nav-panel-arrow {
+    transform: translateX(0);
+    opacity: 1;
+}
+#site-header.header-dark .nav-panel-arrow {
+    color: var(--color-light-neutral-300);
 }
 
-.mega-sidebar {
-    width: 22rem;
-    flex-shrink: 0;
+/* Products panel — right-hand "works with your stack" aside. Its tint reaches
+   the panel's rounded corners because .nav-panel clips overflow. */
+.nav-panel-aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    background-color: var(--color-surface-2);
 }
-.mega-sidebar.is-hidden {
-    display: none;
-}
-.mega-sidebar-card {
-    border-radius: var(--radius-2xl);
-    border: 0.5px solid var(--color-border-default);
-    background-color: var(--color-surface-subtle);
-    padding: var(--space-12);
-}
-#site-header.header-dark .mega-sidebar-card {
-    border-color: var(--color-dark-neutral-500);
+#site-header.header-dark .nav-panel-aside {
     background-color: var(--color-dark-neutral-600);
 }
-.integrations-grid {
+.nav-panel-aside-label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .nav-panel-aside-label {
+    color: var(--color-dark-neutral-100);
+}
+.nav-panel-integrations {
+    margin-top: var(--space-3);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
-.integration-tile {
+.nav-panel-integrations a {
     display: flex;
     aspect-ratio: 1 / 1;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--color-border-default);
     background: #ffffff;
     padding: var(--space-2);
-    transition:
-        border-color 150ms,
-        background-color 150ms;
+    transition: border-color 150ms;
 }
-.integration-tile:hover {
+.nav-panel-integrations a:hover {
     border-color: var(--color-neutral-300);
-    background-color: var(--color-neutral-50);
 }
-.integration-tile img {
-    height: 2.5rem;
-    width: 2.5rem;
+#site-header.header-dark .nav-panel-integrations a {
+    border-color: var(--color-dark-neutral-500);
+}
+.nav-panel-integrations img {
+    height: 2rem;
+    width: 2rem;
     object-fit: contain;
 }
-
-.mega-sidebar-blurb {
-    margin-top: var(--space-6);
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    color: var(--color-neutral-600);
-}
-#site-header.header-dark .mega-sidebar-blurb {
-    color: var(--color-dark-neutral-100);
-}
-.mega-sidebar-cta {
-    margin-top: var(--space-3);
+.nav-panel-aside-cta {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: 0.375rem;
     font-family: var(--font-sans);
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--color-neutral-600);
+    color: var(--color-brand-primary);
     text-decoration: none;
 }
-.mega-sidebar-cta:hover {
-    color: #262626;
+.nav-panel-aside-cta svg {
+    transition: transform 200ms;
 }
-#site-header.header-dark .mega-sidebar-cta {
-    color: var(--color-light-neutral-300);
+.nav-panel-aside-cta:hover svg {
+    transform: translateX(2px);
 }
-#site-header.header-dark .mega-sidebar-cta:hover {
+
+/* ---- Customers panel — featured story card + short list ----------------- */
+/* Centred under its trigger rather than left-aligned to it. */
+.nav-panel-wrap--center {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+.nav-panel-grid--customers {
+    grid-template-columns: 1fr 1.1fr;
+}
+.nav-panel-col {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3);
+}
+.nav-panel-col-label {
+    padding: var(--space-2) var(--space-3);
+}
+/* List rows here have no icon chip — just the name and the slide-in arrow. */
+.nav-panel-link--plain {
+    justify-content: space-between;
+    gap: var(--space-6);
+}
+.nav-panel-col-cta {
+    margin-top: var(--space-1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    border-radius: var(--radius-lg);
+    padding: 0.625rem var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-brand-primary);
+    text-decoration: none;
+    transition: background-color 150ms;
+}
+.nav-panel-col-cta:hover {
+    background-color: color-mix(in oklab, var(--color-brand-primary) 8%, transparent);
+}
+.nav-panel-col-cta svg {
+    flex-shrink: 0;
+    transition: transform 200ms;
+}
+.nav-panel-col-cta:hover svg {
+    transform: translateX(2px);
+}
+
+.nav-panel-story {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    padding: var(--space-6);
+    background: var(--color-brand-black);
+    color: #ffffff;
+    text-decoration: none;
+}
+.nav-panel-story-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    transition: transform 500ms;
+}
+.nav-panel-story:hover .nav-panel-story-bg {
+    transform: scale(1.05);
+}
+.nav-panel-story-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        var(--color-brand-black),
+        color-mix(in oklab, var(--color-brand-black) 70%, transparent) 45%,
+        transparent
+    );
+}
+.nav-panel-story-body {
+    position: relative;
+}
+.nav-panel-story-logo {
+    height: 1.5rem;
+    width: auto;
+    max-width: 9rem;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+.nav-panel-story-quote {
+    display: block;
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.4;
+    font-weight: 500;
     color: #ffffff;
 }
-.mega-sidebar-image {
-    width: 100%;
-    display: block;
+.nav-panel-story-author {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: var(--space-5);
+}
+.nav-panel-story-avatar {
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+.nav-panel-story-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.nav-panel-story-name {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: #ffffff;
+}
+.nav-panel-story-role {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-light-neutral-300);
+}
+@media (prefers-reduced-motion: reduce) {
+    .nav-panel-story:hover .nav-panel-story-bg {
+        transform: none;
+    }
+    #site-header::before {
+        transition: none;
+    }
 }
 
 /* ---- Desktop right side: log in, theme toggle, CTA ------------------------ */
@@ -814,7 +1056,6 @@ kbd.key {
     text-decoration: none;
     white-space: nowrap;
     transition: all 150ms;
-    transform-origin: right center;
 }
 #site-header .btn-primary {
     color: #ffffff;
@@ -831,13 +1072,6 @@ kbd.key {
 }
 #site-header .btn-primary:hover {
     background: #0d379a;
-}
-@media (min-width: 64rem) {
-    #header-cta-signup {
-        transform: translateY(calc(-0.3125rem * var(--header-progress)))
-            scale(calc(1 - 0.16 * var(--header-progress)));
-        will-change: transform;
-    }
 }
 #site-header .btn-outline {
     color: var(--color-brand-black);
@@ -898,16 +1132,11 @@ kbd.key {
     display: inline-flex;
 }
 @media (min-width: 64rem) {
-    /* var(--tap) drops to 2.25rem under pointer:fine (mouse/trackpad) — 8px
-       shorter than the 2.75rem .btn next to it, so LOG IN / GET STARTED
-       sat visibly higher than the toggle instead of on the same line. Pin
-       it to the same 2.75rem so all three sit flush. */
+    /* A compact square in the pill — smaller than the CTA next to it;
+       align-items:center on .site-nav keeps the three flush. */
     #site-header .desktop-actions .theme-toggle {
-        width: 2.75rem;
-        height: 2.75rem;
-        transform: translateY(calc(-0.3125rem * var(--header-progress)))
-            scale(calc(1 - 0.16 * var(--header-progress)));
-        will-change: transform;
+        width: 1.9rem;
+        height: 1.9rem;
     }
 }
 .theme-toggle:hover {
@@ -1203,11 +1432,11 @@ main > .page:first-child {
    continuous surface rather than a panel dropped on top of the page.
 
    It starts one header above the hero's own top edge, so the gradient runs
-   unbroken from the very top of the page down through the copy. The header
-   itself paints nothing, so the band behind the nav is this same wash rather
-   than a second surface butted up against it. --header-height is the live,
-   scroll-compacted value: at scroll 0 — the only moment this edge is on
-   screen — it is exactly the header's height. */
+   unbroken from the very top of the page down through the copy — this is what
+   the floating frosted pill sits over and samples through its backdrop-filter,
+   so the pill reads as tinted glass over the wash rather than a separate
+   surface. --header-height is the live, scroll-compacted value: at scroll 0 —
+   the only moment this edge is on screen — it is exactly the header's height. */
 .hero::before {
     content: "";
     position: absolute;
@@ -1433,6 +1662,14 @@ main > .page:first-child {
 .toolbar-wrap--slim {
     top: 0;
 }
+/* Term pages have no hero, so without this the slim toolbar (and the term
+   heading under it) butts right up against the header. Two-class selector to
+   outrank the base `.toolbar-wrap { margin-block: 0 … }`. The gap sits above
+   the sticky border-box, so it only shows at rest — once scrolled, the
+   toolbar still pins flush to the viewport top. */
+.toolbar-wrap.toolbar-wrap--slim {
+    margin-top: var(--space-8);
+}
 @media (max-width: 39.999rem) {
     /* Term pages only — the homepage's toolbar carries the A-Z jump and
        live search, worth keeping pinned while scrolling a 549-term list.
@@ -1513,17 +1750,11 @@ main > .page:first-child {
 .search-button svg {
     flex: none;
 }
-/* On wide term pages the full-width bordered field pulled focus away from
-   the definition. Collapse it to just its magnifier icon — a quiet
-   affordance grouped with "All terms" on the left. Also inset the row's
-   right edge by the sidebar column (20rem) + grid gap (--space-8), matching
-   .term-layout below, so the right-pinned "browse terms" hint lands on the
-   article column's edge rather than out over the sidebar. Narrower widths
-   keep the obvious bar. */
-@media (min-width: 64rem) {
-    .toolbar.toolbar--slim.card {
-        padding-inline-end: calc(20rem + var(--space-8));
-    }
+/* On term pages the full-width bordered field competes with the definition
+   for attention. From tablet widths up, collapse it to just its magnifier
+   icon — a quiet affordance grouped with "All terms" on the left. (Below
+   40rem it's hidden entirely; the header search icon takes over there.) */
+@media (min-width: 40rem) {
     .toolbar--slim .search-button {
         flex: 0 0 auto;
         max-width: none;
@@ -1542,20 +1773,36 @@ main > .page:first-child {
         background: var(--background);
     }
 }
+/* Tablet only: no sidebar column and no "browse terms" hint yet, so keep the
+   lone icon tucked next to "All terms" instead of flung to the row's far
+   edge by justify-content: space-between. */
+@media (min-width: 40rem) and (max-width: 63.999rem) {
+    .toolbar--slim .search-button {
+        margin-inline-end: auto;
+    }
+}
+/* Desktop: inset the row's right edge by the sidebar column (20rem) + grid
+   gap (--space-8), matching .term-layout, so the right-pinned "browse terms"
+   hint lands on the article column's edge rather than out over the sidebar. */
+@media (min-width: 64rem) {
+    .toolbar.toolbar--slim.card {
+        padding-inline-end: calc(20rem + var(--space-8));
+    }
+}
 
 /* --------------------------------------------------------------------------
    7. Toolbar — sticky search + A–Z jump
    -------------------------------------------------------------------------- */
-/* The header is no longer pinned, so this is the only sticky bar — it
-   sticks at the literal viewport top. */
+/* The header is not pinned (it scrolls away with the page), so this is the
+   only sticky bar — it sticks at the literal viewport top. */
 .toolbar-wrap {
     position: sticky;
     top: 0;
     z-index: 20;
     /* No padding-top and no margin-top. The sticky offset lands this
-       wrapper's border edge flush under the header, so any top padding
-       would push the visible card down by that much and read as a gap;
-       any top margin would offset the stick point itself. Spacing above
+       wrapper's border edge flush against the viewport top, so any top
+       padding would push the visible card down by that much and read as a
+       gap; any top margin would offset the stick point itself. Spacing above
        the bar before it sticks comes from the hero's padding-bottom. */
     padding-block: 0;
     margin-block: 0 var(--space-4);
@@ -2345,8 +2592,8 @@ main > .page:first-child {
        padding around a small glyph in this compact header. Tighten the box
        and size the icon up to fill more of it. */
     #theme-toggle-mobile {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2rem;
+        height: 2rem;
     }
     #theme-toggle-mobile svg {
         width: 1.125rem;
@@ -2410,9 +2657,8 @@ main > .page:first-child {
     .js .search-button {
         display: none;
     }
-    /* Sits in .mobile-header-actions ahead of the theme toggle; matched to
-       #theme-toggle-mobile's compact box and border so the header cluster
-       stays even. */
+    /* Sits in .mobile-header-actions ahead of the theme toggle. Borderless —
+       just the icon — so it reads as a plain tap target, not a chip. */
     .js .mobile-search-btn {
         display: inline-flex;
         align-items: center;
@@ -2421,7 +2667,7 @@ main > .page:first-child {
         height: 2.5rem;
         flex-shrink: 0;
         padding: 0;
-        border: 1px solid var(--color-border-default);
+        border: 0;
         border-radius: var(--radius-md);
         background: none;
         color: var(--color-brand-black);
@@ -2430,7 +2676,6 @@ main > .page:first-child {
     }
     #site-header.header-dark .mobile-search-btn {
         color: #ffffff;
-        border-color: var(--border);
     }
     .js .mobile-search-btn svg {
         width: 1.125rem;
