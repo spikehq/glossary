@@ -645,7 +645,8 @@
 
     /* ---- mobile search: under 40rem the inline toolbar search is hidden
            entirely (see the max-width:39.999rem rules in glossary.css) and
-           reached instead through the #mobile-search-toggle FAB, which opens
+           reached instead through the #mobile-search-toggle button in the
+           header, which opens
            the #palette overlay — same dropdown-results-over-a-scrim pattern
            term pages use for Cmd+K, just without the keyboard-shortcut
            footer. Wired up below, once the palette's own `open` exists. */
@@ -679,17 +680,6 @@
               links[a.dataset.letter] = a;
             },
           );
-
-          // The vertical rail carries the same targets — spy it in step
-          // with the toolbar strip.
-          var railLinks = {};
-          Array.prototype.forEach.call(
-            doc.querySelectorAll(".charnav a[data-charnav]"),
-            function (a) {
-              railLinks[a.dataset.charnav] = a;
-            },
-          );
-          var currentRail = null;
 
           // Document order, so "which section am I reading" can be
           // answered as "the topmost one still in the band" rather
@@ -729,13 +719,6 @@
                 return order.indexOf(a) <= order.indexOf(b) ? a : b;
               });
 
-              var rail = railLinks[topmost.id];
-              if (rail && rail !== currentRail) {
-                if (currentRail) currentRail.removeAttribute("aria-current");
-                rail.setAttribute("aria-current", "true");
-                currentRail = rail;
-              }
-
               var link = links[topmost.id];
               if (!link || link === current) return;
               if (current) current.removeAttribute("aria-current");
@@ -762,10 +745,10 @@
 
        The homepage also carries one, marked data-scope="mobile" (see
        src/index.hbs / palette.hbs): there it's reached only through the
-       #mobile-search-toggle FAB below 40rem, not Cmd+K or "/", and it must
-       never touch `focusSearch` or the global shortcuts further down —
-       those still belong to the homepage's own inline, live-filtering
-       search on every width the FAB isn't shown at.
+       #mobile-search-toggle header button below 40rem, not Cmd+K or "/",
+       and it must never touch `focusSearch` or the global shortcuts
+       further down — those still belong to the homepage's own inline,
+       live-filtering search on every width that button isn't shown at.
        ==================================================================== */
   var palette = doc.getElementById("palette");
 
@@ -921,7 +904,8 @@
     });
 
     // The homepage's mobile-only instance is reached solely by tapping the
-    // FAB above — Cmd+K, "/" and `focusSearch` stay with the homepage's own
+    // #mobile-search-toggle header button — Cmd+K, "/" and `focusSearch`
+    // stay with the homepage's own
     // inline search (see the "Index: live filter" block above), which is
     // still what desktop/tablet widths use.
     if (!paletteMobileOnly) {
@@ -1000,9 +984,7 @@
        content renders, then correct any remaining drift once it settles.
        ==================================================================== */
   (function letterJump() {
-    var links = doc.querySelectorAll(
-      '.az__list a[href^="#letter-"], .charnav a[href^="#letter-"]',
-    );
+    var links = doc.querySelectorAll('.az__list a[href^="#letter-"]');
     if (!links.length) return;
     var activeJump = 0;
 
@@ -1077,15 +1059,12 @@
         e.preventDefault();
 
         // Mark it straight away rather than waiting for the scroll
-        // observer to catch up mid-jump. Both faces of the A–Z (the
-        // toolbar strip and the vertical rail) point at the same
-        // `#letter-X`, so light up every link for this target, not just
-        // the one that was clicked.
+        // observer to catch up mid-jump. Light up every link for this
+        // target, not just the one that was clicked.
         Array.prototype.forEach.call(links, function (other) {
           if (other.getAttribute("href") === href) {
             other.setAttribute("aria-current", "true");
-            // Slide the mobile strip so the tapped chip is centred (no-op
-            // for the vertical rail's copy of this link).
+            // Slide the mobile strip so the tapped chip is centred.
             revealAzChip(other);
           } else {
             other.removeAttribute("aria-current");
@@ -1099,120 +1078,6 @@
         }
       });
     });
-  })();
-
-  /* ====================================================================
-       Right-edge A–Z rail: pointer dock-magnify + a Monoton "flag" bubble
-       that tracks the cursor down the rail. Ported from the `.scrubber` in
-       design-explorations/glossary-homepage-concepts.html. The rail's
-       navigation (click → animated jump) and the current-letter highlight
-       are wired above; this is only the hover flourish, and only where the
-       rail is actually shown (>=78rem).
-       ==================================================================== */
-  (function charnavFlag() {
-    var rail = doc.querySelector(".charnav");
-    var flag = doc.querySelector(".charnav__flag");
-    if (!rail || !flag) return;
-
-    var cells = Array.prototype.slice.call(
-      rail.querySelectorAll("ul > li > a, ul > li > span"),
-    );
-    if (!cells.length) return;
-
-    var wide = window.matchMedia("(min-width: 78rem)");
-    var raf = 0;
-
-    // Peak extra scale right under the pointer, and how far (px) the effect
-    // reaches. Scale only — no positional nudging — so the rail column never
-    // reflows and there's nothing to "shift". Kept small: at the rail's ~16px
-    // pitch the fixed glyph centres keep even the enlarged letters clear of
-    // each other, and the flag bubble is what actually reads out the letter.
-    var PEAK = 0.6;
-    var REACH = 38;
-
-    // Resting mid-Y of each cell, cached so last frame's transforms can't
-    // feed into this frame's measurements. The rail is `position: fixed`, so
-    // this only goes stale on resize.
-    var rest = null;
-    function measure() {
-      rest = cells.map(function (c) {
-        var r = c.getBoundingClientRect();
-        return { el: c, mid: r.top + r.height / 2, left: r.left };
-      });
-    }
-    window.addEventListener("resize", function () {
-      rest = null;
-    });
-
-    function onMove(ev) {
-      if (raf) return;
-      var y = ev.clientY;
-      raf = requestAnimationFrame(function () {
-        raf = 0;
-        if (!wide.matches) return;
-        if (!rest) measure();
-
-        var focus = null;
-        var focusD = Infinity;
-
-        rest.forEach(function (g) {
-          var d = Math.abs(y - g.mid);
-          if (d < focusD) {
-            focusD = d;
-            focus = g;
-          }
-          if (!reduceMotion) {
-            var s = Math.max(0, 1 - d / REACH);
-            g.el.style.transform = s ? "scale(" + (1 + s * PEAK) + ")" : "";
-            g.el.style.color = s > 0.5 ? "var(--heading-foreground)" : "";
-          }
-        });
-
-        if (!focus) return;
-        flag.textContent = (focus.el.textContent || "").trim().charAt(0);
-        flag.style.top = focus.mid + "px";
-        flag.style.right = window.innerWidth - focus.left + 14 + "px";
-        flag.classList.add("is-visible");
-      });
-    }
-
-    function onLeave() {
-      if (raf) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      }
-      cells.forEach(function (c) {
-        c.style.transform = "";
-        c.style.color = "";
-      });
-      flag.classList.remove("is-visible");
-    }
-
-    rail.addEventListener("pointerenter", measure);
-    rail.addEventListener("pointermove", onMove);
-    rail.addEventListener("pointerleave", onLeave);
-
-    // Only light the rail up while the term list actually owns the screen —
-    // i.e. it still crosses the vertical middle of the viewport. That keeps
-    // it off the hero above the list and off the FAQ / footer below it.
-    // (An IntersectionObserver can't express this: the list is ~40 000px
-    // tall, so it "intersects" almost any band almost all the time.)
-    var list = doc.getElementById("term-list");
-    if (list) {
-      var visRaf = 0;
-      var syncVis = function () {
-        visRaf = 0;
-        var r = list.getBoundingClientRect();
-        var mid = window.innerHeight / 2;
-        rail.classList.toggle("is-live", r.top < mid && r.bottom > mid);
-      };
-      var queueVis = function () {
-        if (!visRaf) visRaf = requestAnimationFrame(syncVis);
-      };
-      window.addEventListener("scroll", queueVis, { passive: true });
-      window.addEventListener("resize", queueVis);
-      syncVis();
-    }
   })();
 
   /* ====================================================================

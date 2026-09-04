@@ -130,6 +130,15 @@
         </div>
 
         <div class="mobile-header-actions">
+            {{!-- Mobile-only glossary search. The inline toolbar search (the
+                  homepage live-filter row, the term page's "Search the
+                  glossary" button) is hidden below 40rem; this opens the
+                  #palette overlay in its place. JS-only — unhidden by the
+                  .js class — since the palette needs script. --}}
+            <button type="button" id="mobile-search-toggle" class="mobile-search-btn" aria-label="Search terms" aria-haspopup="dialog" aria-controls="palette">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </button>
+
             <button type="button" id="theme-toggle-mobile" class="theme-toggle" aria-pressed="false" aria-label="Use dark theme">
                 <svg class="icon-sun lucide lucide-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
                 <svg class="icon-moon lucide lucide-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>

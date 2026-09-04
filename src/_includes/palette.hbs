@@ -1,8 +1,8 @@
 {{!-- Command palette: ships empty and hidden, hydrates from terms.json the
       first time it's opened. On term pages that's via / or ⌘K (see
       glossary.js). Pass mobileOnly=true (as the homepage does) to scope it
-      to the #mobile-search-toggle FAB instead and drop the keyboard-shortcut
-      footer, since touch has no arrow keys. --}}
+      to the #mobile-search-toggle header button instead and drop the
+      keyboard-shortcut footer, since touch has no arrow keys. --}}
 <div class="palette" id="palette" hidden{{#if mobileOnly}} data-scope="mobile"{{/if}} data-src="{{site.base}}/terms.json" data-base="{{site.base}}">
     <div class="palette__scrim"></div>
     <div class="palette__panel" role="dialog" aria-modal="true" aria-labelledby="palette-title">

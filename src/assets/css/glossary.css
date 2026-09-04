@@ -1461,6 +1461,29 @@ main > .page:first-child {
 .toolbar--slim .btn--ghost {
     margin-inline-start: calc(var(--space-4) * -1);
 }
+/* "← → browse terms" nudge. Hidden by default: it needs a real keyboard and
+   the JS shortcut, so it only appears with `.js` on wide viewports (see the
+   64rem block, where it's pushed to the right edge of the article column —
+   the toolbar is inset by the sidebar width there so that edge is the
+   article's, not the page's). */
+.pager-hint {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+.pager-hint kbd + kbd {
+    margin-left: -2px;
+}
+@media (min-width: 64rem) {
+    .js .pager-hint {
+        display: flex;
+        margin-inline-start: auto;
+    }
+}
 .search-button {
     align-items: center;
     gap: var(--space-2);
@@ -1489,6 +1512,35 @@ main > .page:first-child {
 }
 .search-button svg {
     flex: none;
+}
+/* On wide term pages the full-width bordered field pulled focus away from
+   the definition. Collapse it to just its magnifier icon — a quiet
+   affordance grouped with "All terms" on the left. Also inset the row's
+   right edge by the sidebar column (20rem) + grid gap (--space-8), matching
+   .term-layout below, so the right-pinned "browse terms" hint lands on the
+   article column's edge rather than out over the sidebar. Narrower widths
+   keep the obvious bar. */
+@media (min-width: 64rem) {
+    .toolbar.toolbar--slim.card {
+        padding-inline-end: calc(20rem + var(--space-8));
+    }
+    .toolbar--slim .search-button {
+        flex: 0 0 auto;
+        max-width: none;
+        gap: 0;
+        padding: var(--space-2);
+        border-color: transparent;
+        background: none;
+    }
+    .toolbar--slim .search-button span,
+    .toolbar--slim .search-button .key {
+        display: none;
+    }
+    .toolbar--slim .search-button:hover,
+    .toolbar--slim .search-button:focus-visible {
+        border-color: var(--input);
+        background: var(--background);
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -1608,12 +1660,11 @@ main > .page:first-child {
 .search input:not(:placeholder-shown) ~ .search__hint {
     display: none;
 }
-/* The floating search trigger is only ever shown from inside the
-   max-width:39.999rem rules below, so it needs an explicit off-by-default
-   here too, or it renders as an unstyled button on every other screen
-   size. Below that width, the inline `.search` form it replaces is hidden
-   in favour of the mobile-scoped #palette overlay it opens. */
-.mobile-search-fab {
+/* The mobile search trigger lives in the header's .mobile-header-actions
+   cluster and is only ever shown from inside the max-width:39.999rem rules
+   below (and only with JS, since it opens the #palette overlay). Off by
+   default here so it never renders on wider screens or without script. */
+.mobile-search-btn {
     display: none;
 }
 
@@ -2303,16 +2354,22 @@ main > .page:first-child {
     }
 
     .hero {
-        --swoosh: 175% 78% at 124% 154%;
         padding-block: var(--space-8) var(--space-10);
+    }
+    /* No swoosh/wash on phones — the hero is just the page background here. */
+    .hero::before {
+        display: none;
     }
     .hero__inner {
         gap: var(--space-2);
     }
     .hero h1 {
-        max-width: 12ch;
-        font-size: 2.25rem;
-        line-height: 1.02;
+        /* Wide enough to keep "Incident Response" together on the first line,
+           with a smaller face so the title settles into two lines, not three
+           single-word ones. */
+        max-width: 18ch;
+        font-size: 1.75rem;
+        line-height: 1.08;
         letter-spacing: 0;
     }
     .hero__sub {
@@ -2336,7 +2393,7 @@ main > .page:first-child {
         gap: var(--space-2);
         padding: var(--space-3) var(--page-pad);
         border-inline: 0;
-        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        border-radius: 0;
         box-shadow: 0 8px 24px -20px rgb(0 0 0 / 0.45);
     }
     .toolbar__top {
@@ -2345,33 +2402,39 @@ main > .page:first-child {
         gap: var(--space-2);
     }
     /* The inline search controls move out of the toolbar entirely at this
-       width, on both pages — the #mobile-search-toggle FAB below opens
-       #palette instead (see glossary.js), so neither the homepage's
+       width, on both pages — the #mobile-search-toggle button in the header
+       opens #palette instead (see glossary.js), so neither the homepage's
        live-filter row nor the term page's "Search the glossary" button
        has anything left to do here. */
     .js .search,
     .js .search-button {
         display: none;
     }
-    .js .mobile-search-fab {
-        display: flex;
+    /* Sits in .mobile-header-actions ahead of the theme toggle; matched to
+       #theme-toggle-mobile's compact box and border so the header cluster
+       stays even. */
+    .js .mobile-search-btn {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        position: fixed;
-        right: var(--page-pad);
-        bottom: calc(var(--page-pad) + env(safe-area-inset-bottom, 0px));
-        z-index: 90;
-        width: 3.25rem;
-        height: 3.25rem;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--primary);
-        color: var(--primary-foreground);
-        box-shadow: 0 8px 20px -6px rgb(0 0 0 / 0.45);
+        width: 2.5rem;
+        height: 2.5rem;
+        flex-shrink: 0;
+        padding: 0;
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        background: none;
+        color: var(--color-brand-black);
+        cursor: pointer;
+        transition: color var(--duration-hover) var(--ease-out);
     }
-    .js .mobile-search-fab svg {
-        width: 1.35rem;
-        height: 1.35rem;
+    #site-header.header-dark .mobile-search-btn {
+        color: #ffffff;
+        border-color: var(--border);
+    }
+    .js .mobile-search-btn svg {
+        width: 1.125rem;
+        height: 1.125rem;
     }
     /* Centered like everywhere else (see §11), just allowed to grow taller
        on a phone viewport so a short result list isn't wasting space. */
@@ -2382,8 +2445,9 @@ main > .page:first-child {
        keyboard-shortcut legend (unlike the homepage's mobile-only one,
        which never renders it — see palette.hbs) since it's also reachable
        there via Cmd+K/"/" on a real keyboard. Below this width it's only
-       ever opened by tapping the FAB, so the hints don't apply — hide
-       them here rather than duplicating a mobileOnly-flagged instance. */
+       ever opened by tapping the #mobile-search-toggle header button, so the
+       hints don't apply — hide them here rather than duplicating a
+       mobileOnly-flagged instance. */
     .palette__foot {
         display: none;
     }
@@ -2540,8 +2604,7 @@ main > .page:first-child {
 /* Tablet (iPad-sized): the A–Z is one full-width row that never wraps and
    never scrolls — all 26 letters share the toolbar width as equal columns.
    (Phones below 40rem keep the horizontal scroller; the wrapped multi-row
-   grid only returns at 78rem, where the fixed vertical rail — §13c — becomes
-   the primary jump nav.) */
+   grid only returns at 78rem.) */
 @media (min-width: 40rem) and (max-width: 77.999rem) {
     .az {
         order: -1;
@@ -2637,6 +2700,10 @@ main > .page:first-child {
     .term-aside {
         position: sticky;
         top: calc(var(--toolbar-h) + var(--space-6));
+        /* Drop it well below the article's first card rather than sitting
+           flush with the term title — the panel is a short aside, not a
+           column header. */
+        margin-top: var(--space-16);
     }
 }
 
@@ -2854,151 +2921,6 @@ main > .page:first-child {
 @media (prefers-reduced-motion: reduce) {
     .letters .term-card h3,
     .letters .term-card__go {
-        transition: none;
-    }
-}
-
-/* --------------------------------------------------------------------------
-   13c. Fixed vertical alphabet rail — right edge, desktop only
-
-   A second face of the toolbar A–Z: same links (`#letter-X`), same
-   `aria-current` scroll-spy (wired in glossary.js). Sits in the right page
-   gutter on wide viewports and tucks to the edge on narrower desktops.
-   -------------------------------------------------------------------------- */
-.charnav {
-    display: none;
-}
-/* Only once the viewport is wide enough for a real gutter beside the 72rem
-   content column — below this the fixed rail would sit on top of the
-   definitions, and the toolbar A–Z already covers the narrower widths. */
-@media (min-width: 78rem) {
-    .charnav {
-        display: block;
-        position: fixed;
-        /* Pinned just under the sticky toolbar — the same offset the sticky
-           letter heads use — so the rail lines up with the top of the term
-           list rather than floating at viewport centre over the hero. */
-        top: calc(var(--toolbar-h) + var(--space-6));
-        right: max(0.75rem, calc((100vw - var(--container-max)) / 2 - 2.25rem));
-        /* Above the sticky toolbar (z-index 20); below the palette (60). */
-        z-index: 30;
-        /* glossary.js adds `is-live` only while the term list is on screen,
-           so the rail isn't shown over the hero or the footer. */
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 200ms var(--ease-out);
-    }
-    .charnav.is-live {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    .charnav ul {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        /* Tight enough that the whole A–Z fits between the toolbar and the
-           bottom of a short desktop viewport (~26 × 15px ≈ 400px). */
-        gap: 1px;
-        margin: 0;
-        padding: var(--space-1) 0.25rem;
-        list-style: none;
-    }
-    .charnav li {
-        display: flex;
-    }
-    .charnav a,
-    .charnav > ul > li > span {
-        display: grid;
-        place-items: center;
-        width: 1.15rem;
-        height: 0.95rem;
-        border-radius: var(--radius-sm);
-        font-family: var(--font-mono);
-        font-size: 0.625rem;
-        line-height: 1;
-        color: var(--muted-foreground);
-        /* Scale only, grown toward the page — no positional nudging, so the
-           column never reflows under the pointer. The centres stay fixed, so
-           even the enlarged glyphs clear their neighbours (see glossary.js
-           for the gentle peak scale). */
-        transform-origin: right center;
-        transition:
-            color 120ms var(--ease-out),
-            transform 120ms var(--ease-out);
-    }
-    .charnav > ul > li > span {
-        opacity: 0.3;
-    }
-    .charnav a:hover {
-        color: var(--link);
-    }
-    /* Current section: weight + colour only — no background pill, which would
-       be the one thing that visually overlaps neighbours once it scales. */
-    .charnav a[aria-current="true"] {
-        color: var(--heading-foreground);
-        font-weight: var(--font-weight-medium);
-    }
-}
-
-/* The dock-magnify "flag": the letter under the pointer, blown up in the
-   Monoton display face inside a round chat bubble that tracks the cursor
-   down the rail. Position (top / right) is set live by glossary.js;
-   everything else is here. Ported from `.scrubber__flag` in the prototype. */
-.charnav__flag {
-    display: none;
-}
-@media (min-width: 78rem) {
-    .charnav__flag {
-        display: grid;
-        place-items: center;
-        position: fixed;
-        top: 50%;
-        right: 3rem;
-        z-index: 31;
-        width: 4rem;
-        height: 4rem;
-        border: 1px solid var(--border);
-        border-radius: 50%;
-        background: var(--card);
-        box-shadow:
-            0 18px 40px -24px rgb(0 0 0 / 0.4),
-            0 6px 14px -8px rgb(0 0 0 / 0.2);
-        font-family: 'Monoton', var(--font-heading);
-        font-weight: 400;
-        font-size: 36px;
-        line-height: 1;
-        color: var(--heading-foreground);
-        pointer-events: none;
-        opacity: 0;
-        transform: translateY(-50%) scale(0.9);
-        transition:
-            opacity 160ms var(--ease-out),
-            transform 160ms var(--ease-out),
-            top 140ms var(--ease-out);
-    }
-    /* small nub pointing right toward the rail */
-    .charnav__flag::after {
-        content: "";
-        position: absolute;
-        right: -4px;
-        top: 50%;
-        width: 9px;
-        height: 9px;
-        background: var(--card);
-        border-top: 1px solid var(--border);
-        border-right: 1px solid var(--border);
-        border-top-right-radius: 2px;
-        transform: translateY(-50%) rotate(45deg);
-    }
-    .charnav__flag.is-visible {
-        opacity: 1;
-        transform: translateY(-50%) scale(1);
-    }
-}
-@media (prefers-reduced-motion: reduce) {
-    .charnav a,
-    .charnav > ul > li > span,
-    .charnav__flag {
         transition: none;
     }
 }
