@@ -306,11 +306,18 @@ kbd.key {
     transition:
         background-color var(--duration-hover) var(--ease-out),
         color var(--duration-hover) var(--ease-out),
-        border-color var(--duration-hover) var(--ease-out);
+        border-color var(--duration-hover) var(--ease-out),
+        transform var(--duration-hover) var(--ease-out);
 }
 .btn:hover {
     background: var(--accent);
     color: var(--accent-foreground);
+}
+/* Press feedback. The whole site had no :active state anywhere — a small
+   scale confirms the tap without a lift or shadow shift. */
+.btn:active,
+.cta:active {
+    transform: scale(0.97);
 }
 
 .btn--ghost {
@@ -338,7 +345,9 @@ kbd.key {
     font-size: var(--text-sm);
     font-weight: var(--font-weight-medium);
     box-shadow: var(--shadow-xs);
-    transition: background-color var(--duration-hover) var(--ease-out);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        transform var(--duration-hover) var(--ease-out);
 }
 .cta:hover {
     background-color: var(--spike-blue-hover);
@@ -711,17 +720,24 @@ kbd.key {
     border-radius: var(--radius-2xl);
     border: 1px solid var(--color-border-default);
     opacity: 0;
+    /* Drops down and settles from its trigger rather than just cross-fading,
+       so the panel reads as belonging to the item above it. Kept tiny and
+       fast — this is desktop hover, a frequent interaction. */
+    transform: translateY(-6px) scale(0.985);
+    transform-origin: top;
     background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
     backdrop-filter: blur(32px) saturate(180%);
     -webkit-backdrop-filter: blur(32px) saturate(180%);
     transition:
-        opacity 200ms,
+        opacity 200ms var(--ease-out),
+        transform 160ms var(--ease-out),
         background-color 200ms,
         border-color 200ms;
 }
 .nav-item:hover .nav-panel,
 .nav-item:focus-within .nav-panel {
     opacity: 1;
+    transform: none;
 }
 #site-header.header-dark .nav-panel {
     border-color: var(--color-dark-neutral-500);
@@ -2144,6 +2160,21 @@ main > .page:first-child {
     gap: var(--space-2);
     text-align: center;
     padding: var(--space-12) var(--space-6);
+    /* Fades/rises in when a search matches nothing, instead of teleporting.
+       Discrete `display` + @starting-style so it needs no JS; degrades to an
+       instant show where @starting-style is unsupported. */
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity var(--duration-enter) var(--ease-out),
+        transform var(--duration-enter) var(--ease-out),
+        display var(--duration-enter) allow-discrete;
+}
+@starting-style {
+    .empty-state:not([hidden]) {
+        opacity: 0;
+        transform: translateY(4px);
+    }
 }
 .empty-state p {
     color: var(--muted-foreground);
@@ -2151,6 +2182,8 @@ main > .page:first-child {
 }
 .empty-state[hidden] {
     display: none;
+    opacity: 0;
+    transform: translateY(4px);
 }
 
 /* --------------------------------------------------------------------------
@@ -2425,9 +2458,27 @@ main > .page:first-child {
 .subscribe__msg {
     margin-top: var(--space-3);
     font-size: var(--text-sm);
+    /* Rises in after a signup rather than snapping — a rare, first-time
+       confirmation moment. Same no-JS discrete-display pattern as
+       .empty-state. */
+    display: block;
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity var(--duration-enter) var(--ease-out),
+        transform var(--duration-enter) var(--ease-out),
+        display var(--duration-enter) allow-discrete;
+}
+@starting-style {
+    .subscribe__msg:not([hidden]) {
+        opacity: 0;
+        transform: translateY(3px);
+    }
 }
 .subscribe__msg[hidden] {
     display: none;
+    opacity: 0;
+    transform: translateY(3px);
 }
 .subscribe__msg--err {
     color: var(--destructive);
