@@ -55,9 +55,12 @@
   }
 
   /* ====================================================================
-       Theme toggle. The `dark` class is set by an inline head script before
-       first paint, so this only has to keep the control and the browser UI
-       colour in sync.
+       Theme control — a three-state cycle: System -> Light -> Dark -> …
+       "System" follows the OS and keeps following it live; Light/Dark pin
+       the choice in localStorage. The inline head script resolves the
+       initial state before first paint (sets .dark and data-theme-pref);
+       this keeps the control, the browser UI colour and the header chrome
+       in sync, and re-resolves when the OS preference changes.
        ==================================================================== */
   (function themeToggle() {
     // Two instances live in the header: one in the desktop actions, one in
@@ -66,22 +69,36 @@
     if (!btns.length) return;
     var meta = doc.getElementById("theme-color");
 
-    // The header's own `.header-dark` treatment (frosted-black chrome,
-    // white mobile "log in" outline) was built for scrolling over a dark
-    // hero section — this site has none, so it's otherwise unused.
-    // Driving it from the global theme switch instead gives one
-    // full-page dark mode rather than a light header floating over a
-    // dark page.
+    // The header's own `.header-dark` treatment is driven from the resolved
+    // theme so the whole page (chrome included) flips as one.
     var siteHeader = doc.getElementById("site-header");
     var menuToggleBtn = doc.getElementById("mobile-menu-toggle");
     var mobileLoginLight = doc.getElementById("mobile-cta-login-light");
     var mobileLoginDark = doc.getElementById("mobile-cta-login-dark");
+    var systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+    var ORDER = ["system", "light", "dark"];
+    var LABELS = { system: "System", light: "Light", dark: "Dark" };
+
+    function getPref() {
+      var s;
+      try {
+        s = localStorage.getItem("spike-theme");
+      } catch (e) {}
+      return s === "light" || s === "dark" ? s : "system";
+    }
+
+    function isDark(pref) {
+      return pref === "dark" || (pref === "system" && systemDark.matches);
+    }
 
     function sync() {
-      var dark = root.classList.contains("dark");
-      Array.prototype.forEach.call(btns, function (btn) {
-        btn.setAttribute("aria-pressed", dark ? "true" : "false");
-      });
+      var pref = getPref();
+      var dark = isDark(pref);
+      var next = ORDER[(ORDER.indexOf(pref) + 1) % ORDER.length];
+
+      root.setAttribute("data-theme-pref", pref);
+      root.classList.toggle("dark", dark);
       if (meta) meta.setAttribute("content", dark ? "#161618" : "#fcfbf9");
       if (siteHeader) siteHeader.classList.toggle("header-dark", dark);
       if (menuToggleBtn) menuToggleBtn.classList.toggle("is-dark", dark);
@@ -89,12 +106,21 @@
         mobileLoginLight.classList.toggle("hidden-important", dark);
       if (mobileLoginDark)
         mobileLoginDark.classList.toggle("hidden-important", !dark);
+
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.setAttribute(
+          "aria-label",
+          "Theme: " + LABELS[pref] + ". Switch to " + LABELS[next] + ".",
+        );
+        btn.title = "Theme: " + LABELS[pref] + " (⇧D to cycle)";
+      });
     }
 
-    function toggle() {
-      var dark = root.classList.toggle("dark");
+    function cycle() {
+      var next = ORDER[(ORDER.indexOf(getPref()) + 1) % ORDER.length];
       try {
-        localStorage.setItem("spike-theme", dark ? "dark" : "light");
+        if (next === "system") localStorage.removeItem("spike-theme");
+        else localStorage.setItem("spike-theme", next);
       } catch (e) {
         /* private mode — the choice just won't persist */
       }
@@ -103,23 +129,26 @@
 
     sync();
     Array.prototype.forEach.call(btns, function (btn) {
-      // Discoverable on hover and to assistive tech, matching the on-screen
-      // hint style the rest of the page uses for its shortcuts.
+      btn.removeAttribute("aria-pressed"); // three states, not a toggle
       btn.setAttribute("aria-keyshortcuts", "Shift+D");
-      if (!btn.title) btn.title = "Toggle theme (⇧D)";
-      btn.addEventListener("click", toggle);
+      btn.addEventListener("click", cycle);
     });
 
-    // Shift+D flips the theme from anywhere on the page — not while typing in
-    // a field, and not as a browser/OS chord. Shift-only so it never clashes
-    // with the "/" search or arrow-key list navigation, which bail on shift.
+    // While on "System", track the OS flipping between light and dark live.
+    systemDark.addEventListener("change", function () {
+      if (getPref() === "system") sync();
+    });
+
+    // Shift+D cycles the theme from anywhere on the page — not while typing
+    // in a field, and not as a browser/OS chord. Shift-only so it never
+    // clashes with "/" search or arrow-key list navigation.
     doc.addEventListener("keydown", function (e) {
       if (e.defaultPrevented || e.repeat) return;
       if (e.metaKey || e.ctrlKey || e.altKey || !e.shiftKey) return;
       if (e.key !== "D" && e.key !== "d") return;
       if (isTyping(e.target)) return;
       e.preventDefault();
-      toggle();
+      cycle();
     });
   })();
 

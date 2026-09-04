@@ -21,11 +21,17 @@
             e.className += " js header-booting";
             try {
                 var s = localStorage.getItem("spike-theme");
-                if (s ? s === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) {
+                // Three states: "light" / "dark" pin the theme; anything else
+                // (including no stored value) follows the OS preference.
+                var pref = s === "light" || s === "dark" ? s : "system";
+                e.setAttribute("data-theme-pref", pref);
+                if (pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches)) {
                     e.className += " dark";
                     document.getElementById("theme-color").content = "#161618";
                 }
-            } catch (x) {}
+            } catch (x) {
+                e.setAttribute("data-theme-pref", "system");
+            }
         })();
     </script>
 

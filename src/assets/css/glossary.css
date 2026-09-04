@@ -1165,11 +1165,18 @@ kbd.key {
     width: 1rem;
     height: 1rem;
 }
-.theme-toggle .icon-moon,
-.dark .theme-toggle .icon-sun {
+/* The button shows the current *preference* (monitor / sun / moon), not the
+   resolved theme — so "System" reads as system even when the OS is dark.
+   Driven by data-theme-pref on <html> (set pre-paint by the inline script). */
+.theme-toggle .icon-system,
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
     display: none;
 }
-.dark .theme-toggle .icon-moon {
+:root:not([data-theme-pref]) .theme-toggle .icon-system,
+:root[data-theme-pref='system'] .theme-toggle .icon-system,
+:root[data-theme-pref='light'] .theme-toggle .icon-sun,
+:root[data-theme-pref='dark'] .theme-toggle .icon-moon {
     display: block;
 }
 /* ---- Mobile toggle ---------------------------------------------------- */
