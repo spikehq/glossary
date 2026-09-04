@@ -134,6 +134,9 @@ module.exports = function (eleventyConfig) {
   /* ---- assets --------------------------------------------------------- */
 
   eleventyConfig.addPassthroughCopy("src/assets/images");
+  // Pass-through the llms.txt index (from production — .txt isn't a
+  // configured template format, so it needs an explicit copy).
+  eleventyConfig.addPassthroughCopy("src/llms.txt");
 
   eleventyConfig.addWatchTarget("src/assets/css/");
   eleventyConfig.addWatchTarget("src/assets/js/");
