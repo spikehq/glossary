@@ -34,6 +34,26 @@
     );
   }
 
+  /* Below 40rem the A–Z is a single horizontal strip inside `.az__list`
+     (overflow-x: auto). As you scroll the page the current-letter highlight
+     walks along the chips, but the lit chip can sit well outside the strip's
+     visible slice, so you can't tell where you are. Slide the strip so the
+     given chip is centred. No-op on wider layouts, where `.az__list` wraps
+     and never overflows. Only ever scrolls the strip — never the page. */
+  function revealAzChip(link) {
+    if (!link) return;
+    var strip = link.closest && link.closest(".az__list");
+    if (!strip) return;
+    if (strip.scrollWidth <= strip.clientWidth + 1) return;
+    var target =
+      link.offsetLeft - (strip.clientWidth - link.offsetWidth) / 2;
+    target = Math.max(0, Math.min(target, strip.scrollWidth - strip.clientWidth));
+    strip.scrollTo({
+      left: target,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }
+
   /* ====================================================================
        Theme toggle. The `dark` class is set by an inline head script before
        first paint, so this only has to keep the control and the browser UI
@@ -71,17 +91,35 @@
         mobileLoginDark.classList.toggle("hidden-important", !dark);
     }
 
+    function toggle() {
+      var dark = root.classList.toggle("dark");
+      try {
+        localStorage.setItem("spike-theme", dark ? "dark" : "light");
+      } catch (e) {
+        /* private mode — the choice just won't persist */
+      }
+      sync();
+    }
+
     sync();
     Array.prototype.forEach.call(btns, function (btn) {
-      btn.addEventListener("click", function () {
-        var dark = root.classList.toggle("dark");
-        try {
-          localStorage.setItem("spike-theme", dark ? "dark" : "light");
-        } catch (e) {
-          /* private mode — the choice just won't persist */
-        }
-        sync();
-      });
+      // Discoverable on hover and to assistive tech, matching the on-screen
+      // hint style the rest of the page uses for its shortcuts.
+      btn.setAttribute("aria-keyshortcuts", "Shift+D");
+      if (!btn.title) btn.title = "Toggle theme (⇧D)";
+      btn.addEventListener("click", toggle);
+    });
+
+    // Shift+D flips the theme from anywhere on the page — not while typing in
+    // a field, and not as a browser/OS chord. Shift-only so it never clashes
+    // with the "/" search or arrow-key list navigation, which bail on shift.
+    doc.addEventListener("keydown", function (e) {
+      if (e.defaultPrevented || e.repeat) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || !e.shiftKey) return;
+      if (e.key !== "D" && e.key !== "d") return;
+      if (isTyping(e.target)) return;
+      e.preventDefault();
+      toggle();
     });
   })();
 
@@ -465,6 +503,16 @@
     listEl.addEventListener("focusin", function (e) {
       var card = e.target.closest && e.target.closest(".term-card");
       if (!card) return;
+      // Only paint the cursor for keyboard focus. A pointer tap on mobile also
+      // fires focusin, and painting `.is-active` there ran the desktop
+      // underline / arrow animation on every tap of the term list.
+      var keyboard = true;
+      try {
+        keyboard = card.matches(":focus-visible");
+      } catch (err) {
+        /* older engine without :focus-visible — keep the cursor */
+      }
+      if (!keyboard) return;
       if (active && active !== card) active.classList.remove("is-active");
       active = card;
       card.classList.add("is-active");
@@ -693,6 +741,8 @@
               if (current) current.removeAttribute("aria-current");
               link.setAttribute("aria-current", "true");
               current = link;
+              // Keep the lit chip in view within the mobile strip.
+              revealAzChip(link);
             },
             { rootMargin: "-" + (stack + 8) + "px 0px -55% 0px" },
           );
@@ -1034,6 +1084,9 @@
         Array.prototype.forEach.call(links, function (other) {
           if (other.getAttribute("href") === href) {
             other.setAttribute("aria-current", "true");
+            // Slide the mobile strip so the tapped chip is centred (no-op
+            // for the vertical rail's copy of this link).
+            revealAzChip(other);
           } else {
             other.removeAttribute("aria-current");
           }

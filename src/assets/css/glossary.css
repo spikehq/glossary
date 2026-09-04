@@ -2535,6 +2535,46 @@ main > .page:first-child {
     .search {
         flex: 0 1 20rem;
     }
+}
+
+/* Tablet (iPad-sized): the A–Z is one full-width row that never wraps and
+   never scrolls — all 26 letters share the toolbar width as equal columns.
+   (Phones below 40rem keep the horizontal scroller; the wrapped multi-row
+   grid only returns at 78rem, where the fixed vertical rail — §13c — becomes
+   the primary jump nav.) */
+@media (min-width: 40rem) and (max-width: 77.999rem) {
+    .az {
+        order: -1;
+        flex: 1 0 100%;
+        width: 100%;
+        min-width: 0;
+    }
+    .az__list {
+        flex-wrap: nowrap;
+        overflow: visible;
+        gap: 2px;
+    }
+    .az__list > li {
+        /* equal-width tracks: 26 letters divide the row edge to edge */
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    .az__list a,
+    .az__list > li > span {
+        width: 100%;
+        min-width: 0;
+        min-height: 1.875rem;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-xs);
+    }
+    /* The A–Z above it spans the whole toolbar, so a 20rem search pill
+       stranded on the left looked half-finished — let it fill the row too. */
+    .search {
+        flex: 1 1 100%;
+    }
+}
+
+@media (min-width: 78rem) {
     .az {
         flex: 1 1 12rem;
         order: 0;
@@ -2597,6 +2637,47 @@ main > .page:first-child {
     .term-aside {
         position: sticky;
         top: calc(var(--toolbar-h) + var(--space-6));
+    }
+}
+
+/* Tablet: the letter section head takes the phone's compact treatment — a
+   small filled Monoton badge with the term count beneath it — not the
+   oversized striped display letter the ≥64rem desktop layout carries. Placed
+   after the 64rem block so it wins across the whole 40–78rem range. */
+@media (min-width: 40rem) and (max-width: 77.999rem) {
+    .letter {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        gap: var(--space-4);
+    }
+    .letter__head {
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-3));
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        margin: 0;
+        padding-top: var(--space-1);
+    }
+    .letter__head h2 {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-md);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        font-family: 'Monoton', var(--font-heading);
+        font-size: var(--text-lg);
+        font-weight: 400;
+        line-height: 1;
+    }
+    .letter__count {
+        font-size: 0.625rem;
+        text-align: center;
+        line-height: 1.1;
     }
 }
 
@@ -2712,25 +2793,44 @@ main > .page:first-child {
         transform 150ms var(--ease-out);
 }
 
-.letters .term-card:hover,
+/* Static active feedback — a flat accent fill, no lift / shadow / border-tint.
+   Safe on every device: this is what a tapped row settles into.
+   The animated bits (the underline that draws in, the arrow that slides in) are
+   pointer / keyboard niceties and live in the `@media (hover: hover)` block plus
+   `.is-active`. On touch, `:hover` sticks after a tap and `:focus-within` lands
+   on every tap, so left ungated they fired the desktop hover animation on each
+   tap of the term list. `.is-active` stays fully animated because the JS only
+   sets it for real keyboard focus (`:focus-visible`), never a pointer tap. */
 .letters .term-card:focus-within,
 .letters .term-card.is-active {
     background: var(--accent);
-    /* neutralise the base card's lift / shadow / border-tint on hover */
     border-color: var(--border);
     box-shadow: none;
     transform: none;
 }
-.letters .term-card:hover h3,
-.letters .term-card:focus-within h3,
 .letters .term-card.is-active h3 {
     background-size: 100% 1.5px;
 }
-.letters .term-card:hover .term-card__go,
-.letters .term-card:focus-within .term-card__go,
 .letters .term-card.is-active .term-card__go {
     opacity: 1;
     transform: translateY(-50%);
+}
+@media (hover: hover) and (pointer: fine) {
+    .letters .term-card:hover {
+        background: var(--accent);
+        border-color: var(--border);
+        box-shadow: none;
+        transform: none;
+    }
+    .letters .term-card:hover h3,
+    .letters .term-card:focus-within h3 {
+        background-size: 100% 1.5px;
+    }
+    .letters .term-card:hover .term-card__go,
+    .letters .term-card:focus-within .term-card__go {
+        opacity: 1;
+        transform: translateY(-50%);
+    }
 }
 /* one cohesive keyboard cursor: an inset ring on the row, not the boxed card */
 .letters .term-card.is-active {
