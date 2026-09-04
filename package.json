@@ -1,35 +1,43 @@
 {
   "name": "glossary",
-  "version": "1.0.1",
-  "description": "Spike.sh glossary with Sass support",
+  "version": "2.0.0",
+  "description": "Spike.sh incident response glossary — a static, keyboard-first Eleventy site",
   "main": "index.js",
   "scripts": {
+    "dev": "eleventy --serve",
     "start": "eleventy --serve",
-    "sitemap": "node generate-sitemap.js",
-    "build": "npm run sass && eleventy && npm run sitemap",
-    "clean": "rm -rf _site",
-    "sass": "sass src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
-    "sass:watch": "sass --watch src/assets/scss/main.scss:src/assets/css/style.css --style=compressed",
-    "dev": "concurrently \"npm run sass:watch\" \"eleventy --serve --quiet\"",
-    "preview": "npm run build && eleventy --serve"
+    "build": "eleventy",
+    "build:local": "cross-env GLOSSARY_LOCAL=1 eleventy",
+    "serve": "node scripts/serve.js",
+    "preview": "npm run build:local && npm run serve",
+    "lighthouse": "node scripts/lighthouse.js",
+    "smoke": "node scripts/smoke.js",
+    "screenshots": "node scripts/screenshots.js",
+    "clean": "node -e \"require('fs').rmSync('_site',{recursive:true,force:true})\""
   },
   "keywords": [
     "glossary",
     "11ty",
     "handlebars",
-    "sass"
+    "incident-response"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@11ty/eleventy": "^3.0.0",
     "@11ty/eleventy-plugin-handlebars": "^1.0.0",
-    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "@fontsource/monoton": "^5.3.0",
     "handlebars": "^4.7.8",
-    "markdown-it": "^14.1.0",
-    "sass": "^1.87.0"
+    "markdown-it": "^14.1.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.28.2",
+    "lighthouse": "^12.8.2",
+    "lucide-static": "^1.34.0",
+    "subset-font": "^2.5.0"
   }
 }

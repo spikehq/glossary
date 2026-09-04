@@ -1,0 +1,5 @@
+---
+permalink: /terms.json
+eleventyExcludeFromCollections: true
+---
+[{{#each collections.glossaryItems}}[{{{json this.data.term}}},{{{json this.fileSlug}}}]{{#unless @last}},{{/unless}}{{/each}}]

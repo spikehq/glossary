@@ -1,0 +1,3256 @@
+/* ==========================================================================
+   Spike Glossary — page styles
+   --------------------------------------------------------------------------
+   This file is concatenated *after* brand/spike-theme.css at build time
+   (see .eleventy.js) and inlined into every page, so everything here consumes
+   the shared semantic tokens: --card, --border, --muted-foreground, --tone-*,
+   --radius-*, --space-*, --duration-*. No raw hex except the two brand colors
+   the theme itself allows.
+
+   `__BASE__` is replaced at build time with the path prefix the site is served
+   from ('' locally, '/glossary' in production).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Fonts — the three Spike families, self-hosted as variable woff2 and subset
+   at build time to the characters this site actually renders (see .eleventy.js).
+   Inter and Instrument Sans are preloaded from the document head; Geist Mono is
+   declared but only fetched if a page renders code. All three swap, and any
+   glyph outside the subset falls through to the next family in the stack.
+   -------------------------------------------------------------------------- */
+@font-face {
+    font-family: 'Inter Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 600;
+    src: url(__BASE__/assets/fonts/inter-latin.woff2) format('woff2-variations');
+}
+@font-face {
+    font-family: 'Instrument Sans Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 700;
+    src: url(__BASE__/assets/fonts/instrument-sans-latin.woff2) format('woff2-variations');
+}
+@font-face {
+    font-family: 'Geist Mono Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 500;
+    src: url(__BASE__/assets/fonts/geist-mono-latin.woff2) format('woff2-variations');
+}
+/* Display face for the big A–Z letters only, subset at build time to those
+   26 glyphs. Static single weight, so a plain woff2 rather than a variation. */
+@font-face {
+    font-family: 'Monoton';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url(__BASE__/assets/fonts/monoton-latin.woff2) format('woff2');
+}
+
+/* --------------------------------------------------------------------------
+   2. Token hardening (light mode only)
+
+   Two shared tokens fall short of WCAG AA on the white card surface, so they
+   are darkened here rather than being worked around per-component. Dark mode
+   already clears both, so the overrides are scoped with :not(.dark) — which
+   also keeps them from out-specifying the theme's own `.dark` block.
+
+     --muted-foreground  #8e8e8e → 3.3:1 on white (needs 4.5:1 for body text)
+     --ring              #b5b5b5 → 1.9:1 on white (needs 3:1 for a focus ring)
+
+   Worth pushing back into spike-theme.css / the dashboard's index.css.
+   -------------------------------------------------------------------------- */
+:root:not(.dark) {
+    --muted-foreground: oklch(0.47 0 0); /* approx #6b6b6b — 5.3:1 on white   */
+    --ring: oklch(0.55 0 0); /* approx #8a8a8a — 3.5:1 on white               */
+}
+
+:root {
+    --header-h: 3.5rem; /* 56px */
+    /* Fallback only — glossary.js overwrites this with the sticky bar's real
+       rendered height, which varies by page (the index's two-row toolbar vs
+       a term page's slim one) and by how far the A–Z strip wraps. Anchor
+       offsets below depend on it being accurate, or headings land tucked
+       under the bar. */
+    --toolbar-h: 4.5rem;
+    --page-pad: var(--space-4);
+
+    /* Minimum interactive height. 48px on touch (WCAG 2.5.5 / Lighthouse tap
+       targets), tightened to 36px once there's a pointer. */
+    --tap: 3rem;
+
+    /* Inline links inside prose. --spike-blue is the light-mode value; on the
+       dark card it only reaches 3.1:1, so dark mode lifts it. The shared theme
+       has no link token yet — worth adding upstream. */
+    --link: var(--spike-blue);
+}
+.dark {
+    --link: #7ba4ff; /* 6.4:1 on --card in dark mode */
+}
+
+@media (pointer: fine) {
+    :root {
+        --tap: 2.25rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. Reset — the theme file ships tokens and base type, not a reset.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+* {
+    margin: 0;
+}
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+ul,
+ol {
+    list-style: none;
+    padding: 0;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+input,
+button,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+code,
+pre,
+samp {
+    font-family: var(--font-mono);
+}
+kbd {
+    font-family: var(--font-sans); /* per SPIKE-THEME.md: <kbd> is body type */
+}
+
+/* Focus-visible on everything, never suppressed. Outline (not box-shadow) so
+   it can't be clipped by an ancestor's overflow. */
+:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+::selection {
+    background: var(--tone-blue-bg);
+}
+
+/* --------------------------------------------------------------------------
+   4. Primitives
+   -------------------------------------------------------------------------- */
+.page {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--page-pad);
+}
+
+/* Card-on-canvas: the load-bearing pattern. Content never sits raw on the
+   canvas — it lives in one of these. */
+.card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-2);
+    z-index: 100;
+    transform: translateY(-250%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-hover) var(--ease-out);
+}
+.skip-link:focus-visible {
+    transform: translateY(0);
+}
+
+.eyebrow {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+/* State pill — the shared status vocabulary. Colour is never the only signal:
+   every pill carries its label, and the dot is decorative. */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--tone-zinc-border);
+    background: var(--tone-zinc-bg);
+    color: var(--tone-zinc-fg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    padding: 0.3rem var(--space-3);
+    line-height: 1;
+}
+.pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: currentcolor;
+    flex: none;
+}
+.pill--red {
+    border-color: var(--tone-red-border);
+    background: var(--tone-red-bg);
+    color: var(--tone-red-fg);
+}
+.pill--blue {
+    border-color: var(--tone-blue-border);
+    background: var(--tone-blue-bg);
+    color: var(--tone-blue-fg);
+}
+.pill--green {
+    border-color: var(--tone-green-border);
+    background: var(--tone-green-bg);
+    color: var(--tone-green-fg);
+}
+.dark .pill--red {
+    color: var(--tone-red-fg-dark);
+}
+.dark .pill--blue {
+    color: var(--tone-blue-fg-dark);
+}
+.dark .pill--green {
+    color: var(--tone-green-fg-dark);
+}
+.dark .pill {
+    color: var(--tone-zinc-fg-dark);
+}
+
+kbd.key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.375rem;
+    height: 1.375rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+}
+
+/* Buttons -------------------------------------------------------------- */
+
+/* Ordinary buttons are neutral. Spike Blue is NOT wired to --primary. */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    color: var(--foreground);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-xs);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out),
+        transform var(--duration-hover) var(--ease-out);
+}
+.btn:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+/* Press feedback. The whole site had no :active state anywhere — a small
+   scale confirms the tap without a lift or shadow shift. */
+.btn:active,
+.cta:active {
+    transform: scale(0.97);
+}
+
+.btn--ghost {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted-foreground);
+}
+.btn--ghost:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* The one blue thing on the page (plus the logo): the brand CTA. */
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: var(--spike-blue);
+    color: var(--spike-white);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-xs);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        transform var(--duration-hover) var(--ease-out);
+}
+.cta:hover {
+    background-color: var(--spike-blue-hover);
+}
+.cta svg {
+    transition: transform var(--duration-hover) var(--ease-out);
+}
+.cta:hover svg {
+    transform: translateX(2px);
+}
+
+/* --------------------------------------------------------------------------
+   5. Site header — modelled on website_astro-production's Header.astro
+   (wordmark image, one independently-sized rounded dropdown panel per nav
+   item — a wide Products panel with an integrations aside, a narrow Resources
+   list — compacting shell, scroll-linked dark-hero flip). The transparent,
+   scroll-away shell is a deliberate glossary-only departure so the header
+   merges into the hero wash. See glossary.js for the matching behaviour.
+
+   Its own local tokens are scoped to `#site-header` (not :root) because a few
+   names — --font-sans, --font-mono, --text-sm/base, --radius-sm/md/lg —
+   collide with brand/spike-theme.css; defining them globally would silently
+   change type/radii sitewide. Scoping to the header keeps every descendant
+   (including the dropdown panels and the fixed mobile sheet, which still
+   inherit custom properties through the DOM regardless of position) resolving the
+   header's own values without touching the rest of the page. `.btn` /
+   `.btn-outline` are likewise addressed as `#site-header .btn…` because the
+   bare class names are already used (with different styling) by the
+   subscribe form and the "Contribute a term" link elsewhere on the page.
+   -------------------------------------------------------------------------- */
+@property --header-height {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 72px;
+}
+
+/* Header geometry. The header is NOT pinned and does NOT compact on scroll —
+   it scrolls away with the page like any other section. These are static:
+   --float-gap / --bar-height shape the frosted pill's ::before box from lg up,
+   --pill-width sets its (and the nav row's) width, and --header-height is the
+   pill's full footprint = gap + bar, which .hero::before reads to run the hero
+   wash up behind the header. On mobile the gap is 0 and the pill styling is
+   off, so --header-height is just the flat bar height. */
+:root {
+    --float-gap: 0rem;
+    --bar-height: 4.5rem;
+    --pill-width: 60rem;
+    --header-height: 4.5rem;
+}
+
+#site-header {
+    --color-brand-primary: var(--spike-blue);
+    --color-brand-black: var(--spike-black);
+
+    --color-neutral-50: #f5f4f0;
+    --color-neutral-100: var(--spike-white);
+    --color-neutral-300: #bebcb4;
+    --color-neutral-600: #6a6a63;
+    --color-neutral-850: #28282a;
+
+    --color-border-default: var(--border);
+    --color-surface-subtle: #fcfbf9;
+    --color-surface-2: #f4f3ef;
+    --color-surface-icon: #777777;
+    --color-neutral-400: #9a988f;
+
+    --color-light-neutral-300: #c3c1c0;
+    --color-dark-neutral-100: #717070;
+    --color-dark-neutral-200: #5f5e5f;
+    --color-dark-neutral-500: #313133;
+    --color-dark-neutral-600: #28282a;
+
+    --font-display: var(--font-heading);
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+    --text-sm: 0.8125rem;
+    --text-base: 1rem;
+    --tracking-mono: 0.06em;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-2xl: 20px;
+    --radius-3xl: 24px;
+}
+
+/* ---- Layout / chrome ----------------------------------------------------- */
+/* NOT pinned — the header scrolls away with the page. `position: relative`
+   only so it stays a positioning context and its z-index keeps the dropdown
+   panels above the content that follows. From lg up the visible chrome is a
+   frosted, rounded, centred pill (::before, below); it just scrolls with
+   everything else rather than staying stuck to the top. */
+#site-header {
+    position: relative;
+    z-index: 50;
+    height: var(--header-height);
+    font-family: var(--font-sans);
+}
+@media (min-width: 64rem) {
+    /* Pill sits 0.75rem down from the header's top edge and is 3.75rem tall,
+       so the header box (gap + bar) is still 4.5rem — same as the mobile bar,
+       so --header-height needs no breakpoint override. */
+    :root {
+        --float-gap: 0.75rem;
+        --bar-height: 3.75rem;
+    }
+    /* The float gap is padding on the header (box-sizing: border-box keeps the
+       total at --header-height), so the nav row and the pill ::before both
+       start at the same 0.75rem offset and stay vertically locked. */
+    #site-header {
+        padding-top: var(--float-gap);
+    }
+}
+
+/* Frosted-glass fill, painted on a pseudo-element (never on #site-header
+   itself) so the nested backdrop-filters on the dropdown panels and the
+   mobile sheet aren't trapped inside a backdrop root — see the long note in
+   Header.astro. Below lg it's the full-bleed flat bar; from lg up it becomes
+   the centred, fully-rounded pill with an all-around border, a soft float
+   shadow and a 1px inner top-edge highlight. On the index the hero wash runs
+   up behind it (see .hero::before) so the blur always has real content to
+   sample. */
+#site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: color-mix(in oklab, var(--color-neutral-100) 85%, transparent);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    transition: background-color 200ms;
+}
+#site-header.header-dark::before {
+    background-color: color-mix(in oklab, var(--color-brand-black) 70%, transparent);
+}
+@media (min-width: 64rem) {
+    #site-header::before {
+        inset: auto;
+        top: var(--float-gap);
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(var(--pill-width), 100% - 2rem);
+        height: var(--bar-height);
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--color-border-default);
+        backdrop-filter: blur(28px) saturate(185%);
+        -webkit-backdrop-filter: blur(28px) saturate(185%);
+        box-shadow:
+            var(--shadow-sm),
+            inset 0 1px 0 0 color-mix(in oklab, var(--color-neutral-100) 55%, transparent);
+        transition:
+            background-color 200ms,
+            border-color 200ms,
+            box-shadow 200ms;
+    }
+    #site-header.header-dark::before {
+        border-color: var(--color-dark-neutral-500);
+        box-shadow:
+            var(--shadow-sm),
+            inset 0 1px 0 0 color-mix(in oklab, var(--color-neutral-100) 14%, transparent);
+    }
+}
+
+/* First-paint guard. `.header-booting` is on <html> from the inline theme
+   script and removed by glossary.js on the first frame, once the theme has
+   been synced onto the header — so a dark-mode load lands with the pill
+   already its dark tint instead of fading from light. */
+.header-booting #site-header::before,
+.header-booting #site-header::after,
+.header-booting #site-header #site-logo {
+    transition: none !important;
+}
+
+/* Bottom divider as an overlay (not a real border) so the header's box stays
+   exactly the bar height. Full-bleed on the flat mobile bar; gone from lg up
+   where the pill carries its own all-around border; suppressed in the dark
+   treatment where it's a redundant seam over an identical background. */
+#site-header::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--color-border-default);
+    opacity: 1;
+    pointer-events: none;
+}
+@media (min-width: 64rem) {
+    #site-header::after {
+        display: none;
+    }
+}
+#site-header.header-dark::after {
+    opacity: 0;
+}
+
+/* Below lg: the flat bar, centred to the content column. From lg up: centred
+   to the pill width and a 3.75rem row that sits inside the frosted pill
+   (::before). The row is pushed down by the float gap with padding on
+   #site-header (see above) rather than a margin here — a top margin on this
+   child collapses through the non-fixed header and desyncs it from the pill
+   by exactly that gap. */
+#site-header .site-nav {
+    margin-inline: auto;
+    max-width: var(--container-max);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-4);
+}
+@media (min-width: 40rem) {
+    #site-header .site-nav {
+        padding-inline: var(--space-6);
+    }
+}
+@media (min-width: 64rem) {
+    #site-header .site-nav {
+        width: min(var(--pill-width), 100% - 2rem);
+        max-width: none;
+        height: var(--bar-height);
+    }
+}
+
+/* ---- Logo ----------------------------------------------------------------- */
+#site-header .logo-link {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+/* One wordmark asset serves both themes (no separate light/dark artwork
+   exists yet) — it just stays put across the light/dark switch instead of
+   cross-fading between a shown and a permanently-invisible twin. */
+#site-logo {
+    height: 1.75rem;
+    width: auto;
+}
+/* Flattens the two-tone wordmark (dark text + blue spike) to solid white
+   against the header's frosted-black chrome — cheaper than shipping a
+   second logo asset. */
+#site-header.header-dark #site-logo {
+    filter: brightness(0) invert(1);
+}
+
+/* ---- Desktop nav ----------------------------------------------------------- */
+#site-header .desktop-nav {
+    display: none;
+    align-items: center;
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+@media (min-width: 64rem) {
+    #site-header .desktop-nav {
+        display: flex;
+    }
+}
+/* Every top-level item is a constant-height flex box (matching the pill's
+   resting row height, like Header.astro's h-15) so the whole row is a hover
+   target for its dropdown and the plain Pricing link shares the triggers'
+   baseline. The pill compacts on a transform, so this stays fixed. */
+#site-header .desktop-nav > li {
+    display: flex;
+    align-items: center;
+    height: 3.75rem;
+}
+
+/* Each dropdown item is its own positioning context: unlike the old single
+   full-width mega panel, every panel is now anchored to (and sized for) its
+   own trigger. */
+.nav-item {
+    position: relative;
+}
+
+#site-header .nav-link-text {
+    font-family: var(--font-mono);
+    font-size: 0.875rem; /* 14px — the nav items hold their size; the rest of
+                            the header chrome uses the smaller --text-sm */
+    font-weight: 400;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-dark-neutral-200);
+    text-decoration: none;
+    transition: color 200ms;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+#site-header .nav-link-text:hover {
+    color: var(--color-brand-black);
+}
+#site-header.header-dark .nav-link-text:hover {
+    color: var(--color-light-neutral-300);
+}
+
+/* Keyboard-shortcut chips on LOG IN (L) and GET STARTED (S) — the bare-key
+   handler lives in glossary.js's header(). Ported from Header.astro. Only
+   meaningful with a real keyboard, so hidden on coarse pointers. */
+#site-header .nav-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
+    padding: 0.1875rem 0.4375rem;
+    border: 1px solid var(--color-border-default);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .nav-kbd {
+    border-color: var(--color-dark-neutral-500);
+    color: var(--color-light-neutral-300);
+}
+#site-header .nav-kbd--on-brand {
+    border-color: rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / 0.8);
+}
+#site-header.header-dark .nav-kbd--on-brand {
+    border-color: rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / 0.8);
+}
+@media (pointer: coarse) {
+    #site-header .nav-kbd {
+        display: none;
+    }
+}
+.nav-link-text .chevron {
+    transition: transform 200ms;
+}
+.nav-item .nav-link-text[aria-expanded='true'] .chevron,
+.nav-trigger:hover .chevron,
+.nav-item:focus-within .nav-trigger .chevron {
+    transform: rotate(-180deg);
+}
+
+/* ---- Dropdown panels ----------------------------------------------------- */
+/* A small top padding on the wrapper (not a margin on the panel) bridges the
+   gap between the trigger and the panel so the pointer can travel across it
+   without :hover dropping. Anchored to the .nav-item, left-aligned to its
+   trigger — the panel is only as wide as its own content needs. */
+.nav-panel-wrap {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 40;
+    padding-top: var(--space-3);
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 200ms;
+}
+.nav-item:hover .nav-panel-wrap,
+.nav-item:focus-within .nav-panel-wrap {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.nav-panel {
+    overflow: hidden;
+    max-width: calc(100vw - 2rem);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border-default);
+    opacity: 0;
+    /* Drops down and settles from its trigger rather than just cross-fading,
+       so the panel reads as belonging to the item above it. Kept tiny and
+       fast — this is desktop hover, a frequent interaction. */
+    transform: translateY(-6px) scale(0.985);
+    transform-origin: top;
+    background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    transition:
+        opacity 200ms var(--ease-out),
+        transform 160ms var(--ease-out),
+        background-color 200ms,
+        border-color 200ms;
+}
+.nav-item:hover .nav-panel,
+.nav-item:focus-within .nav-panel {
+    opacity: 1;
+    transform: none;
+}
+#site-header.header-dark .nav-panel {
+    border-color: var(--color-dark-neutral-500);
+    background-color: color-mix(in oklab, var(--color-brand-black) 90%, transparent);
+}
+
+.nav-panel--wide {
+    width: 36rem;
+}
+.nav-panel--narrow {
+    width: 15rem;
+}
+.nav-panel--wide .nav-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+}
+
+.nav-panel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    list-style: none;
+    margin: 0;
+    padding: var(--space-3);
+}
+.nav-panel--narrow .nav-panel-list {
+    padding: var(--space-2);
+}
+
+.nav-panel-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    border-radius: var(--radius-lg);
+    padding: 0.625rem var(--space-3);
+    text-decoration: none;
+    transition: background-color 150ms;
+}
+.nav-panel-link:hover {
+    background-color: var(--color-surface-subtle);
+}
+#site-header.header-dark .nav-panel-link:hover {
+    background-color: var(--color-dark-neutral-600);
+}
+
+.nav-panel-icon {
+    flex-shrink: 0;
+    display: flex;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+    color: var(--color-surface-icon);
+}
+.nav-panel-icon svg {
+    width: 17px;
+    height: 17px;
+}
+#site-header.header-dark .nav-panel-icon {
+    border-color: var(--color-dark-neutral-500);
+    background-color: var(--color-dark-neutral-600);
+    color: var(--color-light-neutral-300);
+}
+
+.nav-panel-title {
+    flex: 1;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-neutral-850);
+}
+#site-header.header-dark .nav-panel-title {
+    color: #ffffff;
+}
+
+/* Arrow slides in from the left on row hover / keyboard focus. */
+.nav-panel-arrow {
+    flex-shrink: 0;
+    transform: translateX(-0.25rem);
+    color: var(--color-neutral-400);
+    opacity: 0;
+    transition:
+        transform 200ms,
+        opacity 200ms;
+}
+.nav-panel-link:hover .nav-panel-arrow,
+.nav-panel-link:focus-visible .nav-panel-arrow {
+    transform: translateX(0);
+    opacity: 1;
+}
+#site-header.header-dark .nav-panel-arrow {
+    color: var(--color-light-neutral-300);
+}
+
+/* Products panel — right-hand "works with your stack" aside. Its tint reaches
+   the panel's rounded corners because .nav-panel clips overflow. */
+.nav-panel-aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    background-color: var(--color-surface-2);
+}
+#site-header.header-dark .nav-panel-aside {
+    background-color: var(--color-dark-neutral-600);
+}
+.nav-panel-aside-label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-neutral-600);
+}
+#site-header.header-dark .nav-panel-aside-label {
+    color: var(--color-dark-neutral-100);
+}
+.nav-panel-integrations {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+.nav-panel-integrations a {
+    display: flex;
+    aspect-ratio: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-default);
+    background: #ffffff;
+    padding: var(--space-2);
+    transition: border-color 150ms;
+}
+.nav-panel-integrations a:hover {
+    border-color: var(--color-neutral-300);
+}
+#site-header.header-dark .nav-panel-integrations a {
+    border-color: var(--color-dark-neutral-500);
+}
+.nav-panel-integrations img {
+    height: 2rem;
+    width: 2rem;
+    object-fit: contain;
+}
+.nav-panel-aside-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-brand-primary);
+    text-decoration: none;
+}
+.nav-panel-aside-cta svg {
+    transition: transform 200ms;
+}
+.nav-panel-aside-cta:hover svg {
+    transform: translateX(2px);
+}
+
+/* ---- Customers panel — featured story card + short list ----------------- */
+/* Centred under its trigger rather than left-aligned to it. */
+.nav-panel-wrap--center {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+.nav-panel-grid--customers {
+    grid-template-columns: 1fr 1.1fr;
+}
+.nav-panel-col {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3);
+}
+.nav-panel-col-label {
+    padding: var(--space-2) var(--space-3);
+}
+/* List rows here have no icon chip — just the name and the slide-in arrow. */
+.nav-panel-link--plain {
+    justify-content: space-between;
+    gap: var(--space-6);
+}
+.nav-panel-col-cta {
+    margin-top: var(--space-1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    border-radius: var(--radius-lg);
+    padding: 0.625rem var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-brand-primary);
+    text-decoration: none;
+    transition: background-color 150ms;
+}
+.nav-panel-col-cta:hover {
+    background-color: color-mix(in oklab, var(--color-brand-primary) 8%, transparent);
+}
+.nav-panel-col-cta svg {
+    flex-shrink: 0;
+    transition: transform 200ms;
+}
+.nav-panel-col-cta:hover svg {
+    transform: translateX(2px);
+}
+
+.nav-panel-story {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    padding: var(--space-6);
+    background: var(--color-brand-black);
+    color: #ffffff;
+    text-decoration: none;
+}
+.nav-panel-story-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    transition: transform 500ms;
+}
+.nav-panel-story:hover .nav-panel-story-bg {
+    transform: scale(1.05);
+}
+.nav-panel-story-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        var(--color-brand-black),
+        color-mix(in oklab, var(--color-brand-black) 70%, transparent) 45%,
+        transparent
+    );
+}
+.nav-panel-story-body {
+    position: relative;
+}
+.nav-panel-story-logo {
+    height: 1.5rem;
+    width: auto;
+    max-width: 9rem;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+.nav-panel-story-quote {
+    display: block;
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: #ffffff;
+}
+.nav-panel-story-author {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: var(--space-5);
+}
+.nav-panel-story-avatar {
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+.nav-panel-story-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.nav-panel-story-name {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: #ffffff;
+}
+.nav-panel-story-role {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-light-neutral-300);
+}
+@media (prefers-reduced-motion: reduce) {
+    .nav-panel-story:hover .nav-panel-story-bg {
+        transform: none;
+    }
+    #site-header::before {
+        transition: none;
+    }
+}
+
+/* ---- Desktop right side: log in, theme toggle, CTA ------------------------ */
+#site-header .desktop-actions {
+    display: none;
+    align-items: center;
+    gap: var(--space-6);
+}
+@media (min-width: 64rem) {
+    #site-header .desktop-actions {
+        display: flex;
+    }
+}
+
+#site-header .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 2.75rem;
+    border-radius: var(--radius-lg);
+    padding-inline: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    font-weight: 400;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 150ms;
+}
+#site-header .btn-primary {
+    color: #ffffff;
+    background: #134ed9;
+    /* No border — the generic `.btn` (shared with the subscribe form) adds a
+       1px neutral one, which in light mode sits between the blue fill and the
+       blue ring below and reads as a detached outline. The reference header
+       (spike-header-standalone.html) carries the ring only. */
+    border: 0;
+    box-shadow:
+        0 0 0 1px #1b56e1,
+        0 1.5px 9px 0 rgba(22, 22, 24, 0.078),
+        0 0.75px 1.5px -0.75px rgba(22, 22, 24, 0.078);
+}
+#site-header .btn-primary:hover {
+    background: #0d379a;
+}
+#site-header .btn-outline {
+    color: var(--color-brand-black);
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+#site-header .btn-outline:hover {
+    background: #f3f3f3;
+}
+#site-header .btn-outline-light {
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+#site-header .btn-outline-light:hover {
+    background: #ffffff;
+    color: var(--color-brand-black);
+}
+#site-header .btn-full {
+    width: 100%;
+}
+
+/* Theme toggle — the site's existing dark/light switch (not part of the
+   original mockup), dropped into the desktop and mobile action groups.
+   Reuses the same sun/moon markup and `.dark` class contract used
+   everywhere else on the page. The header itself paints no fill (see the
+   comment above `#site-header .site-nav`), so a solid white background
+   here read as a hardcoded white chip on any page whose background isn't
+   the hero wash — e.g. flat #fcfbf9 on glossary item pages. Kept the
+   bordered-chip affordance, but transparent-filled and colored off
+   `--color-border-default` (same token the nav row's own border uses) so
+   the ring reads correctly against whatever's behind the header. In
+   `header-dark`, it keeps using the same `--border` token rather than a
+   one-off white value — `--border` already resolves to white @ 10% under
+   the site's `.dark` theme (see brand/spike-theme.css), which is what
+   every other bordered surface on the page uses. */
+.theme-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap);
+    height: var(--tap);
+    padding: 0;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--color-brand-black);
+    cursor: pointer;
+    transition:
+        color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
+}
+#site-header.header-dark .theme-toggle {
+    color: #ffffff;
+    border-color: var(--border);
+}
+.js .theme-toggle {
+    display: inline-flex;
+}
+@media (min-width: 64rem) {
+    /* A compact square in the pill — smaller than the CTA next to it;
+       align-items:center on .site-nav keeps the three flush. */
+    #site-header .desktop-actions .theme-toggle {
+        width: 1.9rem;
+        height: 1.9rem;
+    }
+}
+.theme-toggle:hover {
+    color: var(--color-dark-neutral-100);
+}
+#site-header.header-dark .theme-toggle:hover {
+    color: var(--color-light-neutral-300);
+}
+.theme-toggle svg {
+    width: 1rem;
+    height: 1rem;
+}
+/* The button shows the current *preference* (monitor / sun / moon), not the
+   resolved theme — so "System" reads as system even when the OS is dark.
+   Driven by data-theme-pref on <html> (set pre-paint by the inline script). */
+.theme-toggle .icon-system,
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+    display: none;
+}
+:root:not([data-theme-pref]) .theme-toggle .icon-system,
+:root[data-theme-pref='system'] .theme-toggle .icon-system,
+:root[data-theme-pref='light'] .theme-toggle .icon-sun,
+:root[data-theme-pref='dark'] .theme-toggle .icon-moon {
+    display: block;
+}
+/* ---- Mobile toggle ---------------------------------------------------- */
+/* Groups the theme toggle and the hamburger so .site-nav's
+   justify-content:space-between treats them as one cluster pinned to the
+   right, instead of spreading two separate flex children across the row. */
+.mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+@media (min-width: 64rem) {
+    /* The desktop-actions copy (#theme-toggle) takes over from here. Hiding
+       just the two children left this wrapper as a zero-width flex item —
+       .site-nav's justify-content:space-between still reserved a gap for
+       it, pushing .desktop-actions ~79px short of the row's right edge
+       instead of flush with the page content below. */
+    .mobile-header-actions {
+        display: none;
+    }
+    #theme-toggle-mobile {
+        display: none;
+    }
+}
+.mobile-menu-toggle {
+    position: relative;
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--color-brand-black);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+@media (min-width: 64rem) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+.mobile-menu-toggle.is-dark {
+    color: #ffffff;
+}
+.mobile-menu-toggle svg {
+    position: absolute;
+    transition: all 300ms;
+}
+#mobile-menu-icon-close {
+    transform: rotate(-90deg) scale(0.75);
+    opacity: 0;
+}
+#mobile-menu-icon-open.is-open {
+    transform: rotate(90deg) scale(0.75);
+    opacity: 0;
+}
+#mobile-menu-icon-close.is-open {
+    transform: none;
+    opacity: 1;
+}
+
+/* ---- Mobile sheet ------------------------------------------------------ */
+#mobile-menu {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    top: var(--header-height);
+    z-index: 30;
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    border-top: 1px solid var(--color-border-default);
+    background-color: color-mix(in oklab, var(--color-neutral-100) 92%, transparent);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    transition:
+        opacity 300ms,
+        visibility 300ms;
+}
+@media (min-width: 64rem) {
+    #mobile-menu {
+        display: none;
+    }
+}
+#mobile-menu.is-open {
+    visibility: visible;
+    opacity: 1;
+}
+#site-header.header-dark #mobile-menu {
+    border-color: var(--color-dark-neutral-500);
+    background-color: color-mix(in oklab, var(--color-brand-black) 90%, transparent);
+}
+.mobile-menu-inner {
+    margin-inline: auto;
+    max-width: var(--container-max);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-10) var(--space-6) var(--space-8);
+}
+@media (min-width: 40rem) {
+    .mobile-menu-inner {
+        padding-inline: var(--space-8);
+    }
+}
+.mobile-nav-list {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.mobile-nav-item {
+    border-bottom: 1px solid var(--color-border-default);
+}
+#site-header.header-dark .mobile-nav-item {
+    border-color: var(--color-dark-neutral-500);
+}
+.mobile-nav-trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-brand-black);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+#site-header.header-dark .mobile-nav-trigger {
+    color: #ffffff;
+}
+.mobile-nav-trigger .chevron {
+    transition: transform 300ms;
+    flex-shrink: 0;
+}
+.mobile-nav-trigger[aria-expanded='true'] .chevron {
+    transform: rotate(90deg);
+}
+.mobile-nav-link {
+    display: block;
+    padding-block: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-brand-black);
+    text-decoration: none;
+}
+#site-header.header-dark .mobile-nav-link {
+    color: #ffffff;
+}
+.mobile-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms;
+}
+.mobile-panel.is-open {
+    grid-template-rows: 1fr;
+}
+.mobile-panel-scroll {
+    overflow: hidden;
+}
+.mobile-link-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+.mobile-link-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    padding: 0.625rem var(--space-2);
+    text-decoration: none;
+    transition: all 150ms;
+}
+.mobile-link-item:hover {
+    border-color: var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+}
+.mobile-link-icon {
+    flex-shrink: 0;
+    display: flex;
+    height: 2.125rem;
+    width: 2.125rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-surface-subtle);
+    color: var(--color-surface-icon);
+}
+.mobile-link-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-neutral-850);
+}
+#site-header.header-dark .mobile-link-title {
+    color: #ffffff;
+}
+.mobile-actions {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.hidden-important {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #site-header * {
+        transition: none !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero
+   -------------------------------------------------------------------------- */
+main {
+    display: block;
+    padding-bottom: var(--space-16);
+}
+/* The hero pulls itself up under the header; pages without one still need
+   breathing room below it. */
+main > .page:first-child {
+    padding-top: var(--space-6);
+}
+
+/* The marketing hero: a full-bleed panel, rounded off at the bottom, with the
+   brand swoosh sweeping in from the lower right. It is built entirely from
+   gradients — nothing to download, nothing to shift when it lands.
+
+   The swoosh is one big off-canvas ellipse: stops on either side of its edge
+   make the bright rim, and everything inside it is the wash. --brand-rgb is
+   --spike-blue as channels so the same colour can carry an alpha. */
+.hero {
+    --brand-rgb: 22 22 24; /* = --spike-black #161618 */
+
+    /* The swoosh is one big off-canvas ellipse. On a phone the panel is far
+       taller than it is wide, so the same ellipse would cut straight through
+       the copy — there it flattens out and sits underneath instead.
+
+       Both numbers are percentages of the wash box, and that box is one header
+       taller than the hero itself (see .hero::before). Read against the taller
+       box, the old 125%/165% pair put the ellipse ~30px higher up the hero than
+       it used to sit, so the values are restated here against the new height:
+       125% × 392 / 464 ≈ 105.5%, and (165% × 392 + 72) / 464 ≈ 155%. Same
+       curve in the same place on the page, just measured from a top edge that
+       now starts above the nav. */
+    --swoosh: 121% 105.5% at 125% 155%;
+    position: relative;
+    /* No `isolation: isolate` here, deliberately. Without a stacking context of
+       its own the z-index:-1 wash below escapes into the root's negative layer,
+       which paints above the canvas (body's --background) but behind every
+       element on the page — the header included. That is what lets one gradient
+       cover both the header band and the hero. */
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+}
+/* The wash lives on a full-bleed pseudo-element, not on .hero itself, so it
+   can be alpha-masked independently of the section's content box. No card
+   edge, no border-radius: the colour just thins out toward nothing, so the
+   page's own --background shows through and the section reads as one
+   continuous surface rather than a panel dropped on top of the page.
+
+   It starts one header above the hero's own top edge, so the gradient runs
+   unbroken from the very top of the page down through the copy — this is what
+   the floating frosted pill sits over and samples through its backdrop-filter,
+   so the pill reads as tinted glass over the wash rather than a separate
+   surface. --header-height is the live, scroll-compacted value: at scroll 0 —
+   the only moment this edge is on screen — it is exactly the header's height. */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--header-height)) 0 0;
+    z-index: -1;
+    background:
+        /* keeps the reading side of the panel clean — the wash lives on the
+           right and fades out well before it reaches the copy */
+        linear-gradient(
+            104deg,
+            var(--spike-white) 0%,
+            rgb(255 255 255 / 0.92) 20%,
+            rgb(255 255 255 / 0) 54%
+        ),
+        /* the light rim that catches along the swoosh edge */
+        radial-gradient(
+            var(--swoosh),
+            rgb(255 255 255 / 0) 0 96%,
+            rgb(255 255 255 / 0.6) 99.2%,
+            rgb(255 255 255 / 0.2) 100.6%,
+            rgb(255 255 255 / 0) 103%
+        ),
+        /* the swoosh itself: everything inside the ellipse */
+        radial-gradient(
+            var(--swoosh),
+            rgb(var(--brand-rgb) / 0.26) 0%,
+            rgb(var(--brand-rgb) / 0.21) 74%,
+            rgb(var(--brand-rgb) / 0.17) 100%,
+            rgb(var(--brand-rgb) / 0.04) 100.9%,
+            rgb(var(--brand-rgb) / 0) 105%
+        ),
+        linear-gradient(
+            118deg,
+            var(--spike-white) 0%,
+            var(--spike-white) 62%,
+            rgb(var(--brand-rgb) / 0.05) 100%
+        );
+    /* Soft fall-off: fully present through the copy, then dissolves toward
+       the bottom and both side edges so it blends into the page background
+       instead of stopping at a hard line. 65%, not the 58% this was before the
+       box grew a header taller — same restatement as --swoosh, so the fade
+       still starts at the same point in the hero. */
+    mask-image:
+        linear-gradient(to bottom, black 0%, black 65%, transparent 100%),
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+        linear-gradient(to bottom, black 0%, black 65%, transparent 100%),
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
+}
+.dark .hero::before {
+    background:
+        linear-gradient(
+            104deg,
+            var(--background) 0%,
+            rgb(22 22 24 / 0.92) 22%,
+            rgb(22 22 24 / 0) 56%
+        ),
+        radial-gradient(
+            var(--swoosh),
+            rgb(255 255 255 / 0) 0 96%,
+            rgb(255 255 255 / 0.16) 99.2%,
+            rgb(255 255 255 / 0.05) 100.6%,
+            rgb(255 255 255 / 0) 103%
+        ),
+        radial-gradient(
+            var(--swoosh),
+            rgb(var(--brand-rgb) / 0.44) 0%,
+            rgb(var(--brand-rgb) / 0.33) 74%,
+            rgb(var(--brand-rgb) / 0.26) 100%,
+            rgb(var(--brand-rgb) / 0.05) 100.9%,
+            rgb(var(--brand-rgb) / 0) 105%
+        ),
+        linear-gradient(118deg, var(--card) 0%, var(--background) 62%);
+}
+
+@media (max-width: 47.999rem) {
+    .hero {
+        /* Same restatement as above against the header-taller box, with the
+           phone's shorter hero and 56px header: 62% × 210 / 266 ≈ 49%,
+           (142% × 210 + 56) / 266 ≈ 133%. */
+        --swoosh: 190% 49% at 120% 133%;
+    }
+    .hero::before {
+        background-position: 0 0;
+    }
+}
+
+.hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.hero h1 {
+    /* Sized to hold "Incident Response Glossary" on one line at desktop. */
+    font-size: clamp(2rem, 5.4vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--heading-foreground); /* near-black in light, near-white in dark */
+}
+.hero__sub {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+    line-height: var(--leading-tight);
+}
+.hero__lede {
+    max-width: 60ch;
+    margin-top: var(--space-2);
+    color: var(--muted-foreground);
+    line-height: var(--leading-relaxed);
+}
+
+/* JS-only controls stay hidden until the head script marks the document as
+   scripted, so a no-JS reader never meets a dead input. */
+.js-only,
+.js .no-js-only {
+    display: none;
+}
+.js .js-only,
+.js .search {
+    display: flex;
+}
+
+/* An accordion instead of a flat definition list — with only a couple of
+   questions a `<dl>` still read as "a white box with some text": no
+   structure to scan, no interaction, everything dumped on screen at once.
+   Native `<details>`/`<summary>` gets a real disclosure widget (keyboard
+   and no-JS support included) for free; both start closed. */
+.faq {
+    margin-top: var(--space-12);
+}
+#faq-title {
+    margin-bottom: var(--space-5);
+}
+.faq__item + .faq__item {
+    margin-top: var(--space-2);
+}
+.faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+    cursor: pointer;
+    list-style: none;
+}
+.faq__question::-webkit-details-marker {
+    display: none;
+}
+.faq__chevron {
+    flex: none;
+    color: var(--muted-foreground);
+    transition: transform var(--duration-enter) var(--ease-out);
+}
+.faq__item[open] .faq__chevron {
+    transform: rotate(180deg);
+}
+/* The animated part. `<details>` content is either fully laid out or, by
+   the UA stylesheet, `display: none` — nothing in between to transition —
+   so this wrapper is forced to stay in the render tree (`display: block`
+   overrides that) and collapses via `height`. Closed is `height: 0`; open
+   is `height: auto` for the no-JS / reduced-motion path (snaps). With JS
+   and motion, glossary.js swaps in the measured pixel height for one clean
+   `height` transition — animating grid-template-rows between 0fr/1fr, which
+   this used to do, interpolates the fr unit against a re-resolved content
+   box every frame and visibly jitters. */
+.faq__answer-wrap {
+    display: block;
+    overflow: hidden;
+    height: 0;
+    transition: height var(--duration-enter) var(--ease-out);
+}
+.faq__item[open] .faq__answer-wrap {
+    height: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    .faq__answer-wrap {
+        transition: none;
+    }
+}
+.faq__answer {
+    padding-bottom: var(--space-4);
+    max-width: 65ch;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+.faq .btn {
+    margin-top: var(--space-6);
+}
+
+/* Term-page toolbar: back link + the palette trigger. Sits inside
+   `.toolbar-wrap`'s own frosted, sticky fill (see §7 below), so the
+   `.card` it also carries in the markup — border, shadow, opaque
+   background, radius — painted a second boxed surface stacked directly
+   inside the first. Stripped here so it's just content sitting in the
+   sticky bar, not a card floating inside a bar. */
+.toolbar.toolbar--slim.card {
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+}
+@media (min-width: 40rem) {
+    /* Below 40rem, `.toolbar-wrap > .page` (see the max-width:39.999rem
+       rules) hands its own horizontal padding over to `.toolbar` itself
+       (`padding: var(--space-3) var(--page-pad)`), so the toolbar needs
+       that padding to land at the same edge as the page content below
+       it. Only cancel it back out to 0 above that width, where the page
+       wrapper is the one still supplying `--page-pad` and doubling up
+       would over-indent everything. */
+    .toolbar.toolbar--slim.card {
+        padding-inline: 0;
+    }
+}
+.toolbar-wrap--slim {
+    top: 0;
+}
+/* Term pages have no hero, so without this the slim toolbar (and the term
+   heading under it) butts right up against the header. Two-class selector to
+   outrank the base `.toolbar-wrap { margin-block: 0 … }`. The gap sits above
+   the sticky border-box, so it only shows at rest — once scrolled, the
+   toolbar still pins flush to the viewport top. */
+.toolbar-wrap.toolbar-wrap--slim {
+    margin-top: var(--space-8);
+}
+@media (max-width: 39.999rem) {
+    /* Term pages only — the homepage's toolbar carries the A-Z jump and
+       live search, worth keeping pinned while scrolling a 549-term list.
+       This slim one is just "All terms" + a search trigger, not worth
+       permanently occupying a mobile viewport's limited height for; let
+       it scroll away with the rest of the page below this width.
+       `.toolbar-wrap.toolbar-wrap--slim` (both classes), not just
+       `.toolbar-wrap--slim` — same specificity as the base `.toolbar-wrap`
+       sticky rule otherwise loses the tie, since that rule comes later in
+       the file regardless of which media query either sits in. */
+    .toolbar-wrap.toolbar-wrap--slim {
+        position: static;
+    }
+}
+.toolbar.toolbar--slim {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+/* `.btn`'s own inline padding (var(--space-4), for a comfortable tap
+   target) otherwise sits its icon and label a further 1rem in from the
+   page edge than the heading below it or the header above it — pull it
+   back out by exactly that much so the arrow lines up with both, while
+   the tap target itself still extends the same amount past the edge. */
+.toolbar--slim .btn--ghost {
+    margin-inline-start: calc(var(--space-4) * -1);
+}
+/* "← → browse terms" nudge. Hidden by default: it needs a real keyboard and
+   the JS shortcut, so it only appears with `.js` on wide viewports (see the
+   64rem block, where it's pushed to the right edge of the article column —
+   the toolbar is inset by the sidebar width there so that edge is the
+   article's, not the page's). */
+.pager-hint {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+.pager-hint kbd + kbd {
+    margin-left: -2px;
+}
+@media (min-width: 64rem) {
+    .js .pager-hint {
+        display: flex;
+        margin-inline-start: auto;
+    }
+}
+.search-button {
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 22rem;
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--duration-hover) var(--ease-out);
+}
+.search-button:hover {
+    border-color: var(--ring);
+}
+.search-button span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.search-button svg {
+    flex: none;
+}
+/* On term pages the full-width bordered field competes with the definition
+   for attention. From tablet widths up, collapse it to just its magnifier
+   icon — a quiet affordance grouped with "All terms" on the left. (Below
+   40rem it's hidden entirely; the header search icon takes over there.) */
+@media (min-width: 40rem) {
+    .toolbar--slim .search-button {
+        flex: 0 0 auto;
+        max-width: none;
+        gap: 0;
+        padding: var(--space-2);
+        border-color: transparent;
+        background: none;
+    }
+    .toolbar--slim .search-button span,
+    .toolbar--slim .search-button .key {
+        display: none;
+    }
+    .toolbar--slim .search-button:hover,
+    .toolbar--slim .search-button:focus-visible {
+        border-color: var(--input);
+        background: var(--background);
+    }
+}
+/* Tablet only: no sidebar column and no "browse terms" hint yet, so keep the
+   lone icon tucked next to "All terms" instead of flung to the row's far
+   edge by justify-content: space-between. */
+@media (min-width: 40rem) and (max-width: 63.999rem) {
+    .toolbar--slim .search-button {
+        margin-inline-end: auto;
+    }
+}
+/* Desktop: inset the row's right edge by the sidebar column (20rem) + grid
+   gap (--space-8), matching .term-layout, so the right-pinned "browse terms"
+   hint lands on the article column's edge rather than out over the sidebar. */
+@media (min-width: 64rem) {
+    .toolbar.toolbar--slim.card {
+        padding-inline-end: calc(20rem + var(--space-8));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   7. Toolbar — sticky search + A–Z jump
+   -------------------------------------------------------------------------- */
+/* The header is not pinned (it scrolls away with the page), so this is the
+   only sticky bar — it sticks at the literal viewport top. */
+.toolbar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    /* No padding-top and no margin-top. The sticky offset lands this
+       wrapper's border edge flush against the viewport top, so any top
+       padding would push the visible card down by that much and read as a
+       gap; any top margin would offset the stick point itself. Spacing above
+       the bar before it sticks comes from the hero's padding-bottom. */
+    padding-block: 0;
+    margin-block: 0 var(--space-4);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    backdrop-filter: blur(8px);
+}
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+}
+.toolbar__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    /* .toolbar is a column flex container, so this is a cross-axis (width)
+       flex item — without this, its default auto min-width is its content's
+       min-content size, so the A-Z scroller's un-shrinking chips inside it
+       force this whole row (and the page under it) wider than the viewport
+       instead of scrolling internally. */
+    min-width: 0;
+}
+
+/* The shortcut legend lives directly under the A–Z row, next to the thing it
+   drives. Hidden on touch, where it means nothing, and aria-hidden everywhere
+   because #search-help already says this to a screen reader. */
+.toolbar__meta {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+.toolbar__keys {
+    display: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-block: 0 var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.toolbar__keys kbd + kbd {
+    margin-left: -2px;
+}
+
+/* Hidden until the head script proves scripting is on — a filter box that
+   can't filter is worse than no filter box. `.js .search` above re-shows it. */
+.search {
+    position: relative;
+    display: none;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.search__icon {
+    position: absolute;
+    left: var(--space-3);
+    width: 1rem;
+    height: 1rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+}
+.search input {
+    width: 100%;
+    min-height: var(--tap);
+    padding: var(--space-2) 4.5rem var(--space-2) 2.375rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: var(--text-base);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color var(--duration-hover) var(--ease-out);
+}
+.search input::placeholder {
+    color: var(--muted-foreground);
+}
+/* Chromium's native search-input clear button renders as a blue-tinted
+   circle that clashes with the rest of the UI — drop it; Escape already
+   clears the field. */
+.search input::-webkit-search-cancel-button,
+.search input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+}
+.search input:hover {
+    border-color: var(--ring);
+}
+.search__hint {
+    position: absolute;
+    right: var(--space-3);
+    display: flex;
+    gap: var(--space-1);
+    pointer-events: none;
+}
+/* The hint would collide with the browser's own clear button once typing. */
+.search input:not(:placeholder-shown) ~ .search__hint {
+    display: none;
+}
+/* The mobile search trigger lives in the header's .mobile-header-actions
+   cluster and is only ever shown from inside the max-width:39.999rem rules
+   below (and only with JS, since it opens the #palette overlay). Off by
+   default here so it never renders on wider screens or without script. */
+.mobile-search-btn {
+    display: none;
+}
+
+/* The result count stays in the accessibility tree as a live region (search
+   still announces "N terms match…" to screen readers) but isn't shown — kept
+   visually hidden at every width rather than only on small screens. */
+.toolbar__count {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A–Z: a disclosure on phones (48px targets in a grid), an inline strip from
+   `md` up. Both are the same list of links. */
+.az {
+    flex: 1 0 100%;
+    order: -1;
+    min-width: 0;
+}
+.az__list {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+}
+.az__list::-webkit-scrollbar {
+    display: none;
+}
+.az__list > li {
+    display: flex;
+    flex: none;
+}
+.az__list a,
+.az__list > li > span {
+    /* Positioned so each chip's .sr-only label anchors to the chip. Without
+       this it would resolve against the sticky toolbar instead, escape the
+       scroller's clipping, and stretch the page 1000px wide. */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 3rem;
+    min-height: 3rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--muted-foreground);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.az__list a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.az__list a[aria-current='true'] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+.az__list > li > span {
+    opacity: 0.35;
+}
+
+/* --------------------------------------------------------------------------
+   8. The term list
+   -------------------------------------------------------------------------- */
+.letters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.letter {
+    /* Keeps 549 cards off the render path until they're near the viewport —
+       the single biggest reason this page paints fast on mobile. `--n` is the
+       term count, set per section, so the placeholder height is close to the
+       real one and the scrollbar doesn't lurch as sections fill in. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.75rem);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+}
+.letter[hidden] {
+    display: none;
+}
+
+.letter__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+.letter__head h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+}
+.letter__count {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.terms {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+}
+.terms > li {
+    /* Second level of skipping: even inside the letter section you're reading,
+       only the cards near the viewport are laid out. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4rem;
+}
+.terms > li[hidden] {
+    display: none;
+}
+
+.term-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    height: 100%;
+    position: relative;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+    transition:
+        background-color 180ms var(--ease-out),
+        border-color 180ms var(--ease-out),
+        box-shadow 180ms var(--ease-out),
+        transform 180ms var(--ease-out);
+}
+.term-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+}
+.term-card p {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--muted-foreground);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+
+/* On phones the A–Z index is a directory, not a reading surface: 549 three-line
+   previews is a wall of text to scroll past, and the single most expensive
+   thing on the page to lay out. The summary stays in the HTML — search engines
+   and wider screens still get it — and each card becomes a compact row.
+
+   The row height is fixed rather than intrinsic, which is what lets the
+   contain-intrinsic-size placeholders below be exact: a section that renders
+   is exactly as tall as its placeholder, so nothing below it ever shifts. */
+.terms .term-card {
+    height: 4rem;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+}
+.terms .term-card h3 {
+    font-size: var(--text-sm);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+.terms .term-card p {
+    display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .letter:hover {
+        content-visibility: visible;
+    }
+    .terms > li:hover {
+        position: relative;
+        z-index: 1;
+        content-visibility: visible;
+    }
+    .term-card:hover {
+        background: color-mix(in srgb, var(--card) 94%, var(--accent-foreground));
+        border-color: color-mix(in srgb, var(--ring) 65%, var(--border));
+        box-shadow:
+            0 8px 20px -12px rgb(0 0 0 / 0.35),
+            0 3px 8px -6px rgb(0 0 0 / 0.2);
+        transform: translateY(-2px);
+    }
+}
+
+/* Release paint containment around the keyboard cursor so its ring can draw
+   outside both deferred-rendering boundaries. */
+.letter:focus-within,
+.terms > li:focus-within {
+    content-visibility: visible;
+}
+.terms > li:focus-within {
+    position: relative;
+    z-index: 1;
+}
+
+/* One cohesive keyboard cursor: the component-level ring replaces the global
+   outline, matching the card radius instead of stacking multiple indicators. */
+.term-card.is-active {
+    background: var(--accent);
+    border-color: var(--ring);
+    box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--ring) 25%, transparent),
+        var(--shadow-sm);
+}
+.term-card:focus-visible {
+    outline: none;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+    /* Fades/rises in when a search matches nothing, instead of teleporting.
+       Discrete `display` + @starting-style so it needs no JS; degrades to an
+       instant show where @starting-style is unsupported. */
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity var(--duration-enter) var(--ease-out),
+        transform var(--duration-enter) var(--ease-out),
+        display var(--duration-enter) allow-discrete;
+}
+@starting-style {
+    .empty-state:not([hidden]) {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+.empty-state p {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+}
+.empty-state[hidden] {
+    display: none;
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+/* --------------------------------------------------------------------------
+   9. Term page
+   -------------------------------------------------------------------------- */
+.term-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: start;
+}
+
+/* The definition itself is the page's main reading surface, not a widget —
+   boxing it in a bordered, shadowed `.card` (its markup also carries that
+   class) made the whole page read as a stack of panels instead of an
+   article. Let it sit directly on the page background like normal prose. */
+.term-head.card {
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Display treatment for the term itself. --heading-foreground, same as
+   every other heading on the page — near-black in light mode, near-white
+   in dark. */
+.term-head h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-block: var(--space-2);
+    color: var(--heading-foreground);
+}
+/* The opening letter set in Monoton — the same striped display face the
+   A-Z index uses for its oversized section letters — as a small
+   wordmark-like flourish on the one word every reader came to this page
+   for. Sized up a little of its own accord: Monoton is a thin, striped
+   face that only reads as one at size (see the index's letter__head rule),
+   and it'd otherwise look under-weight next to the bold heading font
+   beside it. */
+.term-head h1::first-letter {
+    font-family: 'Monoton', var(--font-heading);
+    font-size: 1.15em;
+    font-weight: 400;
+}
+.term-head__lede {
+    color: var(--muted-foreground);
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    max-width: 70ch;
+}
+
+/* Markdown body ---------------------------------------------------------- */
+.prose {
+    /* A touch more than the step above the <h1> (~40px) — enough air that
+       the lede → first heading gap reads as a deliberate section break
+       without the rule-less canyon it used to be. */
+    margin-top: var(--space-12);
+    max-width: 72ch;
+}
+.prose > * + * {
+    margin-top: var(--space-4);
+}
+.prose h2 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    margin-top: var(--space-8);
+    scroll-margin-top: calc(var(--toolbar-h) + var(--space-6));
+}
+.prose h2:first-child {
+    margin-top: 0;
+}
+/* The "How To … With Spike" section of a definition — set apart with a neutral
+   rule rather than brand colour, which stays reserved for the CTA. */
+.prose h2.prose__spike {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--primary);
+}
+.prose p,
+.prose li {
+    line-height: var(--leading-relaxed);
+}
+.prose ul {
+    list-style: disc;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.prose ul li::marker {
+    color: var(--muted-foreground);
+}
+.prose a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    border-radius: var(--radius-sm);
+}
+.prose a:hover {
+    text-decoration-thickness: 2px;
+}
+.prose strong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+}
+
+/* Sidebar ---------------------------------------------------------------- */
+.term-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+/* Still visually set apart from the article (it's a promo panel, not
+   content), but as a soft fill rather than a hard-bordered, shadowed box —
+   the shadow in particular read as an odd 3D lift next to the now-flat
+   article beside it. */
+.side-card.card {
+    padding: var(--space-5);
+    border: none;
+    box-shadow: none;
+    background: var(--muted);
+}
+.side-card h2,
+.side-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+}
+.side-card p {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    line-height: var(--leading-normal);
+}
+.side-card .btn,
+.side-card .cta {
+    margin-top: var(--space-4);
+    width: 100%;
+}
+.side-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+.side-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    background: var(--muted);
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        color var(--duration-hover) var(--ease-out);
+}
+.side-links a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.side-links svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* Prev / next ------------------------------------------------------------ */
+.pager {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+/* A full outline rather than the old bordered-and-shadowed card — enough
+   to read as one complete, tappable control (not a stray line floating
+   above the text), without the drop shadow that made it look lifted off
+   the now-flat article beside it. Transparent-filled for the same reason
+   the article itself has no background: a solid `--card` fill here read
+   as a white chip against the page's off-white canvas. */
+.pager a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: none;
+    transition:
+        background-color var(--duration-hover) var(--ease-out),
+        border-color var(--duration-hover) var(--ease-out);
+}
+.pager a:hover {
+    background: var(--accent);
+    border-color: var(--ring);
+}
+.pager__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.pager__term {
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--heading-foreground);
+}
+.pager__next {
+    text-align: right;
+}
+.pager__next .pager__label {
+    justify-content: flex-end;
+}
+
+/* Further reading -------------------------------------------------------- */
+.further {
+    margin-top: var(--space-12);
+}
+.further > h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+.further ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+}
+/* `.term-card` also drives the homepage's dense A-Z grid (with a keyboard
+   cursor and its own hover styling), so it stays a filled, shadowed card
+   there — that grid is a directory and needs the affordance. Here it's
+   three related links at the bottom of an article, so it's toned down to
+   just an outline: no fill, no shadow, on both the resting and hover
+   states from §8 above. */
+.further .term-card {
+    background: none;
+    box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .further .term-card:hover {
+        background: var(--accent);
+        box-shadow: none;
+        transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   10. Newsletter
+   -------------------------------------------------------------------------- */
+.subscribe input[type='email'] {
+    width: 100%;
+    min-height: 2.75rem;
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    font-size: var(--text-sm);
+}
+.subscribe button {
+    width: 100%;
+    margin-top: var(--space-2);
+    cursor: pointer;
+}
+.subscribe__msg {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    /* Rises in after a signup rather than snapping — a rare, first-time
+       confirmation moment. Same no-JS discrete-display pattern as
+       .empty-state. */
+    display: block;
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity var(--duration-enter) var(--ease-out),
+        transform var(--duration-enter) var(--ease-out),
+        display var(--duration-enter) allow-discrete;
+}
+@starting-style {
+    .subscribe__msg:not([hidden]) {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+}
+.subscribe__msg[hidden] {
+    display: none;
+    opacity: 0;
+    transform: translateY(3px);
+}
+.subscribe__msg--err {
+    color: var(--destructive);
+}
+
+/* --------------------------------------------------------------------------
+   11. Command palette (term pages) — progressive enhancement, ships hidden.
+   -------------------------------------------------------------------------- */
+.palette[hidden] {
+    display: none;
+}
+.palette {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+.palette__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.4);
+}
+.palette__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(34rem, 100%);
+    max-height: min(28rem, 75vh);
+    overflow: hidden;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow:
+        0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.palette__field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+}
+.palette__field svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--muted-foreground);
+}
+.palette__field input {
+    flex: 1;
+    min-width: 0;
+    min-height: 2.25rem;
+    border: 0;
+    background: transparent;
+    font-size: var(--text-base);
+    outline: none;
+}
+.palette__results {
+    overflow-y: auto;
+    padding: var(--space-2);
+    overscroll-behavior: contain;
+}
+.palette__results li {
+    display: block;
+}
+.palette__opt {
+    display: block;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    cursor: pointer;
+}
+.palette__opt[aria-selected='true'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+.palette__empty {
+    padding: var(--space-6);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+.palette__foot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+.palette__foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* --------------------------------------------------------------------------
+   12. Footer
+   -------------------------------------------------------------------------- */
+.site-footer {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-8);
+    margin-top: var(--space-12);
+}
+.site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    justify-content: space-between;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+.site-footer nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+.site-footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-hover) var(--ease-out);
+}
+.site-footer nav a:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* --------------------------------------------------------------------------
+   13. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 39.999rem) {
+    :root {
+        --page-pad: 0.875rem;
+    }
+
+    #site-header,
+    #site-header .site-nav {
+        height: 3.5rem;
+    }
+    #site-header .site-nav {
+        padding-inline: var(--page-pad);
+    }
+    #site-logo {
+        height: 1.75rem;
+    }
+    .mobile-menu-toggle {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+    /* The shared .theme-toggle rule sizes the box to var(--tap) (3rem, the
+       accessible touch-target floor) around a 1rem icon — a lot of empty
+       padding around a small glyph in this compact header. Tighten the box
+       and size the icon up to fill more of it. */
+    #theme-toggle-mobile {
+        width: 2rem;
+        height: 2rem;
+    }
+    #theme-toggle-mobile svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .hero {
+        padding-block: var(--space-8) var(--space-10);
+    }
+    /* No swoosh/wash on phones — the hero is just the page background here. */
+    .hero::before {
+        display: none;
+    }
+    .hero__inner {
+        gap: var(--space-2);
+    }
+    .hero h1 {
+        /* Wide enough to keep "Incident Response" together on the first line,
+           with a smaller face so the title settles into two lines, not three
+           single-word ones. */
+        max-width: 18ch;
+        font-size: 1.75rem;
+        line-height: 1.08;
+        letter-spacing: 0;
+    }
+    .hero__sub {
+        font-size: var(--text-base);
+        line-height: var(--leading-tight);
+    }
+    .hero__lede {
+        display: none;
+    }
+
+    .toolbar-wrap {
+        top: 0;
+        margin-bottom: var(--space-5);
+        background: color-mix(in srgb, var(--background) 94%, transparent);
+        backdrop-filter: blur(16px) saturate(140%);
+    }
+    .toolbar-wrap > .page {
+        padding-inline: 0;
+    }
+    .toolbar {
+        gap: var(--space-2);
+        padding: var(--space-3) var(--page-pad);
+        border-inline: 0;
+        border-radius: 0;
+        box-shadow: 0 8px 24px -20px rgb(0 0 0 / 0.45);
+    }
+    .toolbar__top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+    }
+    /* The inline search controls move out of the toolbar entirely at this
+       width, on both pages — the #mobile-search-toggle button in the header
+       opens #palette instead (see glossary.js), so neither the homepage's
+       live-filter row nor the term page's "Search the glossary" button
+       has anything left to do here. */
+    .js .search,
+    .js .search-button {
+        display: none;
+    }
+    /* Sits in .mobile-header-actions ahead of the theme toggle. Borderless —
+       just the icon — so it reads as a plain tap target, not a chip. */
+    .js .mobile-search-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        flex-shrink: 0;
+        padding: 0;
+        border: 0;
+        border-radius: var(--radius-md);
+        background: none;
+        color: var(--color-brand-black);
+        cursor: pointer;
+        transition: color var(--duration-hover) var(--ease-out);
+    }
+    #site-header.header-dark .mobile-search-btn {
+        color: #ffffff;
+    }
+    .js .mobile-search-btn svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+    /* Centered like everywhere else (see §11), just allowed to grow taller
+       on a phone viewport so a short result list isn't wasting space. */
+    .palette__panel {
+        max-height: 80vh;
+    }
+    /* The term page's palette instance still ships the arrow/enter/esc
+       keyboard-shortcut legend (unlike the homepage's mobile-only one,
+       which never renders it — see palette.hbs) since it's also reachable
+       there via Cmd+K/"/" on a real keyboard. Below this width it's only
+       ever opened by tapping the #mobile-search-toggle header button, so the
+       hints don't apply — hide them here rather than duplicating a
+       mobileOnly-flagged instance. */
+    .palette__foot {
+        display: none;
+    }
+    /* .az is a plain block (`display: block`, not a flex container itself),
+       so — despite being a flex item of .toolbar__top — align-items:stretch
+       does not reliably clamp it to the row's width once its .az__list
+       child wants to be 1090px wide. Pin it explicitly: without this
+       `width: 100%`, .az renders at its content's full intrinsic width,
+       overflowing .toolbar__top (and the page under it) instead of the
+       chips scrolling inside .az__list. Verified by measuring in a real
+       375px viewport, not just reasoning about the flexbox spec. */
+    .az {
+        order: -1;
+        flex-basis: auto;
+        width: 100%;
+        min-width: 0;
+    }
+    /* Horizontal scroller, not a wrapped grid: the row inherits display:flex
+       + overflow-x:auto from the base .az__list rule below — this just sizes
+       the chips for touch and snaps them as you swipe. */
+    .az__list {
+        min-width: 0;
+        gap: 2px;
+        /* Z would otherwise sit flush against the scroller's own right
+           edge — no breathing room, easy to miss as "the end". */
+        padding-inline-end: var(--page-pad);
+        scroll-snap-type: x proximity;
+    }
+    .az__list > li {
+        scroll-snap-align: start;
+    }
+    .az__list a,
+    .az__list > li > span {
+        min-width: 2rem;
+        min-height: 2rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.6875rem;
+    }
+
+    .letters {
+        gap: var(--space-10);
+    }
+    .letter {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        gap: var(--space-3);
+        contain-intrinsic-size: auto calc(1.5rem + var(--n, 20) * 4.5rem);
+    }
+    .letter__head {
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-3));
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        margin: 0;
+        padding-top: var(--space-1);
+    }
+    .letter__head h2 {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-md);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        font-family: 'Monoton', var(--font-heading);
+        font-size: var(--text-lg);
+        font-weight: 400;
+        line-height: 1;
+    }
+    .letter__count {
+        font-size: 0.625rem;
+        text-align: center;
+        line-height: 1.1;
+    }
+    .terms {
+        gap: var(--space-2);
+        min-width: 0;
+    }
+    .terms .term-card {
+        min-height: 4rem;
+        height: auto;
+        padding: 0.75rem 2.5rem 0.75rem var(--space-3);
+        border-radius: var(--radius-lg);
+        box-shadow: none;
+    }
+    .terms .term-card::after {
+        content: '›';
+        position: absolute;
+        right: var(--space-3);
+        top: 50%;
+        transform: translateY(-52%);
+        color: var(--muted-foreground);
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .terms .term-card h3 {
+        font-size: 0.875rem;
+        line-height: 1.25;
+    }
+    .faq {
+        padding: var(--space-5);
+    }
+}
+
+@media (min-width: 40rem) {
+    :root {
+        --page-pad: var(--space-6);
+    }
+    .terms,
+    .further ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* Room for the summary again — and taller cards, so the placeholder
+       heights that back content-visibility grow to match. */
+    .terms .term-card {
+        height: auto;
+        justify-content: flex-start;
+        padding: var(--space-4);
+    }
+    .terms .term-card h3 {
+        font-size: var(--text-base);
+        display: block;
+        overflow: visible;
+    }
+    .terms .term-card p {
+        display: -webkit-box;
+    }
+    .terms > li {
+        contain-intrinsic-size: auto 9rem;
+    }
+    .letter {
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 5rem);
+    }
+    .pager {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 48rem) {
+    .site-header__link {
+        display: inline-flex;
+    }
+    .js .toolbar__keys {
+        display: flex;
+    }
+    .search {
+        flex: 0 1 20rem;
+    }
+}
+
+/* Tablet (iPad-sized): the A–Z is one full-width row that never wraps and
+   never scrolls — all 26 letters share the toolbar width as equal columns.
+   (Phones below 40rem keep the horizontal scroller; the wrapped multi-row
+   grid only returns at 78rem.) */
+@media (min-width: 40rem) and (max-width: 77.999rem) {
+    .az {
+        order: -1;
+        flex: 1 0 100%;
+        width: 100%;
+        min-width: 0;
+    }
+    .az__list {
+        flex-wrap: nowrap;
+        overflow: visible;
+        gap: 2px;
+    }
+    .az__list > li {
+        /* equal-width tracks: 26 letters divide the row edge to edge */
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    .az__list a,
+    .az__list > li > span {
+        width: 100%;
+        min-width: 0;
+        min-height: 1.875rem;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-xs);
+    }
+    /* The A–Z above it spans the whole toolbar, so a 20rem search pill
+       stranded on the left looked half-finished — let it fill the row too. */
+    .search {
+        flex: 1 1 100%;
+    }
+}
+
+@media (min-width: 78rem) {
+    .az {
+        flex: 1 1 12rem;
+        order: 0;
+    }
+    .az__list {
+        flex-wrap: wrap;
+        overflow: visible;
+        gap: 2px;
+    }
+    .az__list a,
+    .az__list > li > span {
+        min-width: 1.375rem;
+        min-height: 1.5rem;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-xs);
+    }
+}
+
+@media (min-width: 64rem) {
+    .site-nav {
+        display: flex;
+    }
+    .terms,
+    .further ul {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .letter {
+        display: grid;
+        grid-template-columns: 7rem 1fr;
+        gap: var(--space-6);
+        /* Three columns, so a section is ceil(n/3) rows of a 9rem card plus a
+           0.75rem gap — 3.25rem of height per term, not 3.5rem. That quarter
+           of a rem is per *term*, so it compounded into thousands of pixels
+           of overshoot across the alphabet and threw every jump off. */
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 3.25rem);
+    }
+    .letter__head {
+        display: block;
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-6));
+        margin-bottom: 0;
+        /* Without this the heading is a stretched grid item filling the whole
+           row, so it has no slack to travel in and sticky does nothing. */
+        align-self: start;
+    }
+    .letter__head h2 {
+        font-family: 'Monoton', var(--font-heading);
+        /* Monoton is a striped display face — it only reads as one at size,
+           and it ships a single weight, so no bold to ask for. */
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 1.1;
+        color: var(--heading-foreground);
+    }
+    .term-layout {
+        grid-template-columns: minmax(0, 1fr) 20rem;
+        gap: var(--space-8);
+    }
+    .term-aside {
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-6));
+        /* Drop it well below the article's first card rather than sitting
+           flush with the term title — the panel is a short aside, not a
+           column header. */
+        margin-top: var(--space-16);
+    }
+}
+
+/* Tablet: the letter section head takes the phone's compact treatment — a
+   small filled Monoton badge with the term count beneath it — not the
+   oversized striped display letter the ≥64rem desktop layout carries. Placed
+   after the 64rem block so it wins across the whole 40–78rem range. */
+@media (min-width: 40rem) and (max-width: 77.999rem) {
+    .letter {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        gap: var(--space-4);
+    }
+    .letter__head {
+        position: sticky;
+        top: calc(var(--toolbar-h) + var(--space-3));
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        margin: 0;
+        padding-top: var(--space-1);
+    }
+    .letter__head h2 {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-md);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        font-family: 'Monoton', var(--font-heading);
+        font-size: var(--text-lg);
+        font-weight: 400;
+        line-height: 1;
+    }
+    .letter__count {
+        font-size: 0.625rem;
+        text-align: center;
+        line-height: 1.1;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   13b. Homepage A–Z list — Ledger layout
+
+   The sticky left-column letter (see §8 and the 40rem / 64rem blocks above)
+   is untouched — the oversized letter still pins while its terms scroll past.
+   Only the right-hand term list changes: the card grid becomes a single
+   column of editorial rows — running index, term, definition, a blue left
+   accent bar and an arrow that slides in on hover / focus. Every selector is
+   scoped under `.letters` so the shared `.term-card` (further-reading lists
+   on term pages) keeps its own look.
+   -------------------------------------------------------------------------- */
+.letters .terms {
+    /* A single-column grid (not `display: block`): the term list keeps
+       behaving like a grid for `content-visibility`, and — importantly —
+       `grid-template-columns` computes to one track, so the keyboard
+       navigation in glossary.js reads a column count of 1 and steps row by
+       row instead of inheriting the old 2-/3-up `repeat()` from the cascade. */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+.letters .terms > li {
+    /* No per-row render deferral. Ledger rows are variable height (a 1- vs
+       2-line definition), so any single `contain-intrinsic-size` estimate is
+       wrong for half of them — and a not-yet-rendered row then snaps to its
+       real height the moment it's hovered or scrolled to, shifting
+       everything below it. Section-level `content-visibility: auto` on
+       `.letter` still keeps offscreen letters off the render path. */
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+}
+.letters .term-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    align-items: baseline;
+    height: auto;
+    min-height: 0;
+    justify-content: initial;
+    padding: var(--space-3) 2.25rem var(--space-3) var(--space-4);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    transition:
+        background-color 160ms var(--ease-out),
+        border-color 160ms var(--ease-out);
+}
+.letters .terms > li:first-child .term-card {
+    border-top: 1px solid var(--border);
+}
+/* the compact `›` glyph the mobile card rows carry is replaced by the arrow */
+.letters .term-card::after {
+    content: none;
+}
+.letters .term-card__term {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-width: 0;
+}
+.letters .term-card__ix {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+}
+.letters .term-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    color: var(--heading-foreground);
+    display: block;
+    overflow: visible;
+    /* underline that draws in from the left on hover, per the Ledger concept */
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1.5px;
+    transition: background-size 220ms var(--ease-out);
+}
+/* `.letters .terms` prefix (not just `.letters`) so this out-specifies the
+   `.terms .term-card p { display: none }` mobile rule, which carries a type
+   selector. */
+.letters .terms .term-card__def {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--muted-foreground);
+}
+.letters .term-card__go {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--muted-foreground);
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+    transition:
+        opacity 150ms var(--ease-out),
+        transform 150ms var(--ease-out);
+}
+
+/* Static active feedback — a flat accent fill, no lift / shadow / border-tint.
+   Safe on every device: this is what a tapped row settles into.
+   The animated bits (the underline that draws in, the arrow that slides in) are
+   pointer / keyboard niceties and live in the `@media (hover: hover)` block plus
+   `.is-active`. On touch, `:hover` sticks after a tap and `:focus-within` lands
+   on every tap, so left ungated they fired the desktop hover animation on each
+   tap of the term list. `.is-active` stays fully animated because the JS only
+   sets it for real keyboard focus (`:focus-visible`), never a pointer tap. */
+.letters .term-card:focus-within,
+.letters .term-card.is-active {
+    background: var(--accent);
+    border-color: var(--border);
+    box-shadow: none;
+    transform: none;
+}
+.letters .term-card.is-active h3 {
+    background-size: 100% 1.5px;
+}
+.letters .term-card.is-active .term-card__go {
+    opacity: 1;
+    transform: translateY(-50%);
+}
+@media (hover: hover) and (pointer: fine) {
+    .letters .term-card:hover {
+        background: var(--accent);
+        border-color: var(--border);
+        box-shadow: none;
+        transform: none;
+    }
+    .letters .term-card:hover h3,
+    .letters .term-card:focus-within h3 {
+        background-size: 100% 1.5px;
+    }
+    .letters .term-card:hover .term-card__go,
+    .letters .term-card:focus-within .term-card__go {
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+}
+/* one cohesive keyboard cursor: an inset ring on the row, not the boxed card */
+.letters .term-card.is-active {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+}
+
+/* From 40rem up the row is genuinely two-column: term | definition. */
+@media (min-width: 40rem) {
+    .letters .term-card {
+        grid-template-columns: minmax(9rem, 32%) 1fr;
+        gap: var(--space-5);
+    }
+    /* The list is one column of rows now (not the old 2-/3-up grid), so a
+       letter's placeholder height is n whole rows — ~4.25rem each with a
+       2-line definition — plus the section head. */
+    .letters .letter {
+        contain-intrinsic-size: auto calc(3.25rem + var(--n, 20) * 4.25rem);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .letters .term-card h3,
+    .letters .term-card__go {
+        transition: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   14. Motion & print
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .term-card:hover {
+        transform: none;
+    }
+}
+
+@media print {
+    .toolbar-wrap,
+    .site-header,
+    .site-footer,
+    .term-aside,
+    .pager,
+    .palette {
+        display: none !important;
+    }
+    .card,
+    .term-card {
+        box-shadow: none;
+    }
+}

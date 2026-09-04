@@ -1,106 +1,92 @@
 ---
 layout: layouts/base.hbs
 ---
-<div class="glossary-item" 
-    {{#if featuredHeading}}data-featured-heading="{{featuredHeading}}"{{/if}}
-    {{#if term}}data-term="{{term}}"{{/if}}>
-    <div class="border-bottom glossary-intro-header">
-        <div class="container">
-            <div class="glossary-item--title">
-                <h1>{{term}}</h1>
-            </div>
-            <div class="glossary-intro">
-                <p class="glossary-item-excerpt">
-                    {{excerpt}}
-                </p>
-            </div>
-        </div>
-    </div>
+<div class="toolbar-wrap toolbar-wrap--slim">
+    <div class="page">
+        <div class="toolbar toolbar--slim card">
+            <a class="btn btn--ghost" href="{{site.base}}/">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+                All terms
+            </a>
 
-    <div class="alphabet-filter">
-        <div class="alphabet-filter-content container">
-            <div class="glossary-back-link">
-                <a href="/">← Glossary</a>
-            </div>
-            <div class="letter-nav" data-active-letter="{{firstLetter}}">
-                {{#each collections.alphabetList}}
-                    <a href="https://spike.sh/glossary/#{{this}}" data-letter="{{this}}">{{this}}</a>
-                {{/each}}
-            </div>
-        </div>
-    </div>
+            <button type="button" class="search-button js-only" id="open-palette" aria-label="Search the glossary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <span>Search the glossary</span>
+                <kbd class="key" aria-hidden="true">/</kbd>
+            </button>
 
-
-    <div class="glossary-content container">
-        <div class="row">
-            {{!-- col-8 --}}
-            <div class="glossary-sections col-12 col-sm-12 col-md-8">
-                {{{content}}}
-            </div>
-            {{!-- col-4 --}}
-            <div class="glossary-sidebar col-12 col-sm-12 col-md-4">
-                <div class="glossary-sidebar-content">
-                    <div class="glossary-sidebar-section">
-                        <div class="socials d-flex align-items-center justify-content-around">
-                            <a href="https://x.com/spikedhq">Follow us on X</a>
-                            <div class="dot">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#777">
-                                    <path
-                                        d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
-                                </svg>
-                            </div>
-                            <a href="https://linkedin.com/company/spike-hq">LinkedIn</a>
-                        </div>
-
-                        <div class="sidebar-cards">
-                            <div class="sidebar-card">
-                                <h3>What's the Root Cause?</h3>
-                                <a href="https://spike.sh/quiz?utm_source=glossary" class="card-link">
-                                    Take the quiz
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="sidebar-cards">
-                            <div class="sidebar-card">
-                                <h3>Our take on PagerDuty's Pricing breakdown</h3>
-                                <a href="https://spike.sh/blog/pagerduty-pricing-breakdown-2025-and-how-to-save-85/?utm_source=glossary" class="card-link">
-                                    Read the blog
-                                </a>
-                            </div>
-                        </div>
-
-                        {{> subscribe}}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="further-reading">
-            <h2 class="further-read-heading">Further reading:</h2>
-            <div class="row glossary-cards-row">
-                {{#if related}}
-                    {{#each (processRelated related collections.glossaryItems)}}
-                    <div class="col-md-4 mb-4">
-                        <div class=" related-card">
-                            <h3>{{this.title}}</h3>
-                            <p>{{this.excerpt}}</p>
-                            <a href="/glossary/{{this.slug}}/" class="card-link"></a>
-                        </div>
-                    </div>
-                    {{/each}}
-                {{else}}
-                    {{#each (getNextTerms page.fileSlug collections.glossaryItems 3)}}
-                    <div class="col-lg-4 col-md-6 col-12 glossary-card-container">
-                        <div class="glossary-card">
-                            <h3>{{this.title}}</h3>
-                            <p>{{truncate this.excerpt 150}}</p>
-                            <a href="/glossary/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
-                        </div>
-                    </div>
-                    {{/each}}
-                {{/if}}
-            </div>
+            {{!-- Nudge to try the ArrowLeft/ArrowRight term paging wired in
+                  glossary.js. The .pager nav further down is the real control
+                  (and what screen readers get); this is decorative. Pushed to
+                  the right edge of the *article* column (the toolbar is inset
+                  by the sidebar width for this), well clear of the search
+                  button, which stays grouped with "All terms" on the left. --}}
+            <p class="pager-hint" aria-hidden="true">
+                <kbd class="key">&larr;</kbd><kbd class="key">&rarr;</kbd> browse terms
+            </p>
         </div>
     </div>
 </div>
+
+{{!-- Mobile only: the toolbar's "Search the glossary" button is hidden
+      entirely at this width (see the max-width:39.999rem rules in
+      glossary.css) and reached instead through the #mobile-search-toggle
+      button in the header — opens the #palette below. --}}
+
+<div class="page">
+    <div class="term-layout">
+        <div class="term-main">
+            <article class="card term-head">
+                <h1>{{term}}</h1>
+                <p class="term-head__lede">{{excerpt}}</p>
+
+                <div class="prose">
+                    {{{markSpikeSections content featuredHeading}}}
+                </div>
+            </article>
+
+            {{#with (termNeighbours page.fileSlug collections.glossaryItems)}}
+                <nav class="pager" aria-label="Nearby terms">
+                    {{#if prev}}
+                        <a class="pager__prev" data-pager="prev" href="{{@root.site.base}}/{{prev.slug}}/" rel="prev">
+                            <span class="pager__label"><kbd class="key" aria-hidden="true">&larr;</kbd> Previous term</span>
+                            <span class="pager__term">{{prev.title}}</span>
+                        </a>
+                    {{/if}}
+                    {{#if next}}
+                        <a class="pager__next" data-pager="next" href="{{@root.site.base}}/{{next.slug}}/" rel="next">
+                            <span class="pager__label">Next term <kbd class="key" aria-hidden="true">&rarr;</kbd></span>
+                            <span class="pager__term">{{next.title}}</span>
+                        </a>
+                    {{/if}}
+                </nav>
+            {{/with}}
+
+            <section class="further" aria-labelledby="further-title">
+                <h2 id="further-title">Further reading</h2>
+                <ul>
+                    {{#each (furtherReading page.fileSlug related collections.glossaryItems 3)}}
+                        <li>
+                            <a class="term-card" href="{{@root.site.base}}/{{this.slug}}/">
+                                <h3>{{this.title}}</h3>
+                                <p>{{truncate this.excerpt 150}}</p>
+                            </a>
+                        </li>
+                    {{/each}}
+                </ul>
+            </section>
+        </div>
+
+        <aside class="term-aside" aria-label="More from Spike">
+            <section class="card side-card" aria-labelledby="cta-title">
+                <h2 id="cta-title">Put this into practice</h2>
+                <p>Spike turns alerts into on-call incidents your team can acknowledge, escalate and resolve — in minutes.</p>
+                <div class="side-links">
+                    <a href="https://spike.sh/quiz?utm_source=glossary">What's the root cause? Take the quiz</a>
+                </div>
+            </section>
+        </aside>
+    </div>
+</div>
+
+{{> palette}}

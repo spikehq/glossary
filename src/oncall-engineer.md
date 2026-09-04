@@ -1,6 +1,6 @@
 ---
 excerpt: An on-call engineer is a team member assigned to respond to incidents and alerts outside regular working hours.
-term: " On-Call Engineer"
+term: On-Call Engineer
 ---
 ## Who Is An On-Call Engineer
 

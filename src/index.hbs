@@ -1,78 +1,106 @@
 ---
 layout: layouts/base.hbs
-title: Glossary
 permalink: /
 ---
-<div class="glossary-page">
-    <div class="glossary-intro-container border-bottom px-3">
-        <h1>Incident Response Glossary</h1>
-        <h2>Master the Language of Modern Incident Response</h2>
+<section class="hero" aria-labelledby="page-title">
+    <div class="page hero__inner">
+        <h1 id="page-title">Incident Response Glossary</h1>
+        <p class="hero__sub">Master the Language of Modern Incident Response</p>
+        <p class="hero__lede">
+            Curious about how modern teams keep systems reliable? This glossary is a beginner-friendly guide to
+            incident response — with over 500 terms covering on-call, alerting, monitoring, and system reliability.
+            Whether you're just getting started or part of an SRE, DevOps, or operations team, this is your go-to
+            reference for everything incident-related.
+        </p>
+    </div>
+</section>
 
-        <div class="glossary-intro">
-            <p>
-                Curious about how modern teams keep systems reliable? This glossary is a beginner-friendly guide to
-                incident response — with over 500 terms covering on-call, alerting, monitoring, and system reliability.
-                Whether you're just getting started or part of an SRE, DevOps, or operations team, this is your go-to
-                reference for everything incident-related.
+<div class="toolbar-wrap">
+    <div class="page">
+        <div class="toolbar card">
+            <div class="toolbar__top">
+                <nav class="az" aria-label="Jump to letter">
+                    <ul class="az__list">{{#each collections.alphabetNav}}<li>{{#if this.count}}<a href="#letter-{{this.letter}}" data-letter="letter-{{this.letter}}">{{this.letter}}<span class="sr-only"> — {{this.count}} terms</span></a>{{else}}<span>{{this.letter}}<span class="sr-only"> — no terms</span></span>{{/if}}</li>{{/each}}</ul>
+                </nav>
+
+                <form class="search" role="search" id="search-form" autocomplete="off">
+                    <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <label class="sr-only" for="q">Search {{collections.glossaryItems.length}} glossary terms</label>
+                    <input type="search" id="q" name="q" placeholder="Search terms…" enterkeyhint="search" autocomplete="off" aria-describedby="search-help">
+                    <span class="search__hint" aria-hidden="true"><kbd class="key">/</kbd></span>
+                </form>
+            </div>
+
+            <p class="sr-only" id="search-help">Results filter as you type. Press the down arrow to step into the list, arrow keys to move between terms, Enter to open a term.</p>
+
+            <p class="toolbar__meta">
+                <span class="toolbar__count" id="result-count" role="status">{{collections.glossaryItems.length}} terms</span>
             </p>
         </div>
     </div>
+</div>
 
-    <div class="alphabet-filter row m-0">
-        <div class="alphabet-filter-content container">
-            <div class="letter-nav">
-                {{#each collections.alphabetList}}
-                    <a href="#{{this}}">
-                        <h2>{{this}}</h2>
-                    </a>
-                {{/each}}
-            </div>
-            <div class="search-container ms-5">
-                <input type="text" id="glossary-search" placeholder="Search" class="search-input">
-            </div>
-            <div class="mobile-filter-container py-2">
-                <select class="mobile-alphabet-dropdown">
-                    <option value="">Select Letter</option>
-                    {{#each collections.alphabetList}}
-                        <option value="#{{this}}">{{this}}</option>
-                    {{/each}}
-                </select>
-                <div class="mobile-search-container">
-                    <input type="text" id="mobile-glossary-search" placeholder="Search" class="search-input">
-                </div>
-            </div>
-        </div>
-    </div>
+{{!-- Mobile only: the inline search row above is hidden entirely at this
+      width (see the max-width:39.999rem rules in glossary.css) and reached
+      instead through the #mobile-search-toggle button in the header, which
+      opens this mobile-scoped command palette — see glossary.js. --}}
+{{> palette mobileOnly=true}}
 
-    <div class="glossary-list container">
-        <div id="no-results" class="no-results" style="display: none;">
-            <div class="no-results-message">
-                <h3>No matching terms found</h3>
-                <p>Try a different search term or browse by letter</p>
-            </div>
-        </div>
+{{!-- Sits directly under the sticky toolbar, but outside it: unlike the count,
+      this legend doesn't need to stay pinned while scrolling, so it lives here
+      and scrolls away with the page. Duplicated by #search-help for screen
+      readers, so this copy is decorative. --}}
+<div class="page">
+    <p class="toolbar__keys" aria-hidden="true">
+        <kbd class="key">&uarr;</kbd><kbd class="key">&darr;</kbd> move
+        <kbd class="key">&crarr;</kbd> open
+        <kbd class="key">/</kbd> search
+    </p>
+</div>
 
+<div class="page">
+    <div class="letters" id="term-list" data-count="{{collections.glossaryItems.length}}">
         {{#each collections.glossaryItemsByLetter}}
-            <div class="letter-group row" id="{{@key}}">
-                <div class="letter-marker d-none d-md-block col-2">
-                    <div class="letter-marker-container">
-                        <span>{{@key}}</span>
-                    </div>
+            <section class="letter" id="letter-{{@key}}" aria-labelledby="heading-{{@key}}" style="--n:{{this.length}}">
+                <div class="letter__head">
+                    <h2 id="heading-{{@key}}">{{@key}}</h2>
+                    <p class="letter__count">{{this.length}} terms</p>
                 </div>
-                <div class="letter-items col-10">
-                    <div class="row glossary-cards-row">
-                        {{#each this}}
-                            <div class="col-lg-4 col-md-6 col-xs-6 col-sm-6 col-4 glossary-card-container">
-                                <div class="glossary-card">
-                                    <h3>{{title}}</h3>
-                                    <p class="d-none d-md-block">{{truncate excerpt 150}}</p>
-                                    <a href="/{{this.slug}}/" class="card-link" data-slug="{{this.slug}}"></a>
-                                </div>
-                            </div>
-                        {{/each}}
-                    </div>
-                </div>
-            </div>
+                {{!-- Emitted without indentation on purpose: at 549 cards the
+                      pretty-printing alone is tens of kilobytes to download
+                      and parse. --}}
+                <ul class="terms">{{#each this}}<li><a class="term-card" href="{{@root.site.base}}/{{this.slug}}/" data-k="{{lower this.title}}"><span class="term-card__term"><span class="term-card__ix" aria-hidden="true">{{pad2 @index}}</span><h3>{{this.title}}</h3></span><p class="term-card__def">{{truncate this.excerpt 130}}</p><svg class="term-card__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>{{/each}}</ul>
+            </section>
         {{/each}}
     </div>
+
+    <div class="card empty-state" id="no-results" hidden>
+        <h2>No matching terms</h2>
+        <p>Try a shorter search, or clear it to browse all {{collections.glossaryItems.length}} terms A–Z.</p>
+    </div>
+
+    <section class="card faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">About this glossary</h2>
+        <div class="faq__list">
+            <details class="faq__item">
+                <summary class="faq__question">
+                    What is the Incident Response Glossary?
+                    <svg class="faq__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="faq__answer-wrap">
+                    <p class="faq__answer">It's a curated collection of {{collections.glossaryItems.length}}+ terms to help teams understand key concepts in incident management, monitoring, on-call response, and DevOps.</p>
+                </div>
+            </details>
+            <details class="faq__item">
+                <summary class="faq__question">
+                    How can I use this glossary?
+                    <svg class="faq__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="faq__answer-wrap">
+                    <p class="faq__answer">You can browse terms alphabetically, use the search, or explore related terms to learn incident response more effectively.</p>
+                </div>
+            </details>
+        </div>
+        <a class="btn" href="{{site.social.github}}">Contribute a term on GitHub</a>
+    </section>
 </div>
