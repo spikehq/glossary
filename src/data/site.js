@@ -25,6 +25,14 @@
  * 404s on a preview and Pages' SPA-style fallback quietly serves back
  * index.html instead, which is why the header's JS-driven behaviour (theme
  * toggle, dropdown, scroll compaction) silently does nothing there.
+ *
+ * Production is spike.sh/glossary/<path> proxied to glossary-2sy.pages.dev/<path>:
+ * the edge strips the /glossary prefix on the way in. Because `base` is baked
+ * into every URL by this build, the edge must NOT also rewrite root-relative
+ * URLs in the HTML on the way out. If spike.sh ever shows /glossary/glossary/...
+ * in href/src/url() while glossary-2sy.pages.dev shows /glossary/..., that
+ * rewrite is back (it predates the baked-in prefix, see commit 200d10f) and the
+ * fix lives at the edge, not in SITE_BASE and not in this repo.
  */
 const runMode = process.env.ELEVENTY_RUN_MODE || "";
 const isCfPagesPreview =
