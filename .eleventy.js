@@ -137,6 +137,8 @@ module.exports = function (eleventyConfig) {
   // Pass-through the llms.txt index (from production — .txt isn't a
   // configured template format, so it needs an explicit copy).
   eleventyConfig.addPassthroughCopy("src/llms.txt");
+  // Cloudflare Pages redirect rules (renamed term slugs).
+  eleventyConfig.addPassthroughCopy("src/_redirects");
 
   eleventyConfig.addWatchTarget("src/assets/css/");
   eleventyConfig.addWatchTarget("src/assets/js/");
