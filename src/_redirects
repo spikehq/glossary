@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects. Paths are as Pages sees them (no /glossary prefix,
+# the spike.sh edge strips it), so targets are absolute spike.sh URLs.
+/containerized%20recovery/ https://spike.sh/glossary/containerized-recovery/ 301
+/containerized%20recovery https://spike.sh/glossary/containerized-recovery/ 301
