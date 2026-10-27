@@ -101,6 +101,19 @@
                 "url": {{{json pageUrl}}},
                 "inDefinedTermSet": { "@id": {{{json (concat site.url "/#glossary")}}} }
             },
+            {
+                "@type": "Article",
+                "@id": {{{json (concat pageUrl "#article")}}},
+                "headline": {{{json pageTitle}}},
+                "description": {{{json excerpt}}},
+                "url": {{{json pageUrl}}},
+                "mainEntityOfPage": {{{json pageUrl}}},
+                "image": {{{json ogImage}}},
+                "inLanguage": "en",
+                "about": { "@id": {{{json pageUrl}}} },
+                "author": { "@id": "https://spike.sh/#organization" },
+                "publisher": { "@id": "https://spike.sh/#organization" }
+            },
             {{else}}
             {
                 "@type": "WebSite",
